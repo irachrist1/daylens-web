@@ -8,8 +8,13 @@
  * @module
  */
 
+import type * as devices from "../devices.js";
 import type * as http from "../http.js";
+import type * as keys from "../keys.js";
+import type * as keysMutations from "../keysMutations.js";
+import type * as linkCodes from "../linkCodes.js";
 import type * as snapshots from "../snapshots.js";
+import type * as workspaces from "../workspaces.js";
 
 import type {
   ApiFromModules,
@@ -18,8 +23,13 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  devices: typeof devices;
   http: typeof http;
+  keys: typeof keys;
+  keysMutations: typeof keysMutations;
+  linkCodes: typeof linkCodes;
   snapshots: typeof snapshots;
+  workspaces: typeof workspaces;
 }>;
 
 /**

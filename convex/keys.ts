@@ -1,6 +1,6 @@
 "use node";
 
-import { action, internalMutation } from "./_generated/server";
+import { action } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import * as crypto from "crypto";
@@ -22,7 +22,6 @@ function encrypt(plaintext: string): string {
   let encrypted = cipher.update(plaintext, "utf8", "base64");
   encrypted += cipher.final("base64");
   const authTag = cipher.getAuthTag();
-  // Format: iv:authTag:ciphertext (all base64)
   return `${iv.toString("base64")}:${authTag.toString("base64")}:${encrypted}`;
 }
 
@@ -45,36 +44,10 @@ export const store = action({
   },
   handler: async (ctx, args) => {
     const encrypted = encrypt(args.anthropicKey);
-    await ctx.runMutation(internal.keys.upsertEncryptedKey, {
+    await ctx.runMutation(internal.keysMutations.upsertEncryptedKey, {
       workspaceId: args.workspaceId,
       encryptedAnthropicKey: encrypted,
     });
     return { success: true };
-  },
-});
-
-export const upsertEncryptedKey = internalMutation({
-  args: {
-    workspaceId: v.id("workspaces"),
-    encryptedAnthropicKey: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const existing = await ctx.db
-      .query("encrypted_keys")
-      .withIndex("by_workspace", (q) =>
-        q.eq("workspaceId", args.workspaceId)
-      )
-      .first();
-
-    if (existing) {
-      await ctx.db.patch(existing._id, {
-        encryptedAnthropicKey: args.encryptedAnthropicKey,
-      });
-    } else {
-      await ctx.db.insert("encrypted_keys", {
-        workspaceId: args.workspaceId,
-        encryptedAnthropicKey: args.encryptedAnthropicKey,
-      });
-    }
   },
 });
