@@ -206,9 +206,32 @@ web_chats
 - **Convex**: Already deployed at `decisive-aardvark-847.convex.cloud`
 
 ### Marketing Site
-- **Platform**: GitHub Pages (static HTML/CSS)
+- **Platform**: Vercel (static HTML/CSS)
 - **Source**: `daylens` repo → `website/` directory
-- **URL**: `https://irachrist1.github.io/daylens/`
+- **URL**: `https://getdaylens.vercel.app` (also `daylens-eight.vercel.app`)
+- **Deploy**: `cd website && vercel --prod`
+
+---
+
+## Security
+
+### Headers (next.config.ts)
+- `Content-Security-Policy` — restricts scripts, styles, connections to self + Convex
+- `X-Frame-Options: DENY` — prevents clickjacking
+- `X-Content-Type-Options: nosniff` — prevents MIME sniffing
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy` — camera self-only, no mic/geo
+
+### Authentication Security
+- **Middleware**: JWT signatures are cryptographically verified using `jwtVerify` with the ES256 public key (not just decoded)
+- **Session cookies**: `HttpOnly; Secure; SameSite=Strict` — never accessible to JavaScript, never sent cross-site
+- **Internal queries**: `workspaces.get` is `internalQuery` — `recoveryKeyHash` is never exposed to clients
+- **Link codes**: SHA256-hashed before storage, 5-minute TTL, max 5 failed attempts, deleted on redemption
+
+### Known Limitations (tracked for follow-up)
+- No rate limiting on `/recoverWorkspace` endpoint
+- Snapshot payload accepted as `v.any()` with no size validation
+- Encryption key derived with SHA-256 instead of proper KDF (HKDF/scrypt)
 
 ---
 
