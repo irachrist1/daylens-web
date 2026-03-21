@@ -1,10 +1,30 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { decodeJwt } from "jose";
+import { jwtVerify, importSPKI, createRemoteJWKSet, importJWK } from "jose";
 
 const PUBLIC_PATHS = ["/", "/recover", "/api/link", "/api/recover"];
 
-export function middleware(request: NextRequest) {
+// ES256 public key for JWT verification — must match the key in convex/sessionPublicJwks.ts
+const SESSION_PUBLIC_JWK = {
+  kid: "daylens-session-key",
+  kty: "EC" as const,
+  x: "hSGHdzrbcr0mB64HbyqXFjkYLZSTQU3EfrDAcWQxwy0",
+  y: "uYGAgDdN_hAkLNvqf9FuJsLb6uASQzAnqMPlc5l8ZVI",
+  crv: "P-256" as const,
+  alg: "ES256",
+  use: "sig",
+};
+
+// Cache the imported key so we only do it once
+let cachedKey: CryptoKey | null = null;
+async function getPublicKey(): Promise<CryptoKey> {
+  if (!cachedKey) {
+    cachedKey = await importJWK(SESSION_PUBLIC_JWK, "ES256") as CryptoKey;
+  }
+  return cachedKey;
+}
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow public paths
@@ -28,15 +48,21 @@ export function middleware(request: NextRequest) {
   }
 
   try {
-    const decoded = decodeJwt(session);
+    // Cryptographically verify the JWT signature using the ES256 public key
+    const publicKey = await getPublicKey();
+    const { payload } = await jwtVerify(session, publicKey, {
+      algorithms: ["ES256"],
+    });
+
     if (
-      typeof decoded.workspaceId !== "string" ||
-      typeof decoded.exp !== "number" ||
-      decoded.exp * 1000 <= Date.now()
+      typeof payload.workspaceId !== "string" ||
+      typeof payload.exp !== "number" ||
+      payload.exp * 1000 <= Date.now()
     ) {
       return NextResponse.redirect(new URL("/", request.url));
     }
   } catch {
+    // Invalid signature, expired, or malformed token
     return NextResponse.redirect(new URL("/", request.url));
   }
 

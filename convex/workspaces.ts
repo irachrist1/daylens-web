@@ -34,7 +34,9 @@ export const recover = internalQuery({
   },
 });
 
-export const get = query({
+// Internal-only — never expose recoveryKeyHash to clients.
+// If a public query is needed, create one that omits sensitive fields.
+export const get = internalQuery({
   args: {
     workspaceId: v.id("workspaces"),
   },
