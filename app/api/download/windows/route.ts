@@ -26,10 +26,10 @@ export async function GET() {
       assets: Array<{ name: string; browser_download_url: string }>;
     };
 
-    // Prefer the x64 installer; fall back to portable if installer not found
+    // Find the Setup installer (.exe but not a checksum)
     const asset =
-      release.assets.find((a) => a.name.match(/x64-Setup\.exe$/i)) ??
-      release.assets.find((a) => a.name.match(/Portable.*x64.*\.exe$/i) || a.name.match(/x64.*Portable.*\.exe$/i));
+      release.assets.find((a) => a.name.match(/Setup\.exe$/i)) ??
+      release.assets.find((a) => a.name.endsWith(".exe"));
 
     if (!asset) {
       return NextResponse.redirect(FALLBACK_URL);
