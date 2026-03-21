@@ -6,7 +6,14 @@ import {
 } from "@/app/lib/sessionConfig";
 
 const PUBLIC_PATHS = ["/", "/recover"];
-const PUBLIC_API_PATHS = ["/api/link", "/api/recover", "/api/logout"];
+const PUBLIC_API_PATHS = [
+  "/api/link",
+  "/api/recover",
+  "/api/logout",
+  "/api/chat",
+  "/api/chat/save",
+  "/api/download/windows",
+];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

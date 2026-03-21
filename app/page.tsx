@@ -169,6 +169,15 @@ function LinkPageContent() {
           <p className="text-on-surface-variant text-[0.9375rem] leading-relaxed max-w-xs mx-auto">
             View your activity data in the browser. Connect your desktop app to get started.
           </p>
+          <a
+            href="/api/download/windows"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-primary-container to-primary px-5 py-2.5 text-sm font-semibold text-on-primary transition-transform hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+            </svg>
+            Download for Windows
+          </a>
         </div>
 
         {/* Steps */}
