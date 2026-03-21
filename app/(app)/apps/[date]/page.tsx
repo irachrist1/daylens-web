@@ -12,6 +12,7 @@ import {
   CATEGORY_COLORS,
 } from "@/app/lib/format";
 import Link from "next/link";
+import { ChatPanel } from "@/app/components/ChatPanel";
 
 export default async function AppsPage({
   params,
@@ -177,6 +178,8 @@ export default async function AppsPage({
           </p>
         </section>
       )}
+
+      <ChatPanel date={date} />
     </div>
   );
 }

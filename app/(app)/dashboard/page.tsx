@@ -6,8 +6,9 @@ import { redirect } from "next/navigation";
 import { ScoreRing } from "@/app/components/ScoreRing";
 import { CategoryBar } from "@/app/components/CategoryBar";
 import { SyncBanner } from "@/app/components/SyncBanner";
-import { formatDuration, CATEGORY_LABELS } from "@/app/lib/format";
+import { formatDuration, CATEGORY_LABELS, CATEGORY_COLORS } from "@/app/lib/format";
 import Link from "next/link";
+import { ChatPanel } from "@/app/components/ChatPanel";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -163,7 +164,6 @@ export default async function DashboardPage() {
               }, 0);
               const appInfo = topApps.find((a: { appKey: string }) => a.appKey === entry.appKey);
               const category = appInfo?.category || "uncategorized";
-              const { CATEGORY_COLORS } = require("@/app/lib/format");
               return (
                 <div
                   key={`${entry.appKey}-${i}`}
@@ -179,6 +179,8 @@ export default async function DashboardPage() {
           </div>
         </section>
       )}
+
+      <ChatPanel date={today} />
     </div>
   );
 }
