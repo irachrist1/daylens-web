@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ServiceWorker } from "./components/ServiceWorker";
+import { PHProvider } from "./providers";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -39,7 +40,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased dark`}>
       <body className="min-h-full flex flex-col bg-surface text-on-surface font-sans">
-        {children}
+        <PHProvider>
+          {children}
+        </PHProvider>
         <ServiceWorker />
       </body>
     </html>

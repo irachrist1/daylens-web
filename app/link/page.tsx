@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import posthog from "posthog-js";
 
 type BarcodeDetectorCtor = new (options: {
   formats: string[];
@@ -129,6 +130,7 @@ function LinkPageContent() {
       return;
     }
 
+    posthog.capture('link_pairing_started')
     setLoading(true);
     setError("");
     setScannerError("");
@@ -148,6 +150,7 @@ function LinkPageContent() {
         return;
       }
 
+      posthog.capture('link_pairing_completed')
       router.push("/dashboard");
     } catch {
       setError("Connection failed. Please try again.");
