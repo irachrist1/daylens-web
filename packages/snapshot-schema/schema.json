@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "deviceId": "uuid-v4",
+  "platform": "macos",
+  "date": "YYYY-MM-DD",
+  "generatedAt": "ISO8601",
+  "isPartialDay": true,
+  "focusScore": 0.0,
+  "focusSeconds": 0,
+  "categoryTotals": {},
+  "appSummaries": [
+    { "sourceAppId": "", "displayName": "", "category": "", "totalSeconds": 0, "sessionCount": 0 }
+  ],
+  "timeline": [
+    { "sourceAppId": "", "start": "ISO8601", "end": "ISO8601" }
+  ],
+  "topDomains": [
+    { "domain": "", "seconds": 0, "category": "" }
+  ],
+  "categoryOverrides": {},
+  "aiSummary": null,
+  "focusSessions": [
+    { "sourceId": "", "start": "ISO8601", "end": "ISO8601", "actualDurationSec": 0, "targetMinutes": 0, "status": "" }
+  ]
+}
