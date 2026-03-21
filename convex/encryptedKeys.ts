@@ -1,7 +1,7 @@
-import { query } from "./_generated/server";
+import { internalQuery } from "./_generated/server";
 import { v } from "convex/values";
 
-export const getByWorkspace = query({
+export const getByWorkspace = internalQuery({
   args: {
     workspaceId: v.id("workspaces"),
   },

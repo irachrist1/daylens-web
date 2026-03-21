@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getConvexClient } from "@/app/lib/convex";
 import { getSession } from "@/app/lib/session";
 import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
 
 export async function POST(request: NextRequest) {
   const session = await getSession();
@@ -18,11 +17,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const client = getConvexClient();
+  const client = getConvexClient(session.token);
 
   try {
     const result = await client.action(api.ai.askQuestion, {
-      workspaceId: session.workspaceId as Id<"workspaces">,
       question,
       date,
     });

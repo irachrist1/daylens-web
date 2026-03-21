@@ -1,6 +1,6 @@
 "use node";
 
-import { action } from "./_generated/server";
+import { internalAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import * as crypto from "crypto";
@@ -37,7 +37,7 @@ export function decrypt(encryptedStr: string): string {
   return decrypted;
 }
 
-export const store = action({
+export const store = internalAction({
   args: {
     workspaceId: v.id("workspaces"),
     anthropicKey: v.string(),

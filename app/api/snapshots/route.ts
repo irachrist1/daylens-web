@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getConvexClient } from "@/app/lib/convex";
 import { getSession } from "@/app/lib/session";
 import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
 
 export async function GET(request: NextRequest) {
   const session = await getSession();
@@ -13,18 +12,15 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const date = searchParams.get("date");
 
-  const client = getConvexClient();
+  const client = getConvexClient(session.token);
 
   if (date) {
     const snapshot = await client.query(api.snapshots.getByDate, {
-      workspaceId: session.workspaceId as Id<"workspaces">,
       localDate: date,
     });
     return NextResponse.json({ snapshot });
   }
 
-  const snapshots = await client.query(api.snapshots.list, {
-    workspaceId: session.workspaceId as Id<"workspaces">,
-  });
+  const snapshots = await client.query(api.snapshots.list, {});
   return NextResponse.json({ snapshots });
 }

@@ -1,7 +1,6 @@
 import { getSession } from "@/app/lib/session";
 import { getConvexClient } from "@/app/lib/convex";
 import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
 import { redirect } from "next/navigation";
 import { formatDate, formatDuration } from "@/app/lib/format";
 import Link from "next/link";
@@ -10,10 +9,8 @@ export default async function HistoryPage() {
   const session = await getSession();
   if (!session) redirect("/");
 
-  const client = getConvexClient();
-  const snapshots = await client.query(api.snapshots.list, {
-    workspaceId: session.workspaceId as Id<"workspaces">,
-  });
+  const client = getConvexClient(session.token);
+  const snapshots = await client.query(api.snapshots.list, {});
 
   // Sort by date descending
   const sorted = [...snapshots].sort((a, b) =>

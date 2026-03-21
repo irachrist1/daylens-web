@@ -1,123 +1,160 @@
-import { mutation, query } from "./_generated/server";
+import { action, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
+import type { Doc } from "./_generated/dataModel";
 
-/** Generate a 6-character alphanumeric code. */
-function generateCode(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // No I/O/0/1 to avoid confusion
-  let code = "";
-  for (let i = 0; i < 6; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return code;
+const LINK_CODE_TTL_MS = 5 * 60 * 1000;
+const MAX_FAILED_ATTEMPTS = 5;
+
+function normalizeToken(token: string): string {
+  return token.trim().toLowerCase();
 }
 
-export const create = mutation({
+async function hashToken(token: string): Promise<string> {
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(token)
+  );
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function getDisplayCode(token: string): string {
+  return normalizeToken(token).slice(0, 8).toUpperCase();
+}
+
+function isExpired(linkCode: Doc<"link_codes">): boolean {
+  return linkCode.expiresAt <= Date.now();
+}
+
+export const create = internalMutation({
   args: {
     workspaceId: v.id("workspaces"),
+    tokenHash: v.string(),
+    displayCode: v.string(),
   },
   handler: async (ctx, args) => {
-    // Verify workspace exists
-    const workspace = await ctx.db.get(args.workspaceId);
-    if (!workspace) {
-      throw new Error("Workspace not found");
+    const existing = await ctx.db
+      .query("link_codes")
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .take(20);
+
+    for (const linkCode of existing) {
+      await ctx.db.delete(linkCode._id);
     }
 
-    const code = generateCode();
-    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
-
+    const expiresAt = Date.now() + LINK_CODE_TTL_MS;
     await ctx.db.insert("link_codes", {
       workspaceId: args.workspaceId,
-      code,
+      tokenHash: args.tokenHash,
+      displayCode: args.displayCode,
       expiresAt,
+      failedAttempts: 0,
     });
 
-    return { code, expiresAt };
+    return { displayCode: args.displayCode, expiresAt };
   },
 });
 
-export const redeem = mutation({
+export const redeem = internalMutation({
   args: {
-    code: v.string(),
+    token: v.string(),
     deviceId: v.string(),
-    platform: v.union(v.literal("macos"), v.literal("windows")),
+    platform: v.literal("web"),
     displayName: v.string(),
   },
   handler: async (ctx, args) => {
-    const normalizedCode = args.code.toUpperCase().trim();
+    const normalizedToken = normalizeToken(args.token);
+    if (!/^[0-9a-f]{32}$/.test(normalizedToken)) {
+      return { success: false as const, error: "Invalid code" };
+    }
 
-    // Find the link code
-    const linkCode = await ctx.db
+    const displayCode = getDisplayCode(normalizedToken);
+    const tokenHash = await hashToken(normalizedToken);
+    const candidates = await ctx.db
       .query("link_codes")
-      .withIndex("by_code", (q) => q.eq("code", normalizedCode))
-      .first();
+      .withIndex("by_display_code", (q) => q.eq("displayCode", displayCode))
+      .take(10);
 
-    if (!linkCode) {
-      return { success: false, error: "Invalid code" };
+    const activeCandidates = candidates.filter((candidate) => !isExpired(candidate));
+    for (const expired of candidates.filter((candidate) => isExpired(candidate))) {
+      await ctx.db.delete(expired._id);
     }
 
-    if (linkCode.expiresAt < Date.now()) {
-      await ctx.db.delete(linkCode._id);
-      return { success: false, error: "Code expired" };
+    const match = activeCandidates.find((candidate) => candidate.tokenHash === tokenHash);
+    if (!match) {
+      const target = activeCandidates[0];
+      if (target) {
+        const failedAttempts = target.failedAttempts + 1;
+        if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
+          await ctx.db.delete(target._id);
+        } else {
+          await ctx.db.patch(target._id, { failedAttempts });
+        }
+      }
+      return { success: false as const, error: "Invalid or expired code" };
     }
 
-    // Register device
-    const existingDevice = await ctx.db
-      .query("devices")
-      .withIndex("by_workspace", (q) =>
-        q.eq("workspaceId", linkCode.workspaceId)
-      )
-      .first();
+    await ctx.runMutation(internal.devices.upsertForWorkspace, {
+      workspaceId: match.workspaceId,
+      deviceId: args.deviceId,
+      platform: args.platform,
+      displayName: args.displayName,
+    });
 
-    // Check if this device already exists
-    const devices = await ctx.db
-      .query("devices")
-      .withIndex("by_workspace", (q) =>
-        q.eq("workspaceId", linkCode.workspaceId)
-      )
-      .take(100);
-
-    const existing = devices.find((d) => d.deviceId === args.deviceId);
-    if (existing) {
-      await ctx.db.patch(existing._id, {
-        lastSyncAt: Date.now(),
-        platform: args.platform,
-        displayName: args.displayName,
-      });
-    } else {
-      await ctx.db.insert("devices", {
-        workspaceId: linkCode.workspaceId,
-        deviceId: args.deviceId,
-        platform: args.platform,
-        displayName: args.displayName,
-        lastSyncAt: Date.now(),
-      });
-    }
-
-    // Consume the link code
-    await ctx.db.delete(linkCode._id);
+    await ctx.db.delete(match._id);
 
     return {
-      success: true,
-      workspaceId: linkCode.workspaceId,
+      success: true as const,
+      workspaceId: match.workspaceId,
+      deviceId: args.deviceId,
     };
   },
 });
 
-export const verify = query({
+export const redeemAndIssueSession = action({
   args: {
-    code: v.string(),
+    token: v.string(),
+    deviceId: v.string(),
+    displayName: v.string(),
   },
-  handler: async (ctx, args) => {
-    const normalizedCode = args.code.toUpperCase().trim();
-    const linkCode = await ctx.db
-      .query("link_codes")
-      .withIndex("by_code", (q) => q.eq("code", normalizedCode))
-      .first();
+  handler: async (
+    ctx,
+    args
+  ): Promise<
+    | { success: true; token: string; expiresAt: number }
+    | { success: false; error: string }
+  > => {
+    const redeemed: {
+      success: boolean;
+      error?: string;
+      workspaceId?: Doc<"link_codes">["workspaceId"];
+      deviceId?: string;
+    } = await ctx.runMutation(internal.linkCodes.redeem, {
+      token: args.token,
+      deviceId: args.deviceId,
+      platform: "web",
+      displayName: args.displayName,
+    });
 
-    if (!linkCode || linkCode.expiresAt < Date.now()) {
-      return { valid: false };
+    if (!redeemed.success || !redeemed.workspaceId || !redeemed.deviceId) {
+      return { success: false as const, error: redeemed.error ?? "Invalid code" };
     }
 
-    return { valid: true, workspaceId: linkCode.workspaceId };
-  },
+    const session: { token: string; expiresAt: number } = await ctx.runAction(
+      internal.sessionTokens.issue,
+      {
+      workspaceId: redeemed.workspaceId,
+      deviceId: redeemed.deviceId,
+      sessionKind: "web",
+      }
+    );
+
+    return {
+      success: true as const,
+      token: session.token,
+      expiresAt: session.expiresAt,
+    };
+  }
 });

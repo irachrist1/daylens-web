@@ -9,12 +9,16 @@
  */
 
 import type * as ai from "../ai.js";
+import type * as authHelpers from "../authHelpers.js";
 import type * as devices from "../devices.js";
 import type * as encryptedKeys from "../encryptedKeys.js";
 import type * as http from "../http.js";
 import type * as keys from "../keys.js";
 import type * as keysMutations from "../keysMutations.js";
 import type * as linkCodes from "../linkCodes.js";
+import type * as sessionConfig from "../sessionConfig.js";
+import type * as sessionPublicJwks from "../sessionPublicJwks.js";
+import type * as sessionTokens from "../sessionTokens.js";
 import type * as snapshots from "../snapshots.js";
 import type * as webChats from "../webChats.js";
 import type * as workspaces from "../workspaces.js";
@@ -27,12 +31,16 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   ai: typeof ai;
+  authHelpers: typeof authHelpers;
   devices: typeof devices;
   encryptedKeys: typeof encryptedKeys;
   http: typeof http;
   keys: typeof keys;
   keysMutations: typeof keysMutations;
   linkCodes: typeof linkCodes;
+  sessionConfig: typeof sessionConfig;
+  sessionPublicJwks: typeof sessionPublicJwks;
+  sessionTokens: typeof sessionTokens;
   snapshots: typeof snapshots;
   webChats: typeof webChats;
   workspaces: typeof workspaces;

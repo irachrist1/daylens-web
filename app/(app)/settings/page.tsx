@@ -11,15 +11,11 @@ export default async function SettingsPage() {
   const session = await getSession();
   if (!session) redirect("/");
 
-  const client = getConvexClient();
+  const client = getConvexClient(session.token);
 
-  const devices = await client.query(api.devices.listByWorkspace, {
-    workspaceId: session.workspaceId as Id<"workspaces">,
-  });
+  const devices = await client.query(api.devices.listByWorkspace, {});
 
-  const snapshots = await client.query(api.snapshots.list, {
-    workspaceId: session.workspaceId as Id<"workspaces">,
-  });
+  const snapshots = await client.query(api.snapshots.list, {});
 
   return (
     <div className="px-6 py-8 max-w-2xl mx-auto space-y-6">
@@ -32,7 +28,12 @@ export default async function SettingsPage() {
           <p className="text-sm text-on-surface-variant">No devices linked.</p>
         ) : (
           <div className="space-y-3">
-            {devices.map((device) => (
+            {devices.map((device: {
+              _id: Id<"devices">;
+              displayName: string;
+              platform: string;
+              lastSyncAt: number;
+            }) => (
               <div
                 key={device._id}
                 className="flex items-center justify-between"
@@ -69,9 +70,11 @@ export default async function SettingsPage() {
       <section className="rounded-2xl bg-surface-low p-6 space-y-4">
         <h2 className="text-lg font-semibold">Account</h2>
         <div className="space-y-2">
-          <p className="text-sm text-on-surface-variant">
-            Workspace ID: {session.workspaceId}
-          </p>
+          {session.workspaceId && (
+            <p className="text-sm text-on-surface-variant">
+              Workspace ID: {session.workspaceId}
+            </p>
+          )}
           <a
             href="/recover"
             className="text-sm text-primary hover:underline"

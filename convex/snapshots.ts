@@ -1,19 +1,62 @@
-import { query, mutation } from "./_generated/server";
+import {
+  internalMutation,
+  internalQuery,
+  query,
+} from "./_generated/server";
 import { v } from "convex/values";
+import { requireSessionIdentity } from "./authHelpers";
 
 export const list = query({
-  args: { workspaceId: v.id("workspaces") },
-  handler: async (ctx, args) => {
+  args: {},
+  handler: async (ctx) => {
+    const identity = await requireSessionIdentity(ctx);
     return await ctx.db
       .query("day_snapshots")
       .withIndex("by_workspace_date", (q) =>
-        q.eq("workspaceId", args.workspaceId)
+        q.eq("workspaceId", identity.workspaceId)
       )
       .take(365);
   },
 });
 
 export const getByDate = query({
+  args: {
+    localDate: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await requireSessionIdentity(ctx);
+    return await ctx.db
+      .query("day_snapshots")
+      .withIndex("by_workspace_date", (q) =>
+        q
+          .eq("workspaceId", identity.workspaceId)
+          .eq("localDate", args.localDate)
+      )
+      .first();
+  },
+});
+
+export const getDateRange = query({
+  args: {
+    startDate: v.string(),
+    endDate: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await requireSessionIdentity(ctx);
+    const all = await ctx.db
+      .query("day_snapshots")
+      .withIndex("by_workspace_date", (q) =>
+        q.eq("workspaceId", identity.workspaceId)
+      )
+      .take(365);
+
+    return all.filter(
+      (s) => s.localDate >= args.startDate && s.localDate <= args.endDate
+    );
+  },
+});
+
+export const getByWorkspaceAndDate = internalQuery({
   args: {
     workspaceId: v.id("workspaces"),
     localDate: v.string(),
@@ -30,37 +73,15 @@ export const getByDate = query({
   },
 });
 
-export const getDateRange = query({
-  args: {
-    workspaceId: v.id("workspaces"),
-    startDate: v.string(),
-    endDate: v.string(),
-  },
-  handler: async (ctx, args) => {
-    // Fetch all snapshots for workspace, filter by date range
-    const all = await ctx.db
-      .query("day_snapshots")
-      .withIndex("by_workspace_date", (q) =>
-        q.eq("workspaceId", args.workspaceId)
-      )
-      .take(365);
-
-    return all.filter(
-      (s) => s.localDate >= args.startDate && s.localDate <= args.endDate
-    );
-  },
-});
-
 /** Upsert snapshot — last write wins by generatedAt. */
-export const upload = mutation({
+export const upload = internalMutation({
   args: {
     workspaceId: v.id("workspaces"),
     deviceId: v.string(),
     localDate: v.string(),
     snapshot: v.any(),
   },
-  handler: async (ctx, args) => {
-    // Find existing snapshot for this workspace+date
+  handler: async (ctx, args): Promise<string> => {
     const existing = await ctx.db
       .query("day_snapshots")
       .withIndex("by_workspace_date", (q) =>
@@ -71,7 +92,6 @@ export const upload = mutation({
       .first();
 
     if (existing) {
-      // Last write wins by generatedAt
       const existingGeneratedAt = existing.snapshot?.generatedAt ?? "";
       const newGeneratedAt = args.snapshot?.generatedAt ?? "";
       if (newGeneratedAt >= existingGeneratedAt) {
@@ -94,8 +114,7 @@ export const upload = mutation({
   },
 });
 
-/** Update device last sync timestamp. */
-export const recordSync = mutation({
+export const recordSync = internalMutation({
   args: {
     workspaceId: v.id("workspaces"),
     deviceId: v.string(),

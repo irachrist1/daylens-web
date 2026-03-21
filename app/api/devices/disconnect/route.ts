@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Device ID required" }, { status: 400 });
   }
 
-  const client = getConvexClient();
+  const client = getConvexClient(session.token);
   await client.mutation(api.devices.remove, { deviceId });
 
   return NextResponse.json({ success: true });

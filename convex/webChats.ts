@@ -1,7 +1,7 @@
-import { query, mutation } from "./_generated/server";
+import { internalMutation, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
 
-export const getByWorkspace = query({
+export const getByWorkspace = internalQuery({
   args: {
     workspaceId: v.id("workspaces"),
   },
@@ -15,7 +15,7 @@ export const getByWorkspace = query({
   },
 });
 
-export const upsert = mutation({
+export const upsert = internalMutation({
   args: {
     workspaceId: v.id("workspaces"),
     messages: v.any(),

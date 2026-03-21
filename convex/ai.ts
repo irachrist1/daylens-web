@@ -1,7 +1,7 @@
 "use node";
 
 import { action } from "./_generated/server";
-import { api } from "./_generated/api";
+import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import Anthropic from "@anthropic-ai/sdk";
 import { decrypt } from "./keys";
@@ -10,17 +10,17 @@ import {
   buildDayContext,
   questionPrompt,
 } from "../packages/prompt-builder/index";
+import { requireSessionIdentity } from "./authHelpers";
 
 export const askQuestion = action({
   args: {
-    workspaceId: v.id("workspaces"),
     question: v.string(),
     date: v.string(),
   },
   handler: async (ctx, args) => {
-    // Load snapshot for the date
-    const snapshotDoc = await ctx.runQuery(api.snapshots.getByDate, {
-      workspaceId: args.workspaceId,
+    const identity = await requireSessionIdentity(ctx);
+    const snapshotDoc = await ctx.runQuery(internal.snapshots.getByWorkspaceAndDate, {
+      workspaceId: identity.workspaceId,
       localDate: args.date,
     });
 
@@ -29,8 +29,8 @@ export const askQuestion = action({
     }
 
     // Load encrypted API key
-    const keyDocs = await ctx.runQuery(api.encryptedKeys.getByWorkspace, {
-      workspaceId: args.workspaceId,
+    const keyDocs = await ctx.runQuery(internal.encryptedKeys.getByWorkspace, {
+      workspaceId: identity.workspaceId,
     });
 
     if (!keyDocs) {
@@ -60,8 +60,8 @@ export const askQuestion = action({
       message.content[0].type === "text" ? message.content[0].text : "";
 
     // Append to web_chats
-    const existingChats = await ctx.runQuery(api.webChats.getByWorkspace, {
-      workspaceId: args.workspaceId,
+    const existingChats = await ctx.runQuery(internal.webChats.getByWorkspace, {
+      workspaceId: identity.workspaceId,
     });
 
     const messages = existingChats?.messages || [];
@@ -70,8 +70,8 @@ export const askQuestion = action({
       { role: "assistant", content: responseText, date: args.date }
     );
 
-    await ctx.runMutation(api.webChats.upsert, {
-      workspaceId: args.workspaceId,
+    await ctx.runMutation(internal.webChats.upsert, {
+      workspaceId: identity.workspaceId,
       messages,
     });
 

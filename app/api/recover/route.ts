@@ -3,6 +3,7 @@ import { getConvexClient } from "@/app/lib/convex";
 import { setSessionCookie } from "@/app/lib/session";
 import { api } from "../../../convex/_generated/api";
 import { createHash } from "node:crypto";
+import { randomUUID } from "node:crypto";
 
 function hashMnemonic(mnemonic: string): string {
   const normalized = mnemonic.trim().toLowerCase().replace(/\s+/g, " ");
@@ -31,13 +32,15 @@ export async function POST(request: NextRequest) {
   const recoveryKeyHash = hashMnemonic(mnemonic);
   const client = getConvexClient();
 
-  const result = await client.mutation(api.workspaces.recover, {
+  const result = await client.action(api.workspaces.recoverAndIssueSession, {
     recoveryKeyHash,
+    deviceId: `web-${randomUUID()}`,
+    displayName: "Recovered Web Browser",
   });
 
-  if (!result.workspaceId) {
+  if (!result.success) {
     return NextResponse.json(
-      { error: "No workspace found for this recovery phrase" },
+      { error: result.error || "No workspace found for this recovery phrase" },
       { status: 404 }
     );
   }
@@ -45,7 +48,7 @@ export async function POST(request: NextRequest) {
   const response = NextResponse.json({ success: true });
   response.headers.set(
     "Set-Cookie",
-    setSessionCookie(result.workspaceId as string)
+    setSessionCookie(result.token)
   );
 
   return response;

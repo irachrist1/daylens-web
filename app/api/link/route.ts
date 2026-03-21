@@ -2,27 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { getConvexClient } from "@/app/lib/convex";
 import { setSessionCookie } from "@/app/lib/session";
 import { api } from "../../../convex/_generated/api";
+import { randomUUID } from "node:crypto";
 
 export async function POST(request: NextRequest) {
-  const { code } = await request.json();
+  const { token } = await request.json();
 
-  if (!code || typeof code !== "string") {
-    return NextResponse.json({ error: "Code is required" }, { status: 400 });
+  if (!token || typeof token !== "string") {
+    return NextResponse.json({ error: "Token is required" }, { status: 400 });
   }
 
   const client = getConvexClient();
-
-  // Verify the code first
-  const verification = await client.query(api.linkCodes.verify, { code });
-  if (!verification.valid || !verification.workspaceId) {
-    return NextResponse.json({ error: "Invalid or expired code" }, { status: 400 });
-  }
-
-  // Redeem it — register a "web" device
-  const result = await client.mutation(api.linkCodes.redeem, {
-    code,
-    deviceId: "web-browser",
-    platform: "macos" as const, // Web is read-only, uses workspace's platform
+  const result = await client.action(api.linkCodes.redeemAndIssueSession, {
+    token,
+    deviceId: `web-${randomUUID()}`,
     displayName: "Web Browser",
   });
 
@@ -36,7 +28,7 @@ export async function POST(request: NextRequest) {
   const response = NextResponse.json({ success: true });
   response.headers.set(
     "Set-Cookie",
-    setSessionCookie(result.workspaceId as string)
+    setSessionCookie(result.token)
   );
 
   return response;

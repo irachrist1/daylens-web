@@ -1,7 +1,6 @@
 import { getSession } from "@/app/lib/session";
 import { getConvexClient } from "@/app/lib/convex";
 import { api } from "../../../../convex/_generated/api";
-import { Id } from "../../../../convex/_generated/dataModel";
 import { redirect } from "next/navigation";
 import { ScoreRing } from "@/app/components/ScoreRing";
 import { CategoryBar } from "@/app/components/CategoryBar";
@@ -23,9 +22,8 @@ export default async function AppsPage({
   const session = await getSession();
   if (!session) redirect("/");
 
-  const client = getConvexClient();
+  const client = getConvexClient(session.token);
   const snapshotDoc = await client.query(api.snapshots.getByDate, {
-    workspaceId: session.workspaceId as Id<"workspaces">,
     localDate: date,
   });
 

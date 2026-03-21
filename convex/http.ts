@@ -1,6 +1,7 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
-import { api } from "./_generated/api";
+import { internal } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 
 const http = httpRouter();
 
@@ -8,10 +9,24 @@ http.route({
   path: "/uploadSnapshot",
   method: "POST",
   handler: httpAction(async (ctx, req) => {
-    const body = await req.json();
-    const { workspaceId, deviceId, localDate, snapshot } = body;
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      return new Response(JSON.stringify({ error: "Not authenticated" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
-    if (!workspaceId || !deviceId || !localDate || !snapshot) {
+    const body = await req.json();
+    const { localDate, snapshot } = body;
+    const workspaceId = identity.workspaceId as Id<"workspaces">;
+    const deviceId = identity.deviceId;
+
+    if (
+      typeof deviceId !== "string" ||
+      !localDate ||
+      !snapshot
+    ) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
@@ -19,14 +34,35 @@ http.route({
     }
 
     try {
-      const id = await ctx.runMutation(api.snapshots.upload, {
+      const registeredDevices = await ctx.runQuery(internal.devices.listForWorkspace, {
+        workspaceId,
+      });
+      const registeredDevice = registeredDevices.find(
+        (device: { deviceId: string }) => device.deviceId === deviceId
+      );
+
+      if (!registeredDevice) {
+        return new Response(JSON.stringify({ error: "Unknown device" }), {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      if (snapshot?.deviceId !== deviceId) {
+        return new Response(JSON.stringify({ error: "Device mismatch" }), {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      const id = await ctx.runMutation(internal.snapshots.upload, {
         workspaceId,
         deviceId,
         localDate,
         snapshot,
       });
 
-      await ctx.runMutation(api.snapshots.recordSync, {
+      await ctx.runMutation(internal.snapshots.recordSync, {
         workspaceId,
         deviceId,
       });
@@ -58,18 +94,34 @@ http.route({
       });
     }
 
-    const result = await ctx.runMutation(api.workspaces.create, {
+    const result = await ctx.runMutation(internal.workspaces.create, {
       recoveryKeyHash,
     });
 
-    const linkResult = await ctx.runMutation(api.linkCodes.create, {
+    const deviceId = typeof body.deviceId === "string" ? body.deviceId : "desktop-device";
+    const displayName =
+      typeof body.displayName === "string" && body.displayName.trim()
+        ? body.displayName.trim()
+        : "This Mac";
+
+    await ctx.runMutation(internal.devices.upsertForWorkspace, {
       workspaceId: result.workspaceId,
+      deviceId,
+      platform: "macos",
+      displayName,
+    });
+
+    const session = await ctx.runAction(internal.sessionTokens.issue, {
+      workspaceId: result.workspaceId,
+      deviceId,
+      sessionKind: "desktop",
     });
 
     return new Response(
       JSON.stringify({
         workspaceId: result.workspaceId,
-        linkCode: linkResult.code,
+        sessionToken: session.token,
+        sessionExpiresAt: session.expiresAt,
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
@@ -90,8 +142,80 @@ http.route({
       });
     }
 
-    const result = await ctx.runMutation(api.workspaces.recover, {
+    const result = await ctx.runQuery(internal.workspaces.recover, {
       recoveryKeyHash,
+    });
+
+    if (!result.workspaceId) {
+      return new Response(JSON.stringify({ error: "Workspace not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const deviceId = typeof body.deviceId === "string" ? body.deviceId : "desktop-device";
+    const displayName =
+      typeof body.displayName === "string" && body.displayName.trim()
+        ? body.displayName.trim()
+        : "This Mac";
+
+    await ctx.runMutation(internal.devices.upsertForWorkspace, {
+      workspaceId: result.workspaceId,
+      deviceId,
+      platform: "macos",
+      displayName,
+    });
+
+    const session = await ctx.runAction(internal.sessionTokens.issue, {
+      workspaceId: result.workspaceId,
+      deviceId,
+      sessionKind: "desktop",
+    });
+
+    return new Response(JSON.stringify({
+      workspaceId: result.workspaceId,
+      sessionToken: session.token,
+      sessionExpiresAt: session.expiresAt,
+    }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }),
+});
+
+http.route({
+  path: "/createLinkCode",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      return new Response(JSON.stringify({ error: "Not authenticated" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const body = await req.json();
+    const { tokenHash, displayCode } = body;
+
+    if (!tokenHash || !displayCode) {
+      return new Response(JSON.stringify({ error: "Missing required fields" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (typeof identity.workspaceId !== "string") {
+      return new Response(JSON.stringify({ error: "Invalid session" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const result = await ctx.runMutation(internal.linkCodes.create, {
+      workspaceId: identity.workspaceId as Id<"workspaces">,
+      tokenHash,
+      displayCode,
     });
 
     return new Response(JSON.stringify(result), {
@@ -105,18 +229,33 @@ http.route({
   path: "/storeApiKey",
   method: "POST",
   handler: httpAction(async (ctx, req) => {
-    const body = await req.json();
-    const { workspaceId, anthropicKey } = body;
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      return new Response(JSON.stringify({ error: "Not authenticated" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
-    if (!workspaceId || !anthropicKey) {
+    const body = await req.json();
+    const { anthropicKey } = body;
+
+    if (!anthropicKey) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    await ctx.runAction(api.keys.store, {
-      workspaceId,
+    if (typeof identity.workspaceId !== "string") {
+      return new Response(JSON.stringify({ error: "Invalid session" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    await ctx.runAction(internal.keys.store, {
+      workspaceId: identity.workspaceId as Id<"workspaces">,
       anthropicKey,
     });
 

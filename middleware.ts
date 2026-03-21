@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { decodeJwt } from "jose";
 
 const PUBLIC_PATHS = ["/", "/recover", "/api/link", "/api/recover"];
 
@@ -27,8 +28,12 @@ export function middleware(request: NextRequest) {
   }
 
   try {
-    const parsed = JSON.parse(decodeURIComponent(session));
-    if (!parsed.workspaceId) {
+    const decoded = decodeJwt(session);
+    if (
+      typeof decoded.workspaceId !== "string" ||
+      typeof decoded.exp !== "number" ||
+      decoded.exp * 1000 <= Date.now()
+    ) {
       return NextResponse.redirect(new URL("/", request.url));
     }
   } catch {
