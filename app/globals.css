@@ -33,12 +33,23 @@
   --foreground: #d5e3fc;
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Safe area insets for notched devices */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .glass {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 /* Focus bar glow */

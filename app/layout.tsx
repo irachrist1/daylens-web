@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { ServiceWorker } from "./components/ServiceWorker";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -15,6 +16,10 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "Daylens",
+  },
+  icons: {
+    icon: "/icon-192.svg",
+    apple: "/icon-192.svg",
   },
 };
 
@@ -35,6 +40,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} h-full antialiased dark`}>
       <body className="min-h-full flex flex-col bg-surface text-on-surface font-sans">
         {children}
+        <ServiceWorker />
       </body>
     </html>
   );

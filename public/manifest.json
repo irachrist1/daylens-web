@@ -1,12 +1,15 @@
 {
   "name": "Daylens",
   "short_name": "Daylens",
+  "description": "Your activity companion — view Mac usage insights on any device",
   "theme_color": "#68AEFF",
-  "background_color": "#0a0a0a",
+  "background_color": "#051425",
   "display": "standalone",
-  "start_url": "/",
+  "start_url": "/dashboard",
+  "scope": "/",
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" },
+    { "src": "/icon-512.svg", "sizes": "512x512", "type": "image/svg+xml" },
+    { "src": "/icon-192.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
   ]
 }
