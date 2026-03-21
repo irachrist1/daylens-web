@@ -52,6 +52,25 @@ export default async function SettingsPage() {
         )}
       </section>
 
+      {/* Download Windows app */}
+      <section className="rounded-2xl bg-surface-low p-6 space-y-4">
+        <h2 className="text-lg font-semibold">Get the Desktop App</h2>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium">Daylens for Windows</p>
+            <p className="text-xs text-on-surface-variant">
+              Required for activity tracking — runs on your PC in the background
+            </p>
+          </div>
+          <a
+            href="/api/download/windows"
+            className="rounded-lg border border-outline-variant/20 px-3 py-1.5 text-sm text-primary hover:bg-primary/5 transition-colors"
+          >
+            Download
+          </a>
+        </div>
+      </section>
+
       {/* Data */}
       <section className="rounded-2xl bg-surface-low p-6 space-y-4">
         <h2 className="text-lg font-semibold">Your Data</h2>

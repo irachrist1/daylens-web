@@ -5,7 +5,7 @@ export default defineSchema({
   workspaces: defineTable({
     createdAt: v.number(),
     recoveryKeyHash: v.string(),
-  }),
+  }).index("by_recovery_key_hash", ["recoveryKeyHash"]),
   devices: defineTable({
     workspaceId: v.id("workspaces"),
     deviceId: v.string(),
@@ -18,13 +18,16 @@ export default defineSchema({
     lastSyncAt: v.number(),
     orgId: v.optional(v.string()),
     userId: v.optional(v.string()),
-  }).index("by_workspace", ["workspaceId"]),
+  })
+    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace_and_device", ["workspaceId", "deviceId"]),
   link_codes: defineTable({
     workspaceId: v.id("workspaces"),
     tokenHash: v.string(),
     displayCode: v.string(),
     expiresAt: v.number(),
     failedAttempts: v.number(),
+    lockedUntil: v.optional(v.number()),
   })
     .index("by_display_code", ["displayCode"])
     .index("by_workspace", ["workspaceId"]),
@@ -35,11 +38,18 @@ export default defineSchema({
     snapshot: v.any(),
     syncedAt: v.number(),
     orgId: v.optional(v.string()),
-  }).index("by_workspace_date", ["workspaceId", "localDate"]),
+  })
+    .index("by_workspace_date", ["workspaceId", "localDate"])
+    .index("by_workspace_device_date", ["workspaceId", "deviceId", "localDate"]),
   encrypted_keys: defineTable({
     workspaceId: v.id("workspaces"),
     encryptedAnthropicKey: v.string(),
   }).index("by_workspace", ["workspaceId"]),
+  http_rate_limits: defineTable({
+    key: v.string(),
+    count: v.number(),
+    expiresAt: v.number(),
+  }).index("by_key", ["key"]),
   web_chats: defineTable({
     workspaceId: v.id("workspaces"),
     messages: v.any(),

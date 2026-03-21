@@ -21,12 +21,12 @@ export const recover = internalQuery({
     recoveryKeyHash: v.string(),
   },
   handler: async (ctx, args) => {
-    // Scan workspaces for matching recovery key hash.
-    // Small table — full scan is acceptable.
-    const workspaces = await ctx.db.query("workspaces").take(1000);
-    const match = workspaces.find(
-      (ws) => ws.recoveryKeyHash === args.recoveryKeyHash
-    );
+    const match = await ctx.db
+      .query("workspaces")
+      .withIndex("by_recovery_key_hash", (q) =>
+        q.eq("recoveryKeyHash", args.recoveryKeyHash)
+      )
+      .unique();
     if (!match) {
       return { workspaceId: null };
     }

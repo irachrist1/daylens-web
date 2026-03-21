@@ -4,7 +4,10 @@ import { internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
 
 const LINK_CODE_TTL_MS = 5 * 60 * 1000;
+const LOCK_AFTER_THREE_ATTEMPTS_MS = 60 * 1000;
 const MAX_FAILED_ATTEMPTS = 5;
+const LOCK_AFTER_FIVE_ATTEMPTS_MS = 10 * 60 * 1000;
+const MAX_ACTIVE_CODES_PER_WORKSPACE = 3;
 
 function normalizeToken(token: string): string {
   return token.trim().toLowerCase();
@@ -28,6 +31,31 @@ function isExpired(linkCode: Doc<"link_codes">): boolean {
   return linkCode.expiresAt <= Date.now();
 }
 
+function isLocked(linkCode: Doc<"link_codes">): boolean {
+  return typeof linkCode.lockedUntil === "number" && linkCode.lockedUntil > Date.now();
+}
+
+function nextLockUntil(failedAttempts: number, now: number): number | undefined {
+  if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
+    return now + LOCK_AFTER_FIVE_ATTEMPTS_MS;
+  }
+
+  if (failedAttempts >= 3) {
+    return now + LOCK_AFTER_THREE_ATTEMPTS_MS;
+  }
+
+  return undefined;
+}
+
+function lockErrorMessage(lockedUntil: number): string {
+  const remainingMs = Math.max(0, lockedUntil - Date.now());
+  const remainingMinutes = Math.ceil(remainingMs / 60_000);
+
+  return remainingMinutes >= 10
+    ? "Too many attempts. Try again in 10 minutes."
+    : "Too many attempts. Try again in 1 minute.";
+}
+
 export const create = internalMutation({
   args: {
     workspaceId: v.id("workspaces"),
@@ -40,17 +68,28 @@ export const create = internalMutation({
       .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .take(20);
 
-    for (const linkCode of existing) {
+    const now = Date.now();
+    const activeCodes = existing.filter((linkCode) => !isExpired(linkCode));
+
+    for (const linkCode of existing.filter((linkCode) => isExpired(linkCode))) {
       await ctx.db.delete(linkCode._id);
     }
 
-    const expiresAt = Date.now() + LINK_CODE_TTL_MS;
+    const surplus = activeCodes.length - (MAX_ACTIVE_CODES_PER_WORKSPACE - 1);
+    if (surplus > 0) {
+      for (const linkCode of activeCodes.slice(0, surplus)) {
+        await ctx.db.delete(linkCode._id);
+      }
+    }
+
+    const expiresAt = now + LINK_CODE_TTL_MS;
     await ctx.db.insert("link_codes", {
       workspaceId: args.workspaceId,
       tokenHash: args.tokenHash,
       displayCode: args.displayCode,
       expiresAt,
       failedAttempts: 0,
+      lockedUntil: undefined,
     });
 
     return { displayCode: args.displayCode, expiresAt };
@@ -82,16 +121,24 @@ export const redeem = internalMutation({
       await ctx.db.delete(expired._id);
     }
 
+    const lockedCandidate = activeCandidates.find(isLocked);
+    if (lockedCandidate?.lockedUntil) {
+      return {
+        success: false as const,
+        error: lockErrorMessage(lockedCandidate.lockedUntil),
+      };
+    }
+
     const match = activeCandidates.find((candidate) => candidate.tokenHash === tokenHash);
     if (!match) {
       const target = activeCandidates[0];
       if (target) {
+        const now = Date.now();
         const failedAttempts = target.failedAttempts + 1;
-        if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
-          await ctx.db.delete(target._id);
-        } else {
-          await ctx.db.patch(target._id, { failedAttempts });
-        }
+        await ctx.db.patch(target._id, {
+          failedAttempts,
+          lockedUntil: nextLockUntil(failedAttempts, now),
+        });
       }
       return { success: false as const, error: "Invalid or expired code" };
     }

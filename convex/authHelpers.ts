@@ -1,9 +1,15 @@
+import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
+import type { Doc } from "./_generated/dataModel";
 
 type AuthLikeCtx = {
   auth: {
     getUserIdentity(): Promise<Record<string, unknown> | null>;
   };
+  runQuery(
+    fn: unknown,
+    args: { workspaceId: Id<"workspaces">; deviceId: string }
+  ): Promise<Doc<"devices"> | null>;
 };
 
 export type SessionIdentity = {
@@ -30,6 +36,18 @@ export async function requireSessionIdentity(
     (sessionKind !== "desktop" && sessionKind !== "web")
   ) {
     throw new Error("Invalid session");
+  }
+
+  const device = await ctx.runQuery(
+    internal.devices.getByWorkspaceAndDeviceId,
+    {
+      workspaceId: workspaceId as Id<"workspaces">,
+      deviceId,
+    }
+  );
+
+  if (!device) {
+    throw new Error("Session revoked");
   }
 
   return {

@@ -41,7 +41,10 @@ export const askQuestion = action({
     }
 
     // Decrypt key
-    const anthropicKey = decrypt(keyDocs.encryptedAnthropicKey);
+    const anthropicKey = decrypt(
+      keyDocs.encryptedAnthropicKey,
+      identity.workspaceId
+    );
 
     // Build prompt using the shared prompt builder
     const activityContext = buildDayContext(snapshotDoc.snapshot);
