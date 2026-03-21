@@ -35,6 +35,17 @@ export async function GET() {
       return NextResponse.redirect(FALLBACK_URL);
     }
 
+    // Validate the redirect target is actually GitHub/GitHub CDN before redirecting
+    const ALLOWED_HOSTS = ["objects.githubusercontent.com", "github.com", "github-releases.githubusercontent.com"];
+    try {
+      const parsed = new URL(asset.browser_download_url);
+      if (!ALLOWED_HOSTS.includes(parsed.hostname)) {
+        return NextResponse.redirect(FALLBACK_URL);
+      }
+    } catch {
+      return NextResponse.redirect(FALLBACK_URL);
+    }
+
     return NextResponse.redirect(asset.browser_download_url);
   } catch {
     return NextResponse.redirect(FALLBACK_URL);
