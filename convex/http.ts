@@ -102,7 +102,7 @@ http.route({
     const displayName =
       typeof body.displayName === "string" && body.displayName.trim()
         ? body.displayName.trim()
-        : "This Mac";
+        : "This Computer";
 
     await ctx.runMutation(internal.devices.upsertForWorkspace, {
       workspaceId: result.workspaceId,
@@ -157,7 +157,7 @@ http.route({
     const displayName =
       typeof body.displayName === "string" && body.displayName.trim()
         ? body.displayName.trim()
-        : "This Mac";
+        : "This Computer";
 
     await ctx.runMutation(internal.devices.upsertForWorkspace, {
       workspaceId: result.workspaceId,

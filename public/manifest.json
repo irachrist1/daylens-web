@@ -1,7 +1,7 @@
 {
   "name": "Daylens",
   "short_name": "Daylens",
-  "description": "Your activity companion — view Mac usage insights on any device",
+  "description": "Your activity companion — view desktop usage insights on any device",
   "theme_color": "#68AEFF",
   "background_color": "#051425",
   "display": "standalone",

@@ -10,7 +10,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Daylens",
-  description: "Your activity companion — view Mac usage insights on any device",
+  description: "Your activity companion — view desktop usage insights on any device",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,

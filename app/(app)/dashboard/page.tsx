@@ -30,7 +30,7 @@ export default async function DashboardPage() {
         <div className="rounded-2xl bg-surface-low p-8 text-center">
           <p className="text-on-surface-variant">No data for today yet.</p>
           <p className="mt-2 text-sm text-on-surface-variant/60">
-            Open Daylens on your Mac and it will sync automatically.
+            Open Daylens on your computer and it will sync automatically.
           </p>
         </div>
       </div>

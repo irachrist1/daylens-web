@@ -15,6 +15,7 @@ function LinkPageContent() {
   const [loading, setLoading] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [scannerError, setScannerError] = useState("");
+  const [showManualEntry, setShowManualEntry] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -41,6 +42,7 @@ function LinkPageContent() {
     if (!Detector) {
       setScannerError("Camera QR scanning is not supported in this browser yet.");
       setScanning(false);
+      setShowManualEntry(true);
       return;
     }
 
@@ -92,6 +94,7 @@ function LinkPageContent() {
       } catch {
         setScannerError("Camera access was denied.");
         setScanning(false);
+        setShowManualEntry(true);
       }
     }
 
@@ -122,7 +125,7 @@ function LinkPageContent() {
   async function submitToken(rawToken: string) {
     const normalizedToken = rawToken.trim().toLowerCase();
     if (!/^[0-9a-f]{32}$/.test(normalizedToken)) {
-      setError("A full 32-character link token is required.");
+      setError("Invalid link token. Make sure you copied the full code from your desktop app.");
       return;
     }
 
@@ -154,84 +157,174 @@ function LinkPageContent() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-6">
-      <div className="w-full max-w-sm space-y-8">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-primary">
-            Daylens
+      <div className="w-full max-w-md space-y-10">
+        {/* Hero */}
+        <div className="text-center space-y-3">
+          <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-container to-primary flex items-center justify-center mb-4">
+            <span className="text-2xl font-bold text-on-primary">D</span>
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight text-on-surface">
+            Daylens Web
           </h1>
-          <p className="mt-2 text-sm text-on-surface-variant">
-            Scan the QR code from your Mac, or paste the full link token.
+          <p className="text-on-surface-variant text-[0.9375rem] leading-relaxed max-w-xs mx-auto">
+            View your activity data in the browser. Connect your desktop app to get started.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="rounded-2xl bg-surface-low p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-on-surface">
-                QR Scanner
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setScannerError("");
-                  setScanning((current) => !current);
-                }}
-                className="rounded-lg border border-outline-variant/20 px-3 py-1.5 text-xs text-primary hover:bg-primary/5 transition-colors"
-              >
-                {scanning ? "Stop Camera" : "Use Camera"}
-              </button>
-            </div>
+        {/* Steps */}
+        <div className="space-y-4">
+          <h2 className="text-xs font-semibold tracking-widest uppercase text-on-surface-variant/60 px-1">
+            How to connect
+          </h2>
+          <div className="rounded-2xl bg-surface-low p-5 space-y-5">
+            <Step
+              number={1}
+              title="Open Daylens on your computer"
+              description="Go to Settings and find the Web Companion section."
+            />
+            <div className="border-t border-outline-variant/10" />
+            <Step
+              number={2}
+              title='Click "Connect to Web"'
+              description="A QR code and link token will appear in the app."
+            />
+            <div className="border-t border-outline-variant/10" />
+            <Step
+              number={3}
+              title="Scan or paste the code below"
+              description="Point your phone camera at the QR code, or copy-paste the token."
+            />
+          </div>
+        </div>
 
-            {scanning && (
+        {/* Connect Section */}
+        <div className="space-y-4">
+          {/* Primary: QR scan on mobile */}
+          <button
+            type="button"
+            onClick={() => {
+              setScannerError("");
+              setScanning((current) => !current);
+            }}
+            className="w-full rounded-xl bg-gradient-to-br from-primary-container to-primary px-5 py-4 font-semibold text-on-primary transition-transform active:scale-[0.98] flex items-center justify-center gap-3"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 7V5a2 2 0 012-2h2" />
+              <path d="M17 3h2a2 2 0 012 2v2" />
+              <path d="M21 17v2a2 2 0 01-2 2h-2" />
+              <path d="M7 21H5a2 2 0 01-2-2v-2" />
+              <line x1="7" y1="12" x2="17" y2="12" />
+            </svg>
+            {scanning ? "Stop Camera" : "Scan QR Code"}
+          </button>
+
+          {scanning && (
+            <div className="rounded-xl overflow-hidden">
               <video
                 ref={videoRef}
                 className="w-full rounded-xl bg-black/60"
                 muted
                 playsInline
               />
-            )}
+            </div>
+          )}
 
-            {scannerError && (
-              <p className="text-xs text-error">{scannerError}</p>
-            )}
+          {scannerError && (
+            <p className="text-xs text-error text-center">{scannerError}</p>
+          )}
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-outline-variant/15" />
+            <span className="text-xs text-on-surface-variant/50 font-medium">or</span>
+            <div className="flex-1 h-px bg-outline-variant/15" />
           </div>
 
-          <div>
-            <input
-              type="text"
-              value={token}
-              onChange={(e) => setToken(e.target.value.toLowerCase())}
-              placeholder="Paste full 32-character token"
-              maxLength={32}
-              className="w-full rounded-lg bg-surface-low px-4 py-3 text-center text-lg font-mono text-on-surface placeholder:text-on-surface-variant/30 focus:outline-none focus:ring-2 focus:ring-primary-container"
-              autoFocus
-            />
-            <p className="mt-2 text-xs text-on-surface-variant/70">
-              The 8-character reference code on your Mac is only for confirmation.
-            </p>
-          </div>
+          {/* Secondary: paste token */}
+          {!showManualEntry ? (
+            <button
+              type="button"
+              onClick={() => setShowManualEntry(true)}
+              className="w-full rounded-xl border border-outline-variant/20 bg-surface-low px-5 py-3.5 text-sm text-on-surface-variant hover:text-on-surface hover:border-outline-variant/30 transition-colors text-center"
+            >
+              Paste link token manually
+            </button>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div className="rounded-xl bg-surface-low p-4 space-y-3">
+                <label className="block text-xs font-medium text-on-surface-variant">
+                  Link token from your desktop app
+                </label>
+                <input
+                  type="text"
+                  value={token}
+                  onChange={(e) => setToken(e.target.value.toLowerCase())}
+                  placeholder="Paste the code here"
+                  maxLength={32}
+                  className="w-full rounded-lg bg-surface px-4 py-3 text-center text-base font-mono text-on-surface placeholder:text-on-surface-variant/30 focus:outline-none focus:ring-2 focus:ring-primary-container"
+                  autoFocus
+                />
+                <p className="text-[0.6875rem] text-on-surface-variant/50 text-center">
+                  This is the long code shown in Settings &rarr; Web Companion
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || token.trim().length !== 32}
+                className="w-full rounded-xl bg-gradient-to-br from-primary-container to-primary px-5 py-3.5 font-semibold text-on-primary transition-transform active:scale-[0.98] disabled:opacity-40"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Connecting...
+                  </span>
+                ) : (
+                  "Connect"
+                )}
+              </button>
+            </form>
+          )}
 
           {error && (
             <p className="text-center text-sm text-error">{error}</p>
           )}
+        </div>
 
-          <button
-            type="submit"
-            disabled={loading || token.trim().length !== 32}
-            className="w-full rounded-lg bg-gradient-to-br from-primary-container to-primary px-4 py-3 font-semibold text-on-primary transition-transform active:scale-[0.98] disabled:opacity-40"
-          >
-            {loading ? "Connecting..." : "Connect"}
-          </button>
-        </form>
-
-        <div className="text-center">
+        {/* Footer */}
+        <div className="text-center pb-8">
           <a
             href="/recover"
-            className="text-xs text-on-surface-variant hover:text-primary transition-colors"
+            className="text-xs text-on-surface-variant/60 hover:text-primary transition-colors"
           >
-            Have a recovery phrase? Restore workspace
+            Already linked before? Restore with recovery phrase
           </a>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function Step({
+  number,
+  title,
+  description,
+}: {
+  number: number;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex gap-4">
+      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
+        <span className="text-xs font-bold text-primary">{number}</span>
+      </div>
+      <div className="pt-0.5">
+        <p className="text-sm font-medium text-on-surface">{title}</p>
+        <p className="text-xs text-on-surface-variant/70 mt-0.5 leading-relaxed">{description}</p>
       </div>
     </div>
   );

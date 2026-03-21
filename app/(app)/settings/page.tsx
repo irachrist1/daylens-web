@@ -91,7 +91,7 @@ export default async function SettingsPage() {
           <div>
             <p className="text-sm font-medium">Disconnect Web Browser</p>
             <p className="text-xs text-on-surface-variant">
-              Removes session cookie. Your Mac data remains.
+              Removes session cookie. Your desktop app data remains.
             </p>
           </div>
           <form action="/api/logout" method="POST">

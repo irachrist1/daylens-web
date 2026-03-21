@@ -36,7 +36,7 @@ export const askQuestion = action({
     if (!keyDocs) {
       return {
         response:
-          "No API key configured. Add your Anthropic API key in Daylens settings on your Mac.",
+          "No API key configured. Add your Anthropic API key in Daylens settings in your desktop app.",
       };
     }
 
