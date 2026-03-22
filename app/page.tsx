@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { DownloadButtons } from "./components/DownloadButtons";
+import { MobileNav } from "./components/MobileNav";
 
 export const metadata = {
   title: "Daylens — Understand how you spend your time",
@@ -10,145 +11,61 @@ export const metadata = {
 
 export default function LandingPage() {
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#051425",
-        color: "#c8dcf4",
-        fontFamily:
-          '-apple-system, "SF Pro Display", "SF Pro Text", "Segoe UI", system-ui, sans-serif',
-        WebkitFontSmoothing: "antialiased",
-      }}
-    >
+    <div className="landing-page">
       {/* Header */}
-      <header
-        style={{
-          maxWidth: 900,
-          margin: "0 auto",
-          padding: "32px 24px 0",
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-        }}
-      >
-        <Image
-          src="/icon-192.svg"
-          alt="Daylens"
-          width={36}
-          height={36}
-          style={{ borderRadius: 9 }}
-        />
-        <span
-          style={{
-            fontSize: 17,
-            fontWeight: 600,
-            letterSpacing: "-0.3px",
-            color: "#c8dcf4",
-          }}
-        >
-          Daylens
-        </span>
-        <nav style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 24 }}>
-          <a
-            href="#web-companion"
-            style={{
-              fontSize: 13,
-              color: "#5e7a92",
-              textDecoration: "none",
-              transition: "color 200ms",
-            }}
-          >
+      <header className="landing-header">
+        <Link href="/" className="landing-logo">
+          <Image
+            src="/app-icon.png"
+            alt="Daylens"
+            width={36}
+            height={36}
+            className="landing-logo-img"
+          />
+          <span className="landing-logo-text">Daylens</span>
+        </Link>
+
+        {/* Desktop nav — hidden on mobile */}
+        <nav className="landing-nav-desktop">
+          <a href="#web-companion" className="landing-nav-link">
             Web Companion
           </a>
-          <Link
-            href="/link"
-            style={{
-              fontSize: 13,
-              color: "#68AEFF",
-              textDecoration: "none",
-              fontWeight: 500,
-              transition: "color 200ms",
-            }}
-          >
+          <Link href="/link" className="landing-nav-link landing-nav-link-accent">
             Connect Device
           </Link>
-          <Link
-            href="/dashboard"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              fontSize: 13,
-              color: "#fff",
-              textDecoration: "none",
-              fontWeight: 600,
-              padding: "7px 16px",
-              borderRadius: 8,
-              background: "linear-gradient(180deg, #68AEFF 0%, #003EB7 100%)",
-              transition: "opacity 200ms",
-            }}
-          >
+          <Link href="/dashboard" className="landing-nav-btn">
             Open Dashboard
           </Link>
         </nav>
+
+        {/* Mobile nav — hidden on desktop */}
+        <MobileNav />
       </header>
 
       {/* Hero */}
-      <main
-        style={{
-          maxWidth: 900,
-          margin: "0 auto",
-          padding: "80px 24px 64px",
-          textAlign: "center",
-        }}
-      >
-        <h1
-          style={{
-            fontSize: "clamp(2rem, 5vw, 3.5rem)",
-            fontWeight: 700,
-            letterSpacing: "-1.5px",
-            lineHeight: 1.1,
-            color: "#ffffff",
-            margin: "0 0 24px",
-          }}
-        >
+      <main className="landing-main">
+        <h1 className="landing-hero-title">
           Understand how you spend your time.
         </h1>
 
-        <p
-          style={{
-            fontSize: 18,
-            color: "#5e7a92",
-            lineHeight: 1.6,
-            maxWidth: 560,
-            margin: "0 auto 48px",
-          }}
-        >
-          Daylens watches the apps and websites you use — privately, locally —
-          and turns that data into insight you can actually act on.
+        <p className="landing-hero-subtitle">
+          Daylens tracks the apps and websites you use — privately, on your device — then
+          lets you view insights from anywhere with the web companion.
         </p>
 
         {/* Download buttons */}
         <DownloadButtons />
 
-        <p style={{ fontSize: 12, color: "#3d5568", marginBottom: 72 }}>
+        <p className="landing-fine-print" style={{ marginBottom: 72 }}>
           Both apps are free. No subscription, no cloud storage, no telemetry.
         </p>
 
         {/* Desktop app features */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: 24,
-            textAlign: "left",
-            marginBottom: 120,
-          }}
-        >
+        <div className="landing-features-grid" style={{ marginBottom: 120 }}>
           <Feature
             icon={<ShieldIcon />}
             title="Private by design"
-            body="All data stays on your device. Nothing is sent to any server unless you choose to connect the web companion."
+            body="All data stays on your device. Nothing leaves unless you connect the web companion."
           />
           <Feature
             icon={<SparkIcon />}
@@ -164,142 +81,69 @@ export default function LandingPage() {
 
         {/* ── Web Companion Section ── */}
         <div id="web-companion" style={{ scrollMarginTop: 80 }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "6px 14px",
-              borderRadius: 100,
-              background: "rgba(104, 174, 255, 0.1)",
-              border: "1px solid rgba(104, 174, 255, 0.2)",
-              marginBottom: 24,
-            }}
-          >
+          <div className="landing-pill">
             <GlobeIcon />
-            <span style={{ fontSize: 12, fontWeight: 600, color: "#68AEFF", letterSpacing: "0.5px", textTransform: "uppercase" }}>
-              Web Companion
-            </span>
+            <span>Web Companion</span>
           </div>
 
-          <h2
-            style={{
-              fontSize: "clamp(1.5rem, 4vw, 2.5rem)",
-              fontWeight: 700,
-              letterSpacing: "-1px",
-              lineHeight: 1.15,
-              color: "#ffffff",
-              margin: "0 0 20px",
-            }}
-          >
+          <h2 className="landing-section-title">
             Your activity data,<br />anywhere you are.
           </h2>
 
-          <p
-            style={{
-              fontSize: 17,
-              color: "#5e7a92",
-              lineHeight: 1.6,
-              maxWidth: 520,
-              margin: "0 auto 48px",
-            }}
-          >
-            Connect your desktop app once, then check your focus scores, browse your history, and chat with AI about your habits — from your phone, tablet, or any browser.
+          <p className="landing-section-subtitle">
+            Connect your desktop app once, then check focus scores, browse history, and
+            chat with AI about your habits — from any device.
           </p>
 
           {/* Web companion features */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: 20,
-              textAlign: "left",
-              marginBottom: 48,
-            }}
-          >
+          <div className="landing-features-grid landing-features-grid-wide" style={{ marginBottom: 48 }}>
             <Feature
               icon={<DashboardIcon />}
               title="Live dashboard"
-              body="See today's focus score, top apps, category breakdown, and timeline — updated every 5 minutes as you work."
+              body="Today's focus score, top apps, categories, and timeline — updated every 5 minutes."
             />
             <Feature
               icon={<ChatIcon />}
               title="AI chat"
-              body={`Ask questions like "How productive was I this week?" or "What did I spend the most time on today?" and get answers grounded in your real data.`}
+              body={`"How productive was I this week?" Get answers grounded in your real activity data.`}
             />
             <Feature
               icon={<HistoryIcon />}
               title="Full history"
-              body="Browse any past day — focus scores, app usage, website visits, and AI-generated summaries. Your personal work diary."
+              body="Browse any past day with focus scores, app usage, websites, and AI summaries."
             />
             <Feature
               icon={<DevicesIcon />}
               title="Cross-platform"
-              body="Works with both the macOS and Windows apps. Multiple devices sync to the same workspace — see everything in one place."
+              body="Mac and Windows sync to one workspace. See everything in one place."
             />
             <Feature
               icon={<LockIcon />}
               title="Zero-account auth"
-              body="No email, no password, no sign-up. Connect with a QR code or recovery phrase. Your identity is a 12-word mnemonic that only you hold."
+              body="No email, no password. Connect with a QR code. Your identity is a 12-word phrase only you hold."
             />
             <Feature
               icon={<PhoneIcon />}
               title="Mobile-ready"
-              body="Designed for phones first. Check your day from the couch, the commute, or anywhere away from your desk."
+              body="Designed for phones first. Check your day from the couch or the commute."
             />
           </div>
 
           {/* CTA */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, marginBottom: 32 }}>
-            <Link
-              href="/link"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 10,
-                padding: "15px 32px",
-                borderRadius: 12,
-                background: "linear-gradient(180deg, #68AEFF 0%, #003EB7 100%)",
-                color: "#fff",
-                fontWeight: 600,
-                fontSize: 16,
-                textDecoration: "none",
-                transition: "transform 200ms, opacity 200ms",
-              }}
-            >
+          <div className="landing-cta-group">
+            <Link href="/link" className="landing-cta-primary">
               <LinkIcon />
               Connect Your Device
             </Link>
-            <Link
-              href="/dashboard"
-              style={{
-                fontSize: 14,
-                color: "#68AEFF",
-                textDecoration: "none",
-                fontWeight: 500,
-                transition: "opacity 200ms",
-              }}
-            >
+            <Link href="/dashboard" className="landing-cta-secondary">
               Already connected? Open your dashboard &rarr;
             </Link>
           </div>
 
           {/* How it works mini-steps */}
-          <div
-            style={{
-              maxWidth: 480,
-              margin: "0 auto",
-              padding: 24,
-              borderRadius: 16,
-              background: "#0d1c2e",
-              border: "1px solid #1c2d3e",
-              textAlign: "left",
-            }}
-          >
-            <p style={{ fontSize: 11, fontWeight: 600, color: "#5e7a92", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 16 }}>
-              How it works
-            </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div className="landing-how-it-works">
+            <p className="landing-how-label">How it works</p>
+            <div className="landing-steps">
               <MiniStep number={1} text="Download Daylens on your Mac or PC" />
               <MiniStep number={2} text="Open Settings and tap Connect to Web" />
               <MiniStep number={3} text="Scan the QR code from your phone — done" />
@@ -309,22 +153,14 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer
-        style={{
-          maxWidth: 900,
-          margin: "0 auto",
-          padding: "48px 24px 40px",
-          textAlign: "center",
-          borderTop: "1px solid #1c2d3e",
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "center", gap: 32, marginBottom: 20, flexWrap: "wrap" }}>
-          <Link href="/link" style={{ fontSize: 13, color: "#5e7a92", textDecoration: "none" }}>Connect Device</Link>
-          <Link href="/dashboard" style={{ fontSize: 13, color: "#5e7a92", textDecoration: "none" }}>Dashboard</Link>
-          <Link href="/recover" style={{ fontSize: 13, color: "#5e7a92", textDecoration: "none" }}>Recover Account</Link>
+      <footer className="landing-footer">
+        <div className="landing-footer-links">
+          <Link href="/link">Connect Device</Link>
+          <Link href="/dashboard">Dashboard</Link>
+          <Link href="/recover">Recover Account</Link>
         </div>
-        <p style={{ fontSize: 12, color: "#3d5568" }}>
-          Made with care by Daylens
+        <p className="landing-fine-print">
+          Made with care by Christian Tonny
         </p>
       </footer>
     </div>
@@ -341,50 +177,30 @@ function Feature({
   body: string;
 }) {
   return (
-    <div
-      style={{
-        padding: 20,
-        borderRadius: 12,
-        border: "1px solid #1c2d3e",
-        background: "#0d1c2e",
-      }}
-    >
-      <div
-        style={{
-          color: "#68AEFF",
-          marginBottom: 12,
-          opacity: 0.85,
-        }}
-      >
-        {icon}
-      </div>
-      <p
-        style={{
-          fontSize: 14,
-          fontWeight: 600,
-          color: "#c8dcf4",
-          marginBottom: 6,
-        }}
-      >
-        {title}
-      </p>
-      <p style={{ fontSize: 13, color: "#5e7a92", lineHeight: 1.5 }}>{body}</p>
+    <div className="landing-feature-card">
+      <div className="landing-feature-icon">{icon}</div>
+      <p className="landing-feature-title">{title}</p>
+      <p className="landing-feature-body">{body}</p>
     </div>
   );
 }
 
+function MiniStep({ number, text }: { number: number; text: string }) {
+  return (
+    <div className="landing-step">
+      <div className="landing-step-number">
+        <span>{number}</span>
+      </div>
+      <p>{text}</p>
+    </div>
+  );
+}
+
+/* ── Icons ── */
+
 function ShieldIcon() {
   return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M10 2L3 5v5c0 4.5 3.5 7.5 7 8.5 3.5-1 7-4 7-8.5V5L10 2z" />
     </svg>
   );
@@ -392,16 +208,7 @@ function ShieldIcon() {
 
 function SparkIcon() {
   return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M10 2 L11.8 7.2 L17 7.2 L12.9 10.3 L14.4 15.5 L10 12.5 L5.6 15.5 L7.1 10.3 L3 7.2 L8.2 7.2 Z" />
     </svg>
   );
@@ -409,16 +216,7 @@ function SparkIcon() {
 
 function GridIcon() {
   return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <rect x="2" y="2" width="6" height="6" rx="1" />
       <rect x="12" y="2" width="6" height="6" rx="1" />
       <rect x="2" y="12" width="6" height="6" rx="1" />
@@ -503,27 +301,5 @@ function LinkIcon() {
       <path d="M11.5 14.5l1.5-1.5a4 4 0 000-5.66l-.34-.34a4 4 0 00-5.66 0L5.5 8.5" />
       <path d="M8.5 5.5L7 7a4 4 0 000 5.66l.34.34a4 4 0 005.66 0L14.5 11.5" />
     </svg>
-  );
-}
-
-function MiniStep({ number, text }: { number: number; text: string }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-      <div
-        style={{
-          flexShrink: 0,
-          width: 28,
-          height: 28,
-          borderRadius: "50%",
-          background: "rgba(104, 174, 255, 0.12)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <span style={{ fontSize: 12, fontWeight: 700, color: "#68AEFF" }}>{number}</span>
-      </div>
-      <p style={{ fontSize: 13, color: "#c8dcf4", margin: 0 }}>{text}</p>
-    </div>
   );
 }

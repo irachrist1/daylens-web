@@ -163,8 +163,8 @@ function LinkPageContent() {
       <div className="w-full max-w-md space-y-10">
         {/* Hero */}
         <div className="text-center space-y-3">
-          <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-container to-primary flex items-center justify-center mb-4">
-            <span className="text-2xl font-bold text-on-primary">D</span>
+          <div className="mx-auto mb-4">
+            <img src="/app-icon.png" alt="Daylens" width={64} height={64} style={{ borderRadius: 16 }} />
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-on-surface">
             Daylens Web

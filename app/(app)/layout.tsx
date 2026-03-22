@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Poller } from "@/app/components/Poller";
 
@@ -6,7 +7,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen flex-col">
       {/* Desktop header */}
       <header className="hidden md:flex items-center justify-between px-6 py-4 bg-surface-lowest">
-        <Link href="/dashboard" className="text-xl font-bold text-primary">
+        <Link href="/dashboard" className="flex items-center gap-2.5 text-xl font-bold text-primary no-underline">
+          <Image src="/app-icon.png" alt="Daylens" width={28} height={28} style={{ borderRadius: 7 }} />
           Daylens
         </Link>
         <nav className="flex items-center gap-6">
