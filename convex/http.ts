@@ -2,7 +2,7 @@ import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
-import type { Platform } from "../packages/snapshot-schema/snapshot";
+import type { DaySnapshot, Platform } from "../packages/snapshot-schema/snapshot";
 
 const http = httpRouter();
 const DESKTOP_PLATFORMS = new Set<Platform>(["macos", "windows"]);
@@ -67,24 +67,31 @@ function parseDesktopPlatform(value: unknown): Platform | null {
     : null;
 }
 
-function isValidSnapshotV1(snapshot: unknown): snapshot is {
-  schemaVersion: 1;
-  deviceId: string;
-  platform: Platform;
-  date: string;
-  generatedAt: string;
-} {
+function isValidSnapshotV1(snapshot: unknown): snapshot is DaySnapshot {
   if (!snapshot || typeof snapshot !== "object") {
     return false;
   }
 
   const candidate = snapshot as Record<string, unknown>;
+  const hasArrayField = (key: string) => Array.isArray(candidate[key]);
+
   return (
     candidate.schemaVersion === 1 &&
     typeof candidate.deviceId === "string" &&
     parseDesktopPlatform(candidate.platform) !== null &&
     typeof candidate.date === "string" &&
-    typeof candidate.generatedAt === "string"
+    typeof candidate.generatedAt === "string" &&
+    typeof candidate.isPartialDay === "boolean" &&
+    typeof candidate.focusScore === "number" &&
+    typeof candidate.focusSeconds === "number" &&
+    hasArrayField("appSummaries") &&
+    hasArrayField("categoryTotals") &&
+    hasArrayField("timeline") &&
+    hasArrayField("topDomains") &&
+    typeof candidate.categoryOverrides === "object" &&
+    candidate.categoryOverrides !== null &&
+    (candidate.aiSummary === null || typeof candidate.aiSummary === "string") &&
+    hasArrayField("focusSessions")
   );
 }
 

@@ -1,5 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { daySnapshotValidator } from "./snapshotValidator";
 
 export default defineSchema({
   workspaces: defineTable({
@@ -35,7 +36,7 @@ export default defineSchema({
     workspaceId: v.id("workspaces"),
     deviceId: v.string(),
     localDate: v.string(),
-    snapshot: v.any(),
+    snapshot: daySnapshotValidator,
     syncedAt: v.number(),
     orgId: v.optional(v.string()),
   })

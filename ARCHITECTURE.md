@@ -43,7 +43,8 @@ Daylens is a **three-repo system**:
 │  Web Dashboard (Next.js)         │
 │                                  │
 │  • Reads snapshots from Convex   │
-│  • Renders timeline, scores, AI  │
+│  • Renders date-driven scores,   │
+│    top apps, top sites, and AI   │
 │  • Read-only — never writes data │
 └──────────────────────────────────┘
 ```
@@ -115,6 +116,7 @@ Web Browser                          Next.js API          Convex
 |------|---------|
 | `schema.ts` | Database schema — workspaces, devices, link_codes, day_snapshots, encrypted_keys, web_chats |
 | `http.ts` | HTTP endpoints — `/uploadSnapshot`, `/createWorkspace`, `/recoverWorkspace`, `/createLinkCode`, `/storeApiKey` |
+| `snapshotValidator.ts` | Convex validator for the synced `DaySnapshot` contract |
 | `sessionTokens.ts` | JWT issuance (signs with ES256 private key) |
 | `sessionPublicJwks.ts` | Public key for JWT verification (ES256) |
 | `linkCodes.ts` | Link code creation + redemption logic |
@@ -122,14 +124,15 @@ Web Browser                          Next.js API          Convex
 | `devices.ts` | Device registration + sync tracking |
 | `workspaces.ts` | Workspace creation + recovery |
 | `ai.ts` | AI chat action (calls Claude API with activity context) |
+| `packages/snapshot-schema/snapshot.ts` | Shared snapshot contract used by upload, storage, and rendering |
 
 ### Next.js Frontend (`app/`)
 
 | File | Purpose |
 |------|---------|
 | `page.tsx` | Landing page — QR scanner, token paste, connect flow |
-| `(app)/dashboard/DashboardClient.tsx` | Main dashboard (client component) — local timezone dates, focus scores, top apps |
-| `(app)/history/HistoryClient.tsx` | History list (client component) — local timezone "Today"/"Yesterday" labels |
+| `(app)/dashboard/DashboardClient.tsx` | Main dashboard (client component) — selected-date navigation, focus scores, top apps, expandable top sites |
+| `(app)/history/HistoryClient.tsx` | History browser (client component) — synced-day list plus selected-day detail and date navigation |
 | `(app)/chat/page.tsx` | AI chat page — renders GlobalChat |
 | `(app)/apps/[date]/page.tsx` | Day detail — app usage, categories, top sites, AI summary |
 | `(app)/settings/page.tsx` | Settings — AI API key, disconnect |
@@ -140,8 +143,9 @@ Web Browser                          Next.js API          Convex
 | `middleware.ts` | Auth guard — checks `daylens_session` cookie on protected routes |
 | `lib/session.ts` | Cookie helpers — set/get/clear session |
 | `lib/convex.ts` | Server-side Convex client |
-| `components/GlobalChat.tsx` | Chat UI — message bubbles, auto-scroll, debounced save |
-| `components/AppIcon.tsx` | App icon resolver — maps macOS bundle IDs to icon URLs |
+| `components/GlobalChat.tsx` | Chat UI — message bubbles, auto-scroll, debounced save, and selected-date context |
+| `components/AppIcon.tsx` | App icon renderer — prefers embedded `iconBase64` payloads from snapshots |
+| `components/TopSitesList.tsx` | Shared expandable top-sites accordion with per-page drilldown |
 | `components/SyncBanner.tsx` | Banner showing sync status |
 | `recover/page.tsx` | Recovery page — enter mnemonic to restore access |
 
@@ -186,7 +190,7 @@ day_snapshots
   workspaceId: Id<workspaces>
   deviceId: string
   localDate: string                ← "2026-03-21"
-  snapshot: any                    ← Full day data (apps, sessions, scores)
+  snapshot: DaySnapshot v1         ← Validated snapshot payload (apps, icons, sites, focus data)
   syncedAt: number
   index: by_workspace_date
 

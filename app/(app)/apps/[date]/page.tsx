@@ -8,10 +8,10 @@ import {
   formatDuration,
   formatFullDate,
   CATEGORY_LABELS,
-  CATEGORY_COLORS,
 } from "@/app/lib/format";
 import Link from "next/link";
 import { AppIcon } from "@/app/components/AppIcon";
+import { TopSitesList } from "@/app/components/TopSitesList";
 
 export default async function AppsPage({
   params,
@@ -103,13 +103,19 @@ export default async function AppsPage({
               category: string;
               totalSeconds: number;
               sessionCount: number;
+              iconBase64?: string | null;
             }) => (
               <div
                 key={app.appKey}
                 className="flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
-                  <AppIcon bundleID={app.bundleID || app.appKey} displayName={app.displayName} category={app.category} />
+                  <AppIcon
+                    bundleID={app.bundleID || app.appKey}
+                    displayName={app.displayName}
+                    category={app.category}
+                    iconBase64={app.iconBase64}
+                  />
                   <div>
                     <p className="text-sm font-medium">{app.displayName}</p>
                     <p className="text-[0.6875rem] text-on-surface-variant">
@@ -135,26 +141,7 @@ export default async function AppsPage({
       {topDomains.length > 0 && (
         <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-3">
           <h2 className="text-lg font-semibold">Top Sites</h2>
-          <div className="space-y-3">
-            {topDomains.map(
-              (d: { domain: string; seconds: number; category: string }) => (
-                <div
-                  key={d.domain}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm">{d.domain}</span>
-                    <span className="text-[0.6875rem] text-on-surface-variant">
-                      {CATEGORY_LABELS[d.category] || d.category}
-                    </span>
-                  </div>
-                  <span className="text-sm font-medium">
-                    {formatDuration(d.seconds)}
-                  </span>
-                </div>
-              )
-            )}
-          </div>
+          <TopSitesList domains={topDomains} showCategory />
         </section>
       )}
 

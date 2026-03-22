@@ -30,6 +30,7 @@ export interface AppSummary {
   category: Category;
   totalSeconds: number;
   sessionCount: number;
+  iconBase64?: string;
 }
 
 export interface CategoryTotal {
@@ -43,10 +44,17 @@ export interface TimelineEntry {
   endAt: string;   // ISO8601 with offset
 }
 
+export interface TopPage {
+  url: string;
+  title?: string | null;
+  seconds: number;
+}
+
 export interface TopDomain {
   domain: string;
   seconds: number;
   category: Category;
+  topPages?: TopPage[];
 }
 
 export interface FocusSession {

@@ -18,17 +18,12 @@ export async function POST(request: NextRequest) {
   if (Array.isArray(body.messages)) {
     const lastUserMsg = [...body.messages]
       .reverse()
-      .find((m: { role: string }) => m.role === "user");
+      .find((m: { role: string; content?: string }) => m.role === "user");
     question = lastUserMsg?.content;
-    date = lastUserMsg?.date || body.date;
+    date = body.date;
   } else {
     question = body.question;
     date = body.date;
-  }
-
-  // Default to today in local timezone
-  if (!date) {
-    date = new Date().toLocaleDateString("en-CA");
   }
 
   if (!question) {
@@ -39,6 +34,20 @@ export async function POST(request: NextRequest) {
   }
 
   const client = getConvexClient(session.token);
+
+  if (!date) {
+    date = await client.query(api.snapshots.latestDate, {});
+  }
+
+  if (!date) {
+    return NextResponse.json(
+      {
+        error:
+          "No synced activity data is available yet. Open Daylens on your computer and let it sync first.",
+      },
+      { status: 400 }
+    );
+  }
 
   try {
     const result = await client.action(api.ai.askQuestion, {
@@ -80,7 +89,7 @@ export async function POST(request: NextRequest) {
         "The AI service is being updated. Please try again in a few minutes.";
     } else if (isNoData) {
       userMessage =
-        "No activity data found for today. Make sure Daylens is running on your computer.";
+        `No activity data found for ${date}. Make sure Daylens is running on your computer and synced that day.`;
     } else {
       userMessage =
         "Something went wrong. Please try again.";

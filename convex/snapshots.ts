@@ -12,6 +12,7 @@ import {
   type DaySnapshot,
   type Platform,
 } from "../packages/snapshot-schema/snapshot";
+import { daySnapshotValidator } from "./snapshotValidator";
 
 const MAX_SNAPSHOT_DOCS = 3650;
 const FOCUSED_CATEGORIES = new Set([
@@ -67,7 +68,11 @@ function normalizeSnapshot(snapshot: unknown): DaySnapshot | null {
     focusSeconds:
       typeof candidate.focusSeconds === "number" ? candidate.focusSeconds : 0,
     appSummaries: Array.isArray(candidate.appSummaries)
-      ? (candidate.appSummaries as DaySnapshot["appSummaries"])
+      ? (candidate.appSummaries as DaySnapshot["appSummaries"]).map((app) => ({
+          ...app,
+          iconBase64:
+            typeof app.iconBase64 === "string" ? app.iconBase64 : undefined,
+        }))
       : [],
     categoryTotals: Array.isArray(candidate.categoryTotals)
       ? (candidate.categoryTotals as DaySnapshot["categoryTotals"])
@@ -76,7 +81,10 @@ function normalizeSnapshot(snapshot: unknown): DaySnapshot | null {
       ? (candidate.timeline as DaySnapshot["timeline"])
       : [],
     topDomains: Array.isArray(candidate.topDomains)
-      ? (candidate.topDomains as DaySnapshot["topDomains"])
+      ? (candidate.topDomains as DaySnapshot["topDomains"]).map((topDomain) => ({
+          ...topDomain,
+          topPages: Array.isArray(topDomain.topPages) ? topDomain.topPages : [],
+        }))
       : [],
     categoryOverrides:
       candidate.categoryOverrides &&
@@ -89,6 +97,27 @@ function normalizeSnapshot(snapshot: unknown): DaySnapshot | null {
       ? (candidate.focusSessions as DaySnapshot["focusSessions"])
       : [],
   };
+}
+
+function mergeTopPages(
+  existingPages: NonNullable<DaySnapshot["topDomains"][number]["topPages"]>,
+  nextPages: NonNullable<DaySnapshot["topDomains"][number]["topPages"]>
+) {
+  const pageMap = new Map<string, (typeof existingPages)[number]>();
+
+  for (const page of [...existingPages, ...nextPages]) {
+    const existing = pageMap.get(page.url);
+    if (existing) {
+      existing.seconds += page.seconds;
+      existing.title = existing.title || page.title || undefined;
+    } else {
+      pageMap.set(page.url, { ...page });
+    }
+  }
+
+  return [...pageMap.values()]
+    .sort((a, b) => b.seconds - a.seconds)
+    .slice(0, 5);
 }
 
 async function loadWorkspaceDevices(
@@ -148,6 +177,7 @@ function mergeSnapshots(
       if (existing) {
         existing.totalSeconds += app.totalSeconds;
         existing.sessionCount += app.sessionCount;
+        existing.iconBase64 = existing.iconBase64 || app.iconBase64;
       } else {
         appMap.set(app.appKey, { ...app });
       }
@@ -158,8 +188,15 @@ function mergeSnapshots(
       const existing = topDomainMap.get(key);
       if (existing) {
         existing.seconds += topDomain.seconds;
+        existing.topPages = mergeTopPages(
+          existing.topPages ?? [],
+          topDomain.topPages ?? []
+        );
       } else {
-        topDomainMap.set(key, { ...topDomain });
+        topDomainMap.set(key, {
+          ...topDomain,
+          topPages: [...(topDomain.topPages ?? [])],
+        });
       }
     }
 
@@ -183,6 +220,12 @@ function mergeSnapshots(
     .map(([category, totalSeconds]) => ({ category, totalSeconds }))
     .sort((a, b) => b.totalSeconds - a.totalSeconds);
   const topDomains = [...topDomainMap.values()]
+    .map((topDomain) => ({
+      ...topDomain,
+      topPages: [...(topDomain.topPages ?? [])]
+        .sort((a, b) => b.seconds - a.seconds)
+        .slice(0, 5),
+    }))
     .sort((a, b) => b.seconds - a.seconds)
     .slice(0, 20);
 
@@ -306,6 +349,22 @@ export const getByDate = query({
   },
 });
 
+export const latestDate = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await requireSessionIdentity(ctx);
+    const latest = await ctx.db
+      .query("day_snapshots")
+      .withIndex("by_workspace_date", (q) =>
+        q.eq("workspaceId", identity.workspaceId)
+      )
+      .order("desc")
+      .take(1);
+
+    return latest[0]?.localDate ?? null;
+  },
+});
+
 export const getAllByDate = query({
   args: {
     localDate: v.string(),
@@ -363,7 +422,7 @@ export const upload = internalMutation({
     workspaceId: v.id("workspaces"),
     deviceId: v.string(),
     localDate: v.string(),
-    snapshot: v.any(),
+    snapshot: daySnapshotValidator,
   },
   handler: async (ctx, args): Promise<string> => {
     const existing = await ctx.db

@@ -5,8 +5,10 @@ import type { ChatMessage } from "@/app/lib/chat";
 
 export function GlobalChat({
   initialMessages,
+  date,
 }: {
   initialMessages: ChatMessage[];
+  date?: string;
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [input, setInput] = useState("");
@@ -60,7 +62,7 @@ export function GlobalChat({
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: nextMessages }),
+        body: JSON.stringify({ messages: nextMessages, date }),
       });
       const data = await response.json();
 

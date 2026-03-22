@@ -1,14 +1,18 @@
 import { ScoreRing } from "@/app/components/ScoreRing";
 import { CategoryBar } from "@/app/components/CategoryBar";
-import { formatDuration, CATEGORY_LABELS, CATEGORY_COLORS } from "@/app/lib/format";
+import { formatDuration, CATEGORY_LABELS } from "@/app/lib/format";
 import Link from "next/link";
+import { AppIcon } from "@/app/components/AppIcon";
+import { TopSitesList, type TopDomainItem } from "@/app/components/TopSitesList";
 
 interface AppSummary {
   appKey: string;
+  bundleID?: string;
   displayName: string;
   category: string;
   totalSeconds: number;
   sessionCount: number;
+  iconBase64?: string | null;
 }
 
 interface CategoryTotal {
@@ -20,12 +24,7 @@ interface TopDomain {
   domain: string;
   seconds: number;
   category: string;
-}
-
-interface TimelineEntry {
-  appKey: string;
-  startAt: string;
-  endAt: string;
+  topPages?: { url: string; title?: string | null; seconds: number }[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,13 +46,8 @@ export function SnapshotContent({ snapshot, date, showAllApps = false }: Snapsho
   const allApps: AppSummary[] = snapshot.appSummaries || [];
   const topApps = showAllApps ? allApps : allApps.slice(0, 8);
   const categoryTotals: CategoryTotal[] = snapshot.categoryTotals || [];
-  const topDomains: TopDomain[] = (snapshot.topDomains || []).slice(0, showAllApps ? 10 : 5);
-  const timeline: TimelineEntry[] = snapshot.timeline || [];
+  const topDomains: TopDomainItem[] = (snapshot.topDomains || []).slice(0, showAllApps ? 10 : 5);
   const focusSessions = snapshot.focusSessions || [];
-
-  const totalTimelineDuration = timeline.reduce((sum, e) => {
-    return sum + (new Date(e.endAt).getTime() - new Date(e.startAt).getTime());
-  }, 0);
 
   return (
     <div className="space-y-6">
@@ -106,15 +100,12 @@ export function SnapshotContent({ snapshot, date, showAllApps = false }: Snapsho
             {topApps.map((app) => (
               <div key={app.appKey} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div
-                    className="h-8 w-8 rounded-lg flex items-center justify-center text-xs font-bold"
-                    style={{
-                      backgroundColor: (CATEGORY_COLORS[app.category] || "#475569") + "20",
-                      color: CATEGORY_COLORS[app.category] || "#475569",
-                    }}
-                  >
-                    {app.displayName.charAt(0)}
-                  </div>
+                  <AppIcon
+                    bundleID={app.bundleID || app.appKey}
+                    displayName={app.displayName}
+                    category={app.category}
+                    iconBase64={app.iconBase64}
+                  />
                   <div>
                     <p className="text-sm font-medium">{app.displayName}</p>
                     <p className="text-[0.6875rem] text-on-surface-variant">
@@ -138,21 +129,7 @@ export function SnapshotContent({ snapshot, date, showAllApps = false }: Snapsho
       {topDomains.length > 0 && (
         <section className="rounded-2xl bg-surface-low p-6 space-y-3">
           <h2 className="text-lg font-semibold">Top Sites</h2>
-          <div className="space-y-3">
-            {topDomains.map((d) => (
-              <div key={d.domain} className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm">{d.domain}</span>
-                  {showAllApps && (
-                    <span className="text-[0.6875rem] text-on-surface-variant">
-                      {CATEGORY_LABELS[d.category] || d.category}
-                    </span>
-                  )}
-                </div>
-                <span className="text-sm font-medium">{formatDuration(d.seconds)}</span>
-              </div>
-            ))}
-          </div>
+          <TopSitesList domains={topDomains} showCategory={showAllApps} />
         </section>
       )}
 
@@ -167,33 +144,6 @@ export function SnapshotContent({ snapshot, date, showAllApps = false }: Snapsho
             <span className="text-sm text-primary">{focusSessions.length} sessions</span>
           </div>
         </Link>
-      )}
-
-      {/* Timeline bar */}
-      {timeline.length > 0 && totalTimelineDuration > 0 && (
-        <section className="rounded-2xl bg-surface-low p-6 space-y-3">
-          <h2 className="text-lg font-semibold">Timeline</h2>
-          <div className="flex h-8 overflow-hidden rounded-full">
-            {timeline.map((entry, i) => {
-              const duration =
-                new Date(entry.endAt).getTime() - new Date(entry.startAt).getTime();
-              const appInfo = allApps.find((a) => a.appKey === entry.appKey);
-              const category = appInfo?.category || "uncategorized";
-              return (
-                <div
-                  key={`${entry.appKey}-${i}`}
-                  className="h-full"
-                  style={{
-                    width: `${(duration / totalTimelineDuration) * 100}%`,
-                    backgroundColor:
-                      CATEGORY_COLORS[category] || CATEGORY_COLORS.uncategorized,
-                  }}
-                  title={`${entry.appKey}: ${new Date(entry.startAt).toLocaleTimeString()} – ${new Date(entry.endAt).toLocaleTimeString()}`}
-                />
-              );
-            })}
-          </div>
-        </section>
       )}
 
       {/* AI Summary (historical days) */}
