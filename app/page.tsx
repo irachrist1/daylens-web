@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { DownloadButtons } from "./components/DownloadButtons";
@@ -9,7 +10,16 @@ export const metadata = {
     "Daylens watches the apps and websites you use — privately, locally — and turns that data into insight you can actually act on. View your data anywhere with the web companion.",
 };
 
-export default function LandingPage() {
+export default async function LandingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ token?: string }>;
+}) {
+  const params = await searchParams;
+  // If a ?token= param arrives on the root (from old QR codes), forward to /link
+  if (params.token && /^[0-9a-f]{32}$/i.test(params.token)) {
+    redirect(`/link?token=${params.token}`);
+  }
   return (
     <div className="landing-page">
       {/* Header */}

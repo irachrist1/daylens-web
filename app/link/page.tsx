@@ -159,58 +159,49 @@ function LinkPageContent() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-6">
-      <div className="w-full max-w-md space-y-10">
+    <div className="flex min-h-screen items-center justify-center px-5">
+      <div className="w-full max-w-md space-y-7">
         {/* Hero */}
-        <div className="text-center space-y-3">
-          <div className="mx-auto mb-4">
-            <img src="/app-icon.png" alt="Daylens" width={64} height={64} style={{ borderRadius: 16 }} />
+        <div className="text-center space-y-2">
+          <div className="mx-auto mb-3">
+            <img src="/app-icon.png" alt="Daylens" width={44} height={44} style={{ borderRadius: 11 }} />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-on-surface">
-            Daylens Web
+          <h1 className="text-2xl font-bold tracking-tight text-on-surface">
+            Connect to Daylens
           </h1>
-          <p className="text-on-surface-variant text-[0.9375rem] leading-relaxed max-w-xs mx-auto">
-            View your activity data in the browser. Connect your desktop app to get started.
+          <p className="text-on-surface-variant text-sm leading-relaxed max-w-[280px] mx-auto">
+            Link your desktop app to view activity data in the browser.
           </p>
-          <a
-            href="/api/download/windows"
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-primary-container to-primary px-5 py-2.5 text-sm font-semibold text-on-primary transition-transform hover:scale-[1.02] active:scale-[0.98]"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-            </svg>
-            Download for Windows
-          </a>
         </div>
 
         {/* Steps */}
-        <div className="space-y-4">
-          <h2 className="text-xs font-semibold tracking-widest uppercase text-on-surface-variant/60 px-1">
+        <div className="space-y-3">
+          <h2 className="text-[10px] font-semibold tracking-widest uppercase text-on-surface-variant/60 px-1">
             How to connect
           </h2>
-          <div className="rounded-2xl bg-surface-low p-5 space-y-5">
+          <div className="rounded-xl bg-surface-low p-4 space-y-3">
             <Step
               number={1}
               title="Open Daylens on your computer"
-              description="Go to Settings and find the Web Companion section."
+              description="Go to Settings → Web Companion."
             />
             <div className="border-t border-outline-variant/10" />
             <Step
               number={2}
               title='Click "Connect to Web"'
-              description="A QR code and link token will appear in the app."
+              description="A QR code and link token will appear."
             />
             <div className="border-t border-outline-variant/10" />
             <Step
               number={3}
-              title="Scan or paste the code below"
-              description="Point your phone camera at the QR code, or copy-paste the token."
+              title="Scan or paste below"
+              description="Point your camera at the QR code, or paste the token."
             />
           </div>
         </div>
 
         {/* Connect Section */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           {/* Primary: QR scan on mobile */}
           <button
             type="button"
@@ -218,7 +209,7 @@ function LinkPageContent() {
               setScannerError("");
               setScanning((current) => !current);
             }}
-            className="w-full rounded-xl bg-gradient-to-br from-primary-container to-primary px-5 py-4 font-semibold text-on-primary transition-transform active:scale-[0.98] flex items-center justify-center gap-3"
+            className="w-full rounded-xl bg-gradient-to-br from-primary-container to-primary px-5 py-3.5 font-semibold text-on-primary transition-transform active:scale-[0.98] flex items-center justify-center gap-3"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 7V5a2 2 0 012-2h2" />
@@ -307,12 +298,18 @@ function LinkPageContent() {
         </div>
 
         {/* Footer */}
-        <div className="text-center pb-8">
+        <div className="text-center space-y-3 pb-8">
           <a
             href="/recover"
-            className="text-xs text-on-surface-variant/60 hover:text-primary transition-colors"
+            className="text-xs text-on-surface-variant/60 hover:text-primary transition-colors block"
           >
-            Already linked before? Restore with recovery phrase
+            Already linked? Restore with recovery phrase
+          </a>
+          <a
+            href="/"
+            className="text-xs text-on-surface-variant/40 hover:text-on-surface-variant transition-colors block"
+          >
+            Back to home
           </a>
         </div>
       </div>
@@ -330,13 +327,13 @@ function Step({
   description: string;
 }) {
   return (
-    <div className="flex gap-4">
-      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
-        <span className="text-xs font-bold text-primary">{number}</span>
+    <div className="flex gap-3 items-start">
+      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/15 flex items-center justify-center mt-0.5">
+        <span className="text-[10px] font-bold text-primary">{number}</span>
       </div>
-      <div className="pt-0.5">
-        <p className="text-sm font-medium text-on-surface">{title}</p>
-        <p className="text-xs text-on-surface-variant/70 mt-0.5 leading-relaxed">{description}</p>
+      <div>
+        <p className="text-[13px] font-medium text-on-surface leading-snug">{title}</p>
+        <p className="text-[11px] text-on-surface-variant/70 mt-0.5 leading-relaxed">{description}</p>
       </div>
     </div>
   );
