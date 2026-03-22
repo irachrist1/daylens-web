@@ -26,6 +26,13 @@ const FOCUSED_CATEGORIES = new Set([
 
 type SnapshotDoc = Doc<"day_snapshots">;
 type DeviceDoc = Doc<"devices">;
+type LegacyFocusSession = {
+  appKey: string;
+  startAt: string;
+  endAt: string;
+  durationSeconds: number;
+};
+type StoredFocusSession = DaySnapshot["focusSessions"][number] | LegacyFocusSession;
 
 function parseGeneratedAtMs(snapshot: unknown): number {
   if (
@@ -38,6 +45,23 @@ function parseGeneratedAtMs(snapshot: unknown): number {
 
   const parsed = Date.parse((snapshot as { generatedAt: string }).generatedAt);
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function normalizeFocusSession(
+  session: StoredFocusSession
+): DaySnapshot["focusSessions"][number] {
+  if ("sourceId" in session) {
+    return session;
+  }
+
+  return {
+    sourceId: `${session.appKey}:${session.startAt}`,
+    startAt: session.startAt,
+    endAt: session.endAt,
+    actualDurationSec: session.durationSeconds,
+    targetMinutes: 0,
+    status: "completed",
+  };
 }
 
 function normalizeSnapshot(snapshot: unknown): DaySnapshot | null {
@@ -94,7 +118,7 @@ function normalizeSnapshot(snapshot: unknown): DaySnapshot | null {
         : {},
     aiSummary: typeof candidate.aiSummary === "string" ? candidate.aiSummary : null,
     focusSessions: Array.isArray(candidate.focusSessions)
-      ? (candidate.focusSessions as DaySnapshot["focusSessions"])
+      ? (candidate.focusSessions as StoredFocusSession[]).map(normalizeFocusSession)
       : [],
   };
 }

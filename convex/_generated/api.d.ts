@@ -21,6 +21,7 @@ import type * as sessionConfig from "../sessionConfig.js";
 import type * as sessionPublicJwks from "../sessionPublicJwks.js";
 import type * as sessionStatus from "../sessionStatus.js";
 import type * as sessionTokens from "../sessionTokens.js";
+import type * as snapshotValidator from "../snapshotValidator.js";
 import type * as snapshots from "../snapshots.js";
 import type * as webChats from "../webChats.js";
 import type * as workspaces from "../workspaces.js";
@@ -45,6 +46,7 @@ declare const fullApi: ApiFromModules<{
   sessionPublicJwks: typeof sessionPublicJwks;
   sessionStatus: typeof sessionStatus;
   sessionTokens: typeof sessionTokens;
+  snapshotValidator: typeof snapshotValidator;
   snapshots: typeof snapshots;
   webChats: typeof webChats;
   workspaces: typeof workspaces;

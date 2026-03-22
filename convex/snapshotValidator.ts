@@ -23,6 +23,26 @@ export const topPageValidator = v.object({
   seconds: v.number(),
 });
 
+const focusSessionValidator = v.object({
+  sourceId: v.string(),
+  startAt: v.string(),
+  endAt: v.string(),
+  actualDurationSec: v.number(),
+  targetMinutes: v.number(),
+  status: v.union(
+    v.literal("completed"),
+    v.literal("cancelled"),
+    v.literal("active")
+  ),
+});
+
+const legacyFocusSessionValidator = v.object({
+  appKey: v.string(),
+  startAt: v.string(),
+  endAt: v.string(),
+  durationSeconds: v.number(),
+});
+
 export const daySnapshotValidator = v.object({
   schemaVersion: v.literal(1),
   deviceId: v.string(),
@@ -65,19 +85,6 @@ export const daySnapshotValidator = v.object({
     })
   ),
   categoryOverrides: v.record(v.string(), categoryValidator),
-  aiSummary: v.union(v.string(), v.null()),
-  focusSessions: v.array(
-    v.object({
-      sourceId: v.string(),
-      startAt: v.string(),
-      endAt: v.string(),
-      actualDurationSec: v.number(),
-      targetMinutes: v.number(),
-      status: v.union(
-        v.literal("completed"),
-        v.literal("cancelled"),
-        v.literal("active")
-      ),
-    })
-  ),
+  aiSummary: v.optional(v.union(v.string(), v.null())),
+  focusSessions: v.optional(v.array(v.union(focusSessionValidator, legacyFocusSessionValidator))),
 });
