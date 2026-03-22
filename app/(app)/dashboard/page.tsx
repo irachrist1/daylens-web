@@ -7,7 +7,6 @@ import { CategoryBar } from "@/app/components/CategoryBar";
 import { SyncBanner } from "@/app/components/SyncBanner";
 import { formatDuration, CATEGORY_LABELS, CATEGORY_COLORS } from "@/app/lib/format";
 import Link from "next/link";
-import { ChatPanel } from "@/app/components/ChatPanel";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -24,7 +23,7 @@ export default async function DashboardPage() {
 
   if (!snapshot) {
     return (
-      <div className="px-6 py-8 max-w-2xl mx-auto space-y-6">
+      <div className="px-4 sm:px-6 py-6 sm:py-8 max-w-2xl mx-auto space-y-5 sm:space-y-6">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <SyncBanner />
         <div className="rounded-2xl bg-surface-low p-8 text-center">
@@ -42,7 +41,7 @@ export default async function DashboardPage() {
   const topDomains = (snapshot.topDomains || []).slice(0, 5);
 
   return (
-    <div className="px-6 py-8 max-w-2xl mx-auto space-y-6">
+    <div className="px-4 sm:px-6 py-6 sm:py-8 max-w-2xl mx-auto space-y-5 sm:space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Today</h1>
         <SyncBanner syncedAt={snapshotDoc?.syncedAt} />
@@ -177,8 +176,6 @@ export default async function DashboardPage() {
           </div>
         </section>
       )}
-
-      <ChatPanel date={today} />
     </div>
   );
 }

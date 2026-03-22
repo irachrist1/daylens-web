@@ -31,7 +31,7 @@ export default async function AppsPage({
 
   if (!snapshot) {
     return (
-      <div className="px-6 py-8 max-w-2xl mx-auto space-y-6">
+      <div className="px-4 sm:px-6 py-6 sm:py-8 max-w-2xl mx-auto space-y-5 sm:space-y-6">
         <Link href="/history" className="text-sm text-primary hover:underline">
           &larr; History
         </Link>
@@ -48,7 +48,7 @@ export default async function AppsPage({
   const topDomains = (snapshot.topDomains || []).slice(0, 10);
 
   return (
-    <div className="px-6 py-8 max-w-2xl mx-auto space-y-6">
+    <div className="px-4 sm:px-6 py-6 sm:py-8 max-w-2xl mx-auto space-y-5 sm:space-y-6">
       <Link href="/history" className="text-sm text-primary hover:underline">
         &larr; History
       </Link>

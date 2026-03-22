@@ -9,7 +9,7 @@ export default async function ChatPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-6 px-6 py-8">
+    <div className="mx-auto flex max-w-4xl flex-col gap-5 sm:gap-6 px-4 sm:px-6 py-6 sm:py-8">
       <div className="space-y-2">
         <p className="text-sm font-medium uppercase tracking-[0.2em] text-primary">
           Daylens AI

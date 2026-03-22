@@ -23,7 +23,7 @@ export default async function FocusPage({
   const focusSessions = snapshot?.focusSessions || [];
 
   return (
-    <div className="px-6 py-8 max-w-2xl mx-auto space-y-6">
+    <div className="px-4 sm:px-6 py-6 sm:py-8 max-w-2xl mx-auto space-y-5 sm:space-y-6">
       <Link href={`/apps/${date}`} className="text-sm text-primary hover:underline">
         &larr; {formatFullDate(date)}
       </Link>
