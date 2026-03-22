@@ -49,9 +49,13 @@ export function HistoryClient() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+
     void fetch("/api/snapshots")
       .then((res) => (res.ok ? res.json() : null))
       .then((json) => {
+        if (cancelled) return;
+
         const list = Array.isArray(json?.snapshots)
           ? [...json.snapshots].sort((a, b) => b.localDate.localeCompare(a.localDate))
           : [];
@@ -64,9 +68,14 @@ export function HistoryClient() {
         );
       })
       .catch(() => {
+        if (cancelled) return;
         setSnapshots([]);
         setSelectedDate(null);
       });
+
+    return () => {
+      cancelled = true;
+    };
   }, [today]);
 
   if (snapshots === undefined) {

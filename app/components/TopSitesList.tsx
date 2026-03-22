@@ -61,57 +61,65 @@ export function TopSitesList({
       {domains.map((domain) => {
         const hasPages = (domain.topPages?.length ?? 0) > 0;
         const isExpanded = expandedDomain === domain.domain;
+        const summaryContent = (
+          <>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="truncate text-sm">{domain.domain}</span>
+                {showCategory ? (
+                  <span className="text-[0.6875rem] text-on-surface-variant">
+                    {CATEGORY_LABELS[domain.category] || domain.category}
+                  </span>
+                ) : null}
+              </div>
+              {hasPages ? (
+                <p className="text-[0.6875rem] text-on-surface-variant">
+                  {domain.topPages!.length} page
+                  {domain.topPages!.length === 1 ? "" : "s"}
+                </p>
+              ) : null}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-on-surface-variant">
+                {formatDuration(domain.seconds)}
+              </span>
+              {hasPages ? (
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className={`text-on-surface-variant transition-transform ${
+                    isExpanded ? "rotate-180" : ""
+                  }`}
+                  aria-hidden
+                >
+                  <path d="M7 10l5 5 5-5z" />
+                </svg>
+              ) : null}
+            </div>
+          </>
+        );
 
         return (
           <div key={domain.domain} className="space-y-2">
-            <button
-              type="button"
-              onClick={() =>
-                setExpandedDomain(
-                  hasPages && !isExpanded ? domain.domain : null
-                )
-              }
-              className={`flex w-full items-center justify-between gap-3 text-left ${
-                hasPages ? "cursor-pointer" : "cursor-default"
-              }`}
-            >
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="truncate text-sm">{domain.domain}</span>
-                  {showCategory ? (
-                    <span className="text-[0.6875rem] text-on-surface-variant">
-                      {CATEGORY_LABELS[domain.category] || domain.category}
-                    </span>
-                  ) : null}
-                </div>
-                {hasPages ? (
-                  <p className="text-[0.6875rem] text-on-surface-variant">
-                    {domain.topPages!.length} page
-                    {domain.topPages!.length === 1 ? "" : "s"}
-                  </p>
-                ) : null}
+            {hasPages ? (
+              <button
+                type="button"
+                aria-expanded={isExpanded}
+                onClick={() =>
+                  setExpandedDomain(hasPages && !isExpanded ? domain.domain : null)
+                }
+                className="flex w-full cursor-pointer items-center justify-between gap-3 text-left"
+              >
+                {summaryContent}
+              </button>
+            ) : (
+              <div className="flex w-full items-center justify-between gap-3 text-left">
+                {summaryContent}
               </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-on-surface-variant">
-                  {formatDuration(domain.seconds)}
-                </span>
-                {hasPages ? (
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className={`text-on-surface-variant transition-transform ${
-                      isExpanded ? "rotate-180" : ""
-                    }`}
-                    aria-hidden
-                  >
-                    <path d="M7 10l5 5 5-5z" />
-                  </svg>
-                ) : null}
-              </div>
-            </button>
+            )}
 
             {hasPages && isExpanded ? (
               <div className="space-y-2 rounded-xl bg-surface-high/40 p-3">

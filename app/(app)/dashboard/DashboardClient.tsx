@@ -192,13 +192,20 @@ export function DashboardClient() {
         </div>
 
         <div className="rounded-2xl bg-surface-low p-4 sm:p-6 text-center space-y-2">
-          <p className="text-on-surface-variant">
-            Daylens only synced {availableDates.length} day
-            {availableDates.length === 1 ? "" : "s"} so far.
-          </p>
-          <p className="text-sm text-on-surface-variant/60">
-            Keep the desktop app running and linked to continue syncing.
-          </p>
+          {availableDates.length > 0 ? (
+            <p className="text-on-surface-variant">
+              No activity was synced for this day.
+            </p>
+          ) : (
+            <>
+              <p className="text-on-surface-variant">
+                Daylens hasn&apos;t synced any days yet.
+              </p>
+              <p className="text-sm text-on-surface-variant/60">
+                Keep the desktop app running and linked to start syncing.
+              </p>
+            </>
+          )}
         </div>
       </div>
     );
