@@ -128,13 +128,20 @@ Web Browser                          Next.js API          Convex
 | File | Purpose |
 |------|---------|
 | `page.tsx` | Landing page — QR scanner, token paste, connect flow |
-| `(app)/dashboard/page.tsx` | Main dashboard — timeline, focus scores, top apps |
+| `(app)/dashboard/DashboardClient.tsx` | Main dashboard (client component) — local timezone dates, focus scores, top apps |
+| `(app)/history/HistoryClient.tsx` | History list (client component) — local timezone "Today"/"Yesterday" labels |
+| `(app)/chat/page.tsx` | AI chat page — renders GlobalChat |
+| `(app)/apps/[date]/page.tsx` | Day detail — app usage, categories, top sites, AI summary |
 | `(app)/settings/page.tsx` | Settings — AI API key, disconnect |
+| `api/chat/route.ts` | POST endpoint — AI chat (accepts both `{messages}` and `{question,date}` formats) |
 | `api/link/route.ts` | POST endpoint — redeems link token, sets session cookie |
 | `api/recover/route.ts` | POST endpoint — recovers workspace from mnemonic |
+| `api/snapshots/route.ts` | GET endpoint — fetch snapshots by date or list all |
 | `middleware.ts` | Auth guard — checks `daylens_session` cookie on protected routes |
 | `lib/session.ts` | Cookie helpers — set/get/clear session |
 | `lib/convex.ts` | Server-side Convex client |
+| `components/GlobalChat.tsx` | Chat UI — message bubbles, auto-scroll, debounced save |
+| `components/AppIcon.tsx` | App icon resolver — maps macOS bundle IDs to icon URLs |
 | `components/SyncBanner.tsx` | Banner showing sync status |
 | `recover/page.tsx` | Recovery page — enter mnemonic to restore access |
 
@@ -231,7 +238,6 @@ web_chats
 ### Known Limitations (tracked for follow-up)
 - No rate limiting on `/recoverWorkspace` endpoint
 - Snapshot payload accepted as `v.any()` with no size validation
-- Encryption key derived with SHA-256 instead of proper KDF (HKDF/scrypt)
 
 ---
 
