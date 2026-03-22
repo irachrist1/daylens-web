@@ -90,6 +90,7 @@ function isValidSnapshotV1(snapshot: unknown): snapshot is DaySnapshot {
     hasArrayField("topDomains") &&
     typeof candidate.categoryOverrides === "object" &&
     candidate.categoryOverrides !== null &&
+    !Array.isArray(candidate.categoryOverrides) &&
     (candidate.aiSummary === null || typeof candidate.aiSummary === "string") &&
     hasArrayField("focusSessions")
   );
