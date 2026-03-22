@@ -16,7 +16,6 @@ export async function POST(request: NextRequest) {
   let date: string | undefined;
 
   if (Array.isArray(body.messages)) {
-    // Extract last user message as the question
     const lastUserMsg = [...body.messages]
       .reverse()
       .find((m: { role: string }) => m.role === "user");
@@ -27,14 +26,14 @@ export async function POST(request: NextRequest) {
     date = body.date;
   }
 
-  // Default to today's date in the client's likely timezone (use UTC as fallback)
+  // Default to today in local timezone
   if (!date) {
-    date = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD format
+    date = new Date().toLocaleDateString("en-CA");
   }
 
   if (!question) {
     return NextResponse.json(
-      { error: "Question is required" },
+      { error: "Please type a question." },
       { status: 400 }
     );
   }
@@ -49,20 +48,44 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "AI request failed";
+    // Classify the error without leaking internals
+    const raw =
+      error instanceof Error ? error.message : "";
+
+    // Log full error server-side for debugging
+    console.error("[chat] AI action failed:", raw);
+
+    // Only surface safe, user-actionable messages
     const isKeyError =
-      message.includes("API key") ||
-      message.includes("authentication") ||
-      message.includes("401") ||
-      message.includes("invalid_api_key");
-    return NextResponse.json(
-      {
-        error: isKeyError
-          ? "API key missing or invalid. Save your Anthropic API key in the desktop app's Settings, then try again."
-          : `AI request failed: ${message}`,
-      },
-      { status: 500 }
-    );
+      raw.includes("API key") ||
+      raw.includes("authentication") ||
+      raw.includes("401") ||
+      raw.includes("invalid_api_key") ||
+      raw.includes("CONVEX_ENCRYPTION_SECRET");
+
+    const isNotDeployed =
+      raw.includes("Could not find") ||
+      raw.includes("is not a function") ||
+      raw.includes("npx");
+
+    const isNoData =
+      raw.includes("No activity data");
+
+    let userMessage: string;
+    if (isKeyError) {
+      userMessage =
+        "Your API key isn't set up yet. Open Daylens on your computer, go to Settings, and save your Anthropic API key.";
+    } else if (isNotDeployed) {
+      userMessage =
+        "The AI service is being updated. Please try again in a few minutes.";
+    } else if (isNoData) {
+      userMessage =
+        "No activity data found for today. Make sure Daylens is running on your computer.";
+    } else {
+      userMessage =
+        "Something went wrong. Please try again.";
+    }
+
+    return NextResponse.json({ error: userMessage }, { status: 500 });
   }
 }

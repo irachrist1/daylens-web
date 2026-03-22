@@ -12,11 +12,17 @@ export function GlobalChat({
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const didHydrateRef = useRef(false);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, loading]);
+
+  // Auto-focus the input on mount
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     if (!didHydrateRef.current) {
@@ -83,7 +89,7 @@ export function GlobalChat({
           content:
             error instanceof Error
               ? error.message
-              : "Failed to reach Daylens AI. Try again.",
+              : "Something went wrong. Please try again.",
           timestamp: new Date().toISOString(),
         },
       ]);
@@ -93,11 +99,12 @@ export function GlobalChat({
   }
 
   return (
-    <div className="flex h-[calc(100vh-10rem)] sm:h-[calc(100vh-12rem)] min-h-[24rem] flex-col">
-      <div className="flex-1 space-y-3 overflow-y-auto pr-1">
+    <div className="flex flex-col" style={{ height: "calc(100dvh - 8rem)" }}>
+      {/* Messages area — takes remaining space */}
+      <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pb-2">
         {messages.length === 0 ? (
-          <div className="flex flex-1 items-center justify-center py-16">
-            <p className="text-sm text-on-surface-variant/60">
+          <div className="flex items-center justify-center h-full">
+            <p className="text-sm text-on-surface-variant/50">
               Ask anything about your activity
             </p>
           </div>
@@ -120,18 +127,6 @@ export function GlobalChat({
               <p className="whitespace-pre-wrap text-sm leading-relaxed">
                 {message.content}
               </p>
-              {message.role === "assistant" && message.toolsUsed?.length ? (
-                <details className="mt-2 rounded-xl bg-surface-lowest/60 px-3 py-2 text-xs text-on-surface-variant">
-                  <summary className="cursor-pointer select-none">
-                    Tools used
-                  </summary>
-                  <div className="mt-2 space-y-1">
-                    {message.toolsUsed.map((tool) => (
-                      <p key={tool}>{tool}</p>
-                    ))}
-                  </div>
-                </details>
-              ) : null}
             </div>
           </div>
         ))}
@@ -151,14 +146,16 @@ export function GlobalChat({
         <div ref={endRef} />
       </div>
 
+      {/* Input — always pinned at bottom */}
       <form
         onSubmit={(event) => {
           event.preventDefault();
           void sendMessage(input);
         }}
-        className="mt-3 flex items-end gap-2 border-t border-outline-variant/10 pt-3"
+        className="shrink-0 flex items-end gap-2 border-t border-outline-variant/10 pt-3 pb-1"
       >
         <textarea
+          ref={inputRef}
           value={input}
           onChange={(event) => setInput(event.target.value)}
           onKeyDown={(event) => {
