@@ -427,8 +427,11 @@ body {
   .landing-nav-desktop { display: none; }
   .landing-nav-mobile { display: block; }
 
-  .landing-hero-section { min-height: 100svh; }
-  .landing-hero-content { padding: 0 20px; }
+  .landing-hero-section {
+    min-height: 100svh;
+    justify-content: flex-start;
+  }
+  .landing-hero-content { padding: 60px 20px 0; }
   .landing-main { padding: 64px 20px 64px; }
   .landing-hero-subtitle { font-size: 15px; }
 
