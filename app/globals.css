@@ -95,7 +95,7 @@ body {
 .landing-header {
   max-width: 900px;
   margin: 0 auto;
-  padding: 24px 20px 0;
+  padding: 28px 24px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -200,11 +200,39 @@ body {
   margin-top: 4px;
 }
 
-/* Hero */
+/* Hero — full viewport section */
+.landing-hero-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.landing-hero-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px;
+  text-align: center;
+}
+.landing-scroll-hint {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #3d5568;
+  animation: landing-bounce 2s ease-in-out infinite;
+}
+@keyframes landing-bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(6px); }
+}
+
+/* Page 2+ */
 .landing-main {
   max-width: 900px;
   margin: 0 auto;
-  padding: 60px 20px 64px;
+  padding: 100px 24px 64px;
   text-align: center;
 }
 .landing-hero-title {
@@ -399,7 +427,9 @@ body {
   .landing-nav-desktop { display: none; }
   .landing-nav-mobile { display: block; }
 
-  .landing-main { padding-top: 40px; }
+  .landing-hero-section { min-height: 100svh; }
+  .landing-hero-content { padding: 0 20px; }
+  .landing-main { padding: 64px 20px 64px; }
   .landing-hero-subtitle { font-size: 15px; }
 
   .landing-features-grid,
@@ -415,4 +445,5 @@ body {
   }
 
   .landing-footer-links { gap: 20px; }
+  .landing-scroll-hint { bottom: 24px; }
 }

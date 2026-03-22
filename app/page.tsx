@@ -52,44 +52,53 @@ export default async function LandingPage({
         <MobileNav />
       </header>
 
-      {/* Hero */}
-      <main className="landing-main">
-        <h1 className="landing-hero-title">
-          Understand how you spend your time.
-        </h1>
+      {/* Hero — full viewport */}
+      <section className="landing-hero-section">
+        <div className="landing-hero-content">
+          <h1 className="landing-hero-title">
+            Understand how you spend your time.
+          </h1>
 
-        <p className="landing-hero-subtitle">
-          Daylens tracks the apps and websites you use — privately, on your device — then
-          lets you view insights from anywhere with the web companion.
-        </p>
+          <p className="landing-hero-subtitle">
+            Daylens tracks the apps and websites you use — privately, on your device — then
+            lets you view insights from anywhere with the web companion.
+          </p>
 
-        {/* Download buttons */}
-        <DownloadButtons />
+          <DownloadButtons />
 
-        <p className="landing-fine-print" style={{ marginBottom: 72 }}>
-          Both apps are free. No subscription, no cloud storage, no telemetry.
-        </p>
+          <p className="landing-fine-print">
+            Both apps are free. No subscription, no cloud storage, no telemetry.
+          </p>
 
-        {/* Desktop app features */}
-        <div className="landing-features-grid" style={{ marginBottom: 120 }}>
-          <Feature
-            icon={<ShieldIcon />}
-            title="Private by design"
-            body="All data stays on your device. Nothing leaves unless you connect the web companion."
-          />
-          <Feature
-            icon={<SparkIcon />}
-            title="AI-powered insights"
-            body="Ask Claude about your day, your habits, or your focus patterns. Powered by your local data."
-          />
-          <Feature
-            icon={<GridIcon />}
-            title="Every app, every website"
-            body="Nothing slips through. Daylens tracks every app and browser visit from the moment you start it."
-          />
+          <div className="landing-features-grid" style={{ marginTop: 56 }}>
+            <Feature
+              icon={<ShieldIcon />}
+              title="Private by design"
+              body="All data stays on your device. Nothing leaves unless you connect the web companion."
+            />
+            <Feature
+              icon={<SparkIcon />}
+              title="AI-powered insights"
+              body="Ask Claude about your day, your habits, or your focus patterns. Powered by your local data."
+            />
+            <Feature
+              icon={<GridIcon />}
+              title="Every app, every website"
+              body="Nothing slips through. Daylens tracks every app and browser visit from the moment you start it."
+            />
+          </div>
         </div>
 
-        {/* ── Web Companion Section ── */}
+        {/* Scroll hint */}
+        <div className="landing-scroll-hint">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M7 13l5 5 5-5M7 6l5 5 5-5" />
+          </svg>
+        </div>
+      </section>
+
+      {/* ── Page 2: Web Companion ── */}
+      <main className="landing-main">
         <div id="web-companion" style={{ scrollMarginTop: 80 }}>
           <div className="landing-pill">
             <GlobeIcon />
