@@ -5,13 +5,14 @@ import {
   verifySessionToken,
 } from "@/app/lib/sessionConfig";
 
-const PUBLIC_PATHS = ["/", "/recover"];
+const PUBLIC_PATHS = ["/", "/link", "/recover"];
 const PUBLIC_API_PATHS = [
   "/api/link",
   "/api/recover",
   "/api/logout",
   "/api/chat",
   "/api/chat/save",
+  "/api/download/mac",
   "/api/download/windows",
 ];
 
