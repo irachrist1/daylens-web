@@ -133,6 +133,9 @@ export function DashboardClient() {
   const topApps = (snapshot?.appSummaries || []).slice(0, 8);
   const categoryTotals = snapshot?.categoryTotals || [];
   const topDomains = (snapshot?.topDomains || []).slice(0, 5);
+  const earliestDate =
+    availableDates.length > 0 ? availableDates[availableDates.length - 1]! : today;
+  const canGoPrev = selectedDate > earliestDate;
   const canGoNext = selectedDate < today;
 
   function selectDate(nextDate: string) {
@@ -164,7 +167,8 @@ export function DashboardClient() {
           <button
             type="button"
             onClick={() => selectDate(shiftDate(selectedDate, -1))}
-            className="rounded-full px-3 py-1.5 text-sm text-on-surface hover:bg-surface-high"
+            disabled={!canGoPrev}
+            className="rounded-full px-3 py-1.5 text-sm text-on-surface hover:bg-surface-high disabled:opacity-40"
           >
             Previous day
           </button>
@@ -226,7 +230,8 @@ export function DashboardClient() {
         <button
           type="button"
           onClick={() => selectDate(shiftDate(selectedDate, -1))}
-          className="rounded-full px-3 py-1.5 text-sm text-on-surface hover:bg-surface-high"
+          disabled={!canGoPrev}
+          className="rounded-full px-3 py-1.5 text-sm text-on-surface hover:bg-surface-high disabled:opacity-40"
         >
           Previous day
         </button>

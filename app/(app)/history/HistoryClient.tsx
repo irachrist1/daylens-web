@@ -98,6 +98,8 @@ export function HistoryClient() {
 
   const selectedSnapshot =
     snapshots.find((snapshot) => snapshot.localDate === selectedDate) ?? null;
+  const earliestDate = snapshots[snapshots.length - 1]?.localDate ?? today;
+  const canGoPrev = selectedDate ? selectedDate > earliestDate : false;
   const canGoNext = selectedDate ? selectedDate < today : false;
 
   return (
@@ -126,7 +128,8 @@ export function HistoryClient() {
           <button
             type="button"
             onClick={() => setSelectedDate(shiftDate(selectedDate, -1))}
-            className="rounded-full px-3 py-1.5 text-sm text-on-surface hover:bg-surface-high"
+            disabled={!canGoPrev}
+            className="rounded-full px-3 py-1.5 text-sm text-on-surface hover:bg-surface-high disabled:opacity-40"
           >
             Previous day
           </button>
