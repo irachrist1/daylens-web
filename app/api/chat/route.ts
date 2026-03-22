@@ -9,10 +9,32 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const { question, date } = await request.json();
-  if (!question || !date) {
+  const body = await request.json();
+
+  // Support both formats: { messages: [...] } from GlobalChat, or { question, date }
+  let question: string | undefined;
+  let date: string | undefined;
+
+  if (Array.isArray(body.messages)) {
+    // Extract last user message as the question
+    const lastUserMsg = [...body.messages]
+      .reverse()
+      .find((m: { role: string }) => m.role === "user");
+    question = lastUserMsg?.content;
+    date = lastUserMsg?.date || body.date;
+  } else {
+    question = body.question;
+    date = body.date;
+  }
+
+  // Default to today's date in the client's likely timezone (use UTC as fallback)
+  if (!date) {
+    date = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD format
+  }
+
+  if (!question) {
     return NextResponse.json(
-      { error: "Question and date required" },
+      { error: "Question is required" },
       { status: 400 }
     );
   }

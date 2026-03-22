@@ -25,6 +25,7 @@ export type FocusSessionStatus = "completed" | "cancelled" | "active";
 
 export interface AppSummary {
   appKey: string;
+  bundleID?: string; // Full macOS bundle ID (e.g. "com.google.Chrome"), added in v1.0.7
   displayName: string;
   category: Category;
   totalSeconds: number;

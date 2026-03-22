@@ -11,7 +11,7 @@ import {
   CATEGORY_COLORS,
 } from "@/app/lib/format";
 import Link from "next/link";
-import { ChatPanel } from "@/app/components/ChatPanel";
+import { AppIcon } from "@/app/components/AppIcon";
 
 export default async function AppsPage({
   params,
@@ -31,7 +31,7 @@ export default async function AppsPage({
 
   if (!snapshot) {
     return (
-      <div className="px-4 sm:px-6 py-6 sm:py-8 max-w-2xl mx-auto space-y-5 sm:space-y-6">
+      <div className="px-4 sm:px-6 py-4 sm:py-8 max-w-2xl mx-auto space-y-4 sm:space-y-6">
         <Link href="/history" className="text-sm text-primary hover:underline">
           &larr; History
         </Link>
@@ -48,14 +48,14 @@ export default async function AppsPage({
   const topDomains = (snapshot.topDomains || []).slice(0, 10);
 
   return (
-    <div className="px-4 sm:px-6 py-6 sm:py-8 max-w-2xl mx-auto space-y-5 sm:space-y-6">
+    <div className="px-4 sm:px-6 py-4 sm:py-8 max-w-2xl mx-auto space-y-4 sm:space-y-6">
       <Link href="/history" className="text-sm text-primary hover:underline">
         &larr; History
       </Link>
       <h1 className="text-2xl font-bold">{formatFullDate(date)}</h1>
 
       {/* Score + Stats */}
-      <div className="flex items-center gap-6 rounded-2xl bg-surface-low p-6">
+      <div className="flex items-center gap-4 sm:gap-6 rounded-2xl bg-surface-low p-4 sm:p-6">
         <ScoreRing score={snapshot.focusScore || 0} />
         <div className="flex-1 space-y-3">
           <div>
@@ -85,19 +85,20 @@ export default async function AppsPage({
 
       {/* Categories */}
       {categoryTotals.length > 0 && (
-        <section className="rounded-2xl bg-surface-low p-6 space-y-4">
+        <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-4">
           <h2 className="text-lg font-semibold">Categories</h2>
           <CategoryBar totals={categoryTotals} />
         </section>
       )}
 
       {/* All Apps */}
-      <section className="rounded-2xl bg-surface-low p-6 space-y-3">
+      <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-3">
         <h2 className="text-lg font-semibold">All Apps</h2>
         <div className="space-y-3">
           {apps.map(
             (app: {
               appKey: string;
+              bundleID?: string;
               displayName: string;
               category: string;
               totalSeconds: number;
@@ -108,17 +109,7 @@ export default async function AppsPage({
                 className="flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
-                  <div
-                    className="h-8 w-8 rounded-lg flex items-center justify-center text-xs font-bold"
-                    style={{
-                      backgroundColor:
-                        (CATEGORY_COLORS[app.category] || "#475569") + "20",
-                      color:
-                        CATEGORY_COLORS[app.category] || "#475569",
-                    }}
-                  >
-                    {app.displayName.charAt(0)}
-                  </div>
+                  <AppIcon bundleID={app.bundleID || app.appKey} displayName={app.displayName} category={app.category} />
                   <div>
                     <p className="text-sm font-medium">{app.displayName}</p>
                     <p className="text-[0.6875rem] text-on-surface-variant">
@@ -142,7 +133,7 @@ export default async function AppsPage({
 
       {/* Top Domains */}
       {topDomains.length > 0 && (
-        <section className="rounded-2xl bg-surface-low p-6 space-y-3">
+        <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-3">
           <h2 className="text-lg font-semibold">Top Sites</h2>
           <div className="space-y-3">
             {topDomains.map(
@@ -169,7 +160,7 @@ export default async function AppsPage({
 
       {/* AI Summary */}
       {snapshot.aiSummary && (
-        <section className="rounded-2xl bg-surface-low p-6 space-y-3">
+        <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-3">
           <h2 className="text-lg font-semibold">AI Summary</h2>
           <p className="text-sm leading-relaxed text-on-surface/90">
             {snapshot.aiSummary}
@@ -177,7 +168,6 @@ export default async function AppsPage({
         </section>
       )}
 
-      <ChatPanel date={date} />
     </div>
   );
 }

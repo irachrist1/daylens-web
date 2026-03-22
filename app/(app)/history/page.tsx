@@ -18,11 +18,11 @@ export default async function HistoryPage() {
   );
 
   return (
-    <div className="px-4 sm:px-6 py-6 sm:py-8 max-w-2xl mx-auto space-y-5 sm:space-y-6">
+    <div className="px-4 sm:px-6 py-4 sm:py-8 max-w-2xl mx-auto space-y-4 sm:space-y-6">
       <h1 className="text-2xl font-bold">History</h1>
 
       {sorted.length === 0 ? (
-        <div className="rounded-2xl bg-surface-low p-8 text-center">
+        <div className="rounded-2xl bg-surface-low p-4 sm:p-6 text-center">
           <p className="text-on-surface-variant">No synced days yet.</p>
         </div>
       ) : (

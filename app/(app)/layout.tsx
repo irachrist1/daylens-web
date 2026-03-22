@@ -34,10 +34,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Mobile bottom nav */}
       <nav className="fixed bottom-0 inset-x-0 md:hidden glass border-t border-outline-variant/15 z-50">
-        <div className="flex justify-around py-2">
-          <NavItem href="/dashboard" icon="chart" label="Dashboard" />
+        <div className="flex justify-around py-1.5 px-1">
+          <NavItem href="/dashboard" icon="chart" label="Home" />
           <NavItem href="/history" icon="clock" label="History" />
-          <NavItem href="/chat" icon="chat" label="AI Chat" />
+          <NavItem href="/chat" icon="chat" label="Chat" />
           <NavItem href="/settings" icon="gear" label="Settings" />
         </div>
       </nav>
