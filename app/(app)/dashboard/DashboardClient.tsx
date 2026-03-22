@@ -79,7 +79,9 @@ export function DashboardClient() {
 
         const todaySnapshot = snapshots.find((snapshot) => snapshot.localDate === today);
         const initialDate = todaySnapshot?.localDate ?? snapshots[0]!.localDate;
+        const initialSnapshot = todaySnapshot ?? snapshots[0] ?? null;
         setSelectedDate(initialDate);
+        setData(initialSnapshot);
         setIsInitialLatestFallback(initialDate !== today);
       })
       .catch(() => {
@@ -97,6 +99,10 @@ export function DashboardClient() {
 
   useEffect(() => {
     if (!selectedDate) {
+      return;
+    }
+
+    if (data && data.localDate === selectedDate) {
       return;
     }
 
