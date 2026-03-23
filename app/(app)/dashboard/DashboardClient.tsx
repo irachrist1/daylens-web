@@ -95,6 +95,8 @@ export function DashboardClient() {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "hideApp", appKey }),
+    }).then((res) => {
+      if (!res.ok) throw new Error("save failed");
     }).catch(() => {
       setHiddenApps((prev) => {
         const next = new Set(prev);
@@ -111,6 +113,8 @@ export function DashboardClient() {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "hideDomain", domain: normalized }),
+    }).then((res) => {
+      if (!res.ok) throw new Error("save failed");
     }).catch(() => {
       setHiddenDomains((prev) => {
         const next = new Set(prev);
@@ -436,7 +440,7 @@ export function DashboardClient() {
           {hiddenCount > 0 && (
             <p className="text-center text-[0.6875rem] text-on-surface-variant">
               {hiddenCount} item{hiddenCount === 1 ? "" : "s"} hidden ·{" "}
-              <Link href="/settings" className="text-primary hover:underline">
+              <Link href="/settings#privacy" className="text-primary hover:underline">
                 Manage
               </Link>
             </p>

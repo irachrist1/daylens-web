@@ -145,7 +145,7 @@ export function PrivacySection() {
   const isLocked = hasPivacyPin && !unlocked;
 
   return (
-    <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-4">
+    <section id="privacy" className="rounded-2xl glass-card p-4 sm:p-6 space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Privacy</h2>
         <div className="flex items-center gap-2">
