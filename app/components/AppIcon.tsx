@@ -7,63 +7,61 @@ import { CATEGORY_COLORS } from "@/app/lib/format";
 /** Static icon URLs for well-known macOS/Windows apps (bundle ID → icon URL) */
 const KNOWN_APP_ICONS: Record<string, string> = {
   // Browsers
-  "com.google.Chrome": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/120px-Google_Chrome_icon_%28February_2022%29.svg.png",
-  "com.apple.Safari": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Safari_browser_logo.svg/120px-Safari_browser_logo.svg.png",
-  "company.thebrowser.Browser": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Arc_%28browser%29_logo.svg/120px-Arc_%28browser%29_logo.svg.png",
-  "org.mozilla.firefox": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Firefox_logo%2C_2019.svg/120px-Firefox_logo%2C_2019.svg.png",
-  "com.brave.Browser": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Brave_icon_lionface.png/120px-Brave_icon_lionface.png",
-  "com.microsoft.edgemac": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Microsoft_Edge_logo_%282019%29.svg/120px-Microsoft_Edge_logo_%282019%29.svg.png",
-  "com.operasoftware.Opera": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Opera_2015_icon.svg/120px-Opera_2015_icon.svg.png",
+  "com.google.Chrome": "https://www.google.com/chrome/static/images/chrome-logo-m100.svg",
+  "com.apple.Safari": "https://help.apple.com/assets/6723A7E02FD4045D040756DE/6723A7E12FD4045D040756E6/en_US/7f4c7670a0c9daa73e3d3266a7ff2a5c.png",
+  "company.thebrowser.Browser": "https://arc.net/favicon.png",
+  "org.mozilla.firefox": "https://www.mozilla.org/media/protocol/img/logos/firefox/browser/logo.eb1324e44442.svg",
+  "com.brave.Browser": "https://brave.com/static-assets/images/brave-logo-sans-text.svg",
+  "com.microsoft.edgemac": "https://edgestatic.azureedge.net/shared/cms/lrs1c69a1j/section-images/bbc579d07fc74a1a8aab02e47a1ca303.png",
 
   // Development
-  "com.microsoft.VSCode": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Visual_Studio_Code_1.35_icon.svg/120px-Visual_Studio_Code_1.35_icon.svg.png",
-  "com.apple.dt.Xcode": "https://upload.wikimedia.org/wikipedia/en/thumb/5/56/Xcode_14_icon.png/120px-Xcode_14_icon.png",
-  "dev.warp.Warp-Stable": "https://avatars.githubusercontent.com/u/71840468?s=120",
+  "com.microsoft.VSCode": "https://code.visualstudio.com/favicon.ico",
+  "com.apple.dt.Xcode": "https://developer.apple.com/assets/elements/icons/xcode/xcode-96x96_2x.png",
+  "dev.warp.Warp-Stable": "https://avatars.githubusercontent.com/u/71840468?s=96",
   "com.todesktop.230313mzl4w4u92": "https://cursor.com/apple-touch-icon.png",
-  "com.googlecode.iterm2": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/ITerm2_v3.4_icon.png/120px-ITerm2_v3.4_icon.png",
+  "com.googlecode.iterm2": "https://iterm2.com/favicon.ico",
 
   // Communication
-  "com.tinyspeck.slackmacgap": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Slack_icon_2019.svg/120px-Slack_icon_2019.svg.png",
-  "us.zoom.xos": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Zoom_Communications_Logo.svg/120px-Zoom_Communications_Logo.svg.png",
-  "com.microsoft.teams2": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Microsoft_Office_Teams_%282018%E2%80%93present%29.svg/120px-Microsoft_Office_Teams_%282018%E2%80%93present%29.svg.png",
-  "ru.keepcoder.Telegram": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/120px-Telegram_logo.svg.png",
-  "com.hnc.Discord": "https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg",
+  "com.tinyspeck.slackmacgap": "https://a.slack-edge.com/80588/marketing/img/meta/favicon-32.png",
+  "us.zoom.xos": "https://st1.zoom.us/zoom.ico",
+  "com.microsoft.teams2": "https://statics.teams.cdn.office.net/hashedassets-new/favicon/teams-favicon-fluent-96x96.png",
+  "ru.keepcoder.Telegram": "https://telegram.org/img/t_logo.png",
+  "com.hnc.Discord": "https://discord.com/assets/f9bb9c4af2b9c32a2c5ee0014661546d.png",
 
   // Productivity
-  "com.microsoft.Word": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg/120px-Microsoft_Office_Word_%282019%E2%80%93present%29.svg.png",
-  "com.microsoft.Excel": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/120px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png",
-  "com.microsoft.Powerpoint": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg/120px-Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg.png",
-  "com.microsoft.onenote.mac": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Microsoft_Office_OneNote_%282019%E2%80%93present%29.svg/120px-Microsoft_Office_OneNote_%282019%E2%80%93present%29.svg.png",
-  "com.microsoft.Outlook": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg/120px-Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg.png",
-  "notion.id": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion-logo.svg/120px-Notion-logo.svg.png",
-  "com.figma.Desktop": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Figma-logo.svg/120px-Figma-logo.svg.png",
+  "com.microsoft.Word": "https://res.cdn.office.net/assets/mail/illustrations/noConnection/v2/light.png",
+  "com.microsoft.Excel": "https://upload.wikimedia.org/wikipedia/commons/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg",
+  "com.microsoft.Powerpoint": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg",
+  "com.microsoft.Outlook": "https://upload.wikimedia.org/wikipedia/commons/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg",
+  "notion.id": "https://www.notion.so/images/favicon.ico",
+  "com.figma.Desktop": "https://static.figma.com/app/icon/1/favicon.png",
 
   // Apple system apps
-  "com.apple.finder": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Finder_Icon_macOS_Big_Sur.png/120px-Finder_Icon_macOS_Big_Sur.png",
-  "com.apple.mail": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Mail_%28iOS%29.svg/120px-Mail_%28iOS%29.svg.png",
-  "com.apple.Notes": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Notes_%28iOS%29.svg/120px-Notes_%28iOS%29.svg.png",
-  "com.apple.AppStore": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/App_Store_%28iOS%29.svg/120px-App_Store_%28iOS%29.svg.png",
-  "com.apple.Terminal": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Terminalicon2.png/120px-Terminalicon2.png",
-  "com.apple.MobileSMS": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IMessage_logo.svg/120px-IMessage_logo.svg.png",
-  "com.apple.Preview": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Preview_%28macOS%29.png/120px-Preview_%28macOS%29.png",
-  "com.apple.systempreferences": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/System_Preferences_%28macOS_Ventura%29.png/120px-System_Preferences_%28macOS_Ventura%29.png",
-  "com.apple.Music": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Apple_Music_logo.svg/120px-Apple_Music_logo.svg.png",
+  "com.apple.finder": "https://help.apple.com/assets/6723A7E02FD4045D040756DE/6723A7E12FD4045D040756E6/en_US/058dff3bfc0d36e57c6f0c3e9e8e2c84.png",
+  "com.apple.AppStore": "https://help.apple.com/assets/6723A7E02FD4045D040756DE/6723A7E12FD4045D040756E6/en_US/2622e392af498b6ea12efe0007595b9f.png",
+  "com.apple.Terminal": "https://help.apple.com/assets/6723A7E02FD4045D040756DE/6723A7E12FD4045D040756E6/en_US/d94aa1f4cf6c2c05ca80ef699bebc14c.png",
+  "com.apple.systempreferences": "https://help.apple.com/assets/6723A7E02FD4045D040756DE/6723A7E12FD4045D040756E6/en_US/c11a5948fc11bcc63c40e1e3eaca708c.png",
+  "com.apple.Music": "https://music.apple.com/assets/favicon/favicon-180.png",
+  "com.apple.mail": "https://help.apple.com/assets/6723A7E02FD4045D040756DE/6723A7E12FD4045D040756E6/en_US/0a9c43566e6dadcc52460d8e7e1cb73b.png",
+  "com.apple.Notes": "https://help.apple.com/assets/6723A7E02FD4045D040756DE/6723A7E12FD4045D040756E6/en_US/91ff3a73b6aacc1ecf5ca1a7b4faab5d.png",
 
-  // Media & entertainment
-  "com.spotify.client": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Spotify_icon.svg/120px-Spotify_icon.svg.png",
+  // Media
+  "com.spotify.client": "https://open.spotifycdn.com/cdn/images/favicon32.b64ecc03.png",
 
   // AI tools
-  "com.openai.chat": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/120px-ChatGPT_logo.svg.png",
+  "com.openai.chat": "https://cdn.oaistatic.com/assets/apple-touch-icon-mz9nytnj.webp",
 };
 
-/** Try appKey as display-name match (e.g. "arc" → find by partial match) */
+/** Display-name based fallback for apps without bundle IDs */
 const DISPLAY_NAME_ICONS: Record<string, string> = {
   "arc": KNOWN_APP_ICONS["company.thebrowser.Browser"]!,
+  "google chrome": KNOWN_APP_ICONS["com.google.Chrome"]!,
   "chrome": KNOWN_APP_ICONS["com.google.Chrome"]!,
   "safari": KNOWN_APP_ICONS["com.apple.Safari"]!,
   "firefox": KNOWN_APP_ICONS["org.mozilla.firefox"]!,
   "vscode": KNOWN_APP_ICONS["com.microsoft.VSCode"]!,
   "visual studio code": KNOWN_APP_ICONS["com.microsoft.VSCode"]!,
+  "code": KNOWN_APP_ICONS["com.microsoft.VSCode"]!,
   "xcode": KNOWN_APP_ICONS["com.apple.dt.Xcode"]!,
   "slack": KNOWN_APP_ICONS["com.tinyspeck.slackmacgap"]!,
   "discord": KNOWN_APP_ICONS["com.hnc.Discord"]!,
@@ -74,8 +72,16 @@ const DISPLAY_NAME_ICONS: Record<string, string> = {
   "finder": KNOWN_APP_ICONS["com.apple.finder"]!,
   "terminal": KNOWN_APP_ICONS["com.apple.Terminal"]!,
   "microsoft excel": KNOWN_APP_ICONS["com.microsoft.Excel"]!,
+  "excel": KNOWN_APP_ICONS["com.microsoft.Excel"]!,
   "microsoft word": KNOWN_APP_ICONS["com.microsoft.Word"]!,
+  "word": KNOWN_APP_ICONS["com.microsoft.Word"]!,
   "app store": KNOWN_APP_ICONS["com.apple.AppStore"]!,
+  "cursor": KNOWN_APP_ICONS["com.todesktop.230313mzl4w4u92"]!,
+  "warp": KNOWN_APP_ICONS["dev.warp.Warp-Stable"]!,
+  "iterm2": KNOWN_APP_ICONS["com.googlecode.iterm2"]!,
+  "chatgpt": KNOWN_APP_ICONS["com.openai.chat"]!,
+  "system preferences": KNOWN_APP_ICONS["com.apple.systempreferences"]!,
+  "system settings": KNOWN_APP_ICONS["com.apple.systempreferences"]!,
 };
 
 function resolveIconSrc(bundleID: string, displayName: string, iconBase64?: string | null) {
