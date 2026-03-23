@@ -44,7 +44,12 @@ export function PrivacySection() {
   useEffect(() => {
     void fetch("/api/preferences")
       .then((r) => (r.ok ? r.json() : null))
-      .then((data: Prefs | null) => setPrefs(data))
+      .then((data: Prefs | null) => {
+        setPrefs(data);
+        if (data && window.location.hash === "#privacy") {
+          document.getElementById("privacy")?.scrollIntoView({ behavior: "smooth" });
+        }
+      })
       .catch(() => {});
   }, []);
 

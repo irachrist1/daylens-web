@@ -79,7 +79,14 @@ export function DashboardClient() {
 
   useEffect(() => {
     void fetch("/api/preferences")
-      .then((r) => (r.ok ? r.json() : null))
+      .then(async (r) => {
+        if (!r.ok) {
+          const body = await r.json().catch(() => ({})) as { error?: string };
+          console.error("[preferences] load failed:", body.error ?? r.status);
+          return null;
+        }
+        return r.json() as Promise<{ hiddenApps: string[]; hiddenDomains: string[] }>;
+      })
       .then((prefs) => {
         if (prefs) {
           setHiddenApps(new Set(prefs.hiddenApps ?? []));
@@ -96,7 +103,10 @@ export function DashboardClient() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "hideApp", appKey }),
     }).then((res) => {
-      if (!res.ok) throw new Error("save failed");
+      if (!res.ok) {
+        console.error("[hideApp] save failed: HTTP", res.status);
+        throw new Error("save failed");
+      }
     }).catch(() => {
       setHiddenApps((prev) => {
         const next = new Set(prev);
@@ -114,7 +124,10 @@ export function DashboardClient() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "hideDomain", domain: normalized }),
     }).then((res) => {
-      if (!res.ok) throw new Error("save failed");
+      if (!res.ok) {
+        console.error("[hideDomain] save failed: HTTP", res.status);
+        throw new Error("save failed");
+      }
     }).catch(() => {
       setHiddenDomains((prev) => {
         const next = new Set(prev);
