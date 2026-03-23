@@ -55,6 +55,50 @@ export function DashboardClient() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [data, setData] = useState<SnapshotDoc | null | undefined>(undefined);
   const [isInitialLatestFallback, setIsInitialLatestFallback] = useState(false);
+  const [hiddenApps, setHiddenApps] = useState<Set<string>>(new Set());
+  const [hiddenDomains, setHiddenDomains] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    void fetch("/api/preferences")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((prefs) => {
+        if (prefs) {
+          setHiddenApps(new Set(prefs.hiddenApps ?? []));
+          setHiddenDomains(new Set(prefs.hiddenDomains ?? []));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  function hideApp(appKey: string) {
+    setHiddenApps((prev) => new Set([...prev, appKey]));
+    void fetch("/api/preferences", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "hideApp", appKey }),
+    }).catch(() => {
+      setHiddenApps((prev) => {
+        const next = new Set(prev);
+        next.delete(appKey);
+        return next;
+      });
+    });
+  }
+
+  function hideCurrentDomain(domain: string) {
+    setHiddenDomains((prev) => new Set([...prev, domain]));
+    void fetch("/api/preferences", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "hideDomain", domain }),
+    }).catch(() => {
+      setHiddenDomains((prev) => {
+        const next = new Set(prev);
+        next.delete(domain);
+        return next;
+      });
+    });
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -162,9 +206,14 @@ export function DashboardClient() {
 
   const snapshot = data?.snapshot;
   const isToday = selectedDate === today;
-  const topApps = (snapshot?.appSummaries || []).slice(0, 8);
+  const topApps = (snapshot?.appSummaries || [])
+    .filter((app) => !hiddenApps.has(app.appKey))
+    .slice(0, 8);
   const categoryTotals = snapshot?.categoryTotals || [];
-  const topDomains = (snapshot?.topDomains || []).slice(0, 5);
+  const topDomains = (snapshot?.topDomains || [])
+    .filter((d) => !hiddenDomains.has(d.domain))
+    .slice(0, 5);
+  const hiddenCount = hiddenApps.size + hiddenDomains.size;
   const earliestDate =
     availableDates.length > 0 ? availableDates[availableDates.length - 1]! : today;
   const canGoPrev = selectedDate > earliestDate;
@@ -330,7 +379,7 @@ export function DashboardClient() {
           </div>
           <div className="space-y-3">
             {topApps.map((app) => (
-              <div key={app.appKey} className="flex items-center justify-between">
+              <div key={app.appKey} className="group flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <AppIcon
                     bundleID={app.bundleID || app.appKey}
@@ -345,22 +394,40 @@ export function DashboardClient() {
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium">{formatDuration(app.totalSeconds)}</p>
-                  <p className="text-[0.6875rem] text-on-surface-variant">
-                    {app.sessionCount} sessions
-                  </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => hideApp(app.appKey)}
+                    className="rounded px-2 py-0.5 text-[0.6875rem] text-on-surface-variant opacity-0 transition-opacity hover:text-error group-hover:opacity-100"
+                    aria-label={`Hide ${app.displayName}`}
+                  >
+                    Hide
+                  </button>
+                  <div className="text-right">
+                    <p className="text-sm font-medium">{formatDuration(app.totalSeconds)}</p>
+                    <p className="text-[0.6875rem] text-on-surface-variant">
+                      {app.sessionCount} sessions
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
+          {hiddenCount > 0 && (
+            <p className="text-center text-[0.6875rem] text-on-surface-variant">
+              {hiddenCount} item{hiddenCount === 1 ? "" : "s"} hidden ·{" "}
+              <Link href="/settings" className="text-primary hover:underline">
+                Manage
+              </Link>
+            </p>
+          )}
         </section>
       )}
 
       {topDomains.length > 0 && (
         <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-3">
           <h2 className="text-lg font-semibold">Top Sites</h2>
-          <TopSitesList domains={topDomains} />
+          <TopSitesList domains={topDomains} onHideDomain={hideCurrentDomain} />
         </section>
       )}
 

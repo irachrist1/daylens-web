@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { formatRelativeTime } from "@/app/lib/format";
 import { DisconnectButton } from "./DisconnectButton";
 import { DownloadButton } from "./DownloadButton";
+import { PrivacySection } from "./PrivacySection";
 
 export default async function SettingsPage() {
   const session = await getSession();
@@ -51,6 +52,9 @@ export default async function SettingsPage() {
           </div>
         )}
       </section>
+
+      {/* Privacy */}
+      <PrivacySection />
 
       {/* Download Windows app */}
       <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-4">

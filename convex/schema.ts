@@ -56,4 +56,9 @@ export default defineSchema({
     messages: v.any(),
     updatedAt: v.number(),
   }).index("by_workspace", ["workspaceId"]),
+  workspace_preferences: defineTable({
+    workspaceId: v.id("workspaces"),
+    hiddenApps: v.array(v.string()),
+    hiddenDomains: v.array(v.string()),
+  }).index("by_workspace", ["workspaceId"]),
 });

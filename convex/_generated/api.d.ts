@@ -17,6 +17,7 @@ import type * as httpRateLimits from "../httpRateLimits.js";
 import type * as keys from "../keys.js";
 import type * as keysMutations from "../keysMutations.js";
 import type * as linkCodes from "../linkCodes.js";
+import type * as preferences from "../preferences.js";
 import type * as sessionConfig from "../sessionConfig.js";
 import type * as sessionPublicJwks from "../sessionPublicJwks.js";
 import type * as sessionStatus from "../sessionStatus.js";
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   keys: typeof keys;
   keysMutations: typeof keysMutations;
   linkCodes: typeof linkCodes;
+  preferences: typeof preferences;
   sessionConfig: typeof sessionConfig;
   sessionPublicJwks: typeof sessionPublicJwks;
   sessionStatus: typeof sessionStatus;

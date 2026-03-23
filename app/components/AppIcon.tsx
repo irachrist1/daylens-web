@@ -38,9 +38,9 @@ const BUNDLE_TO_DOMAIN: Record<string, string> = {
   "WhatsApp": "whatsapp.com",
 
   // Productivity
-  "com.microsoft.Word": "microsoft.com",
-  "com.microsoft.Excel": "microsoft.com",
-  "com.microsoft.Powerpoint": "microsoft.com",
+  "com.microsoft.Word": "word.office.com",
+  "com.microsoft.Excel": "excel.office.com",
+  "com.microsoft.Powerpoint": "powerpoint.office.com",
   "com.microsoft.onenote.mac": "onenote.com",
   "com.microsoft.Outlook": "outlook.com",
   "notion.id": "notion.so",
@@ -129,14 +129,14 @@ function resolveIconSrc(bundleID: string, displayName: string, iconBase64?: stri
   // 2. Try known bundle ID → domain
   const domainFromBundle = BUNDLE_TO_DOMAIN[bundleID];
   if (domainFromBundle) {
-    return `https://www.google.com/s2/favicons?domain=${domainFromBundle}&sz=64`;
+    return `https://www.google.com/s2/favicons?domain=${domainFromBundle}&sz=128`;
   }
 
   // 3. Try display name → domain (case-insensitive)
   const nameLower = displayName.toLowerCase();
   const domainFromName = NAME_TO_DOMAIN[nameLower];
   if (domainFromName) {
-    return `https://www.google.com/s2/favicons?domain=${domainFromName}&sz=64`;
+    return `https://www.google.com/s2/favicons?domain=${domainFromName}&sz=128`;
   }
 
   return null;

@@ -50,9 +50,11 @@ function pageMeta(page: TopPageItem) {
 export function TopSitesList({
   domains,
   showCategory = false,
+  onHideDomain,
 }: {
   domains: TopDomainItem[];
   showCategory?: boolean;
+  onHideDomain?: (domain: string) => void;
 }) {
   const [expandedDomain, setExpandedDomain] = useState<string | null>(null);
 
@@ -81,6 +83,19 @@ export function TopSitesList({
             </div>
 
             <div className="flex items-center gap-2">
+              {onHideDomain ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onHideDomain(domain.domain);
+                  }}
+                  className="rounded px-2 py-0.5 text-[0.6875rem] text-on-surface-variant opacity-0 transition-opacity hover:text-error group-hover:opacity-100"
+                  aria-label={`Hide ${domain.domain}`}
+                >
+                  Hide
+                </button>
+              ) : null}
               <span className="text-sm font-medium text-on-surface-variant">
                 {formatDuration(domain.seconds)}
               </span>
@@ -103,7 +118,7 @@ export function TopSitesList({
         );
 
         return (
-          <div key={domain.domain} className="space-y-2">
+          <div key={domain.domain} className="group space-y-2">
             {hasPages ? (
               <button
                 type="button"
