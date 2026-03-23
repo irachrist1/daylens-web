@@ -60,5 +60,6 @@ export default defineSchema({
     workspaceId: v.id("workspaces"),
     hiddenApps: v.array(v.string()),
     hiddenDomains: v.array(v.string()),
+    privacyPinHash: v.optional(v.string()),
   }).index("by_workspace", ["workspaceId"]),
 });

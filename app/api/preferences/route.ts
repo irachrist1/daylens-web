@@ -24,6 +24,8 @@ export async function PATCH(request: NextRequest) {
   const { action, appKey, domain } = body;
   const client = getConvexClient(session.token);
 
+  const { pinHash } = body as { pinHash?: string };
+
   if (action === "hideApp" && appKey) {
     await client.mutation(api.preferences.hideApp, { appKey });
   } else if (action === "showApp" && appKey) {
@@ -32,6 +34,10 @@ export async function PATCH(request: NextRequest) {
     await client.mutation(api.preferences.hideDomain, { domain });
   } else if (action === "showDomain" && domain) {
     await client.mutation(api.preferences.showDomain, { domain });
+  } else if (action === "setPin" && pinHash) {
+    await client.mutation(api.preferences.setPrivacyPin, { pinHash });
+  } else if (action === "clearPin") {
+    await client.mutation(api.preferences.clearPrivacyPin, {});
   } else {
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   }
