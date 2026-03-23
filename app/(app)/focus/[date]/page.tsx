@@ -30,7 +30,7 @@ export default async function FocusPage({
       <h1 className="text-2xl font-bold">Focus Sessions</h1>
 
       {focusSessions.length === 0 ? (
-        <div className="rounded-2xl bg-surface-low p-8 text-center">
+        <div className="rounded-2xl glass-card p-8 text-center">
           <p className="text-on-surface-variant">No focus sessions this day.</p>
         </div>
       ) : (
@@ -71,7 +71,7 @@ export default async function FocusPage({
               return (
                 <div
                   key={session.sourceId || i}
-                  className="rounded-2xl bg-surface-low p-5 space-y-2"
+                  className="rounded-2xl glass-card p-5 space-y-2"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">

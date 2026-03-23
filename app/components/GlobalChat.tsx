@@ -123,7 +123,7 @@ export function GlobalChat({
               className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
                 message.role === "user"
                   ? "bg-primary text-on-primary"
-                  : "bg-surface-high text-on-surface"
+                  : "glass-card text-on-surface"
               }`}
             >
               <p className="whitespace-pre-wrap text-sm leading-relaxed">
@@ -135,7 +135,7 @@ export function GlobalChat({
 
         {loading ? (
           <div className="flex justify-start">
-            <div className="rounded-2xl bg-surface-high px-4 py-2.5">
+            <div className="rounded-2xl glass-card px-4 py-2.5">
               <div className="flex gap-1">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
                 <span className="h-2 w-2 animate-pulse rounded-full bg-primary [animation-delay:0.15s]" />

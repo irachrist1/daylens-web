@@ -6,7 +6,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Desktop header */}
-      <header className="hidden md:flex items-center justify-between px-6 py-4 bg-surface-lowest">
+      <header className="hidden md:flex items-center justify-between px-6 py-4 glass-header">
         <Link href="/dashboard" className="flex items-center gap-2.5 text-xl font-bold text-primary no-underline">
           <Image src="/app-icon.png" alt="Daylens" width={28} height={28} style={{ borderRadius: 7 }} />
           Daylens

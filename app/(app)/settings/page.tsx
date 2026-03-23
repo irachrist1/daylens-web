@@ -22,7 +22,7 @@ export default async function SettingsPage() {
       <h1 className="text-2xl font-bold">Settings</h1>
 
       {/* Linked Devices */}
-      <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-4">
+      <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-4">
         <h2 className="text-lg font-semibold">Linked Devices</h2>
         {devices.length === 0 ? (
           <p className="text-sm text-on-surface-variant">No devices linked.</p>
@@ -53,7 +53,7 @@ export default async function SettingsPage() {
       </section>
 
       {/* Download Windows app */}
-      <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-4">
+      <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-4">
         <h2 className="text-lg font-semibold">Get the Desktop App</h2>
         <div className="flex items-center justify-between">
           <div>
@@ -72,7 +72,7 @@ export default async function SettingsPage() {
       </section>
 
       {/* Data */}
-      <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-4">
+      <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-4">
         <h2 className="text-lg font-semibold">Your Data</h2>
         <div className="flex items-center justify-between">
           <div>
@@ -86,7 +86,7 @@ export default async function SettingsPage() {
       </section>
 
       {/* Recovery */}
-      <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-4">
+      <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-4">
         <h2 className="text-lg font-semibold">Account</h2>
         <div className="space-y-2">
           {session.workspaceId && (
@@ -104,7 +104,7 @@ export default async function SettingsPage() {
       </section>
 
       {/* Disconnect */}
-      <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-4">
+      <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-4">
         <h2 className="text-lg font-semibold text-error">Danger Zone</h2>
         <div className="flex items-center justify-between">
           <div>

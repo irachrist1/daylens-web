@@ -84,7 +84,7 @@ export function HistoryClient() {
         <h1 className="text-2xl font-bold">History</h1>
         <div className="space-y-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-2xl bg-surface-low p-4 animate-pulse h-16" />
+            <div key={i} className="rounded-2xl glass-card p-4 animate-pulse h-16" />
           ))}
         </div>
       </div>
@@ -95,7 +95,7 @@ export function HistoryClient() {
     return (
       <div className="px-4 sm:px-6 py-4 sm:py-8 max-w-2xl mx-auto space-y-4 sm:space-y-6">
         <h1 className="text-2xl font-bold">History</h1>
-        <div className="rounded-2xl bg-surface-low p-4 sm:p-6 text-center">
+        <div className="rounded-2xl glass-card p-4 sm:p-6 text-center">
           <p className="text-on-surface-variant">No synced days yet.</p>
           <p className="mt-2 text-sm text-on-surface-variant/60">
             Daylens will sync automatically when it&apos;s running on your computer.
@@ -133,7 +133,7 @@ export function HistoryClient() {
       </div>
 
       {selectedDate ? (
-        <div className="flex items-center justify-between rounded-2xl bg-surface-low p-3">
+        <div className="flex items-center justify-between rounded-2xl glass-card p-3">
           <button
             type="button"
             onClick={() => setSelectedDate(shiftDate(selectedDate, -1))}
@@ -159,7 +159,7 @@ export function HistoryClient() {
       {selectedDate && selectedSnapshot?.snapshot ? (
         <SnapshotContent snapshot={selectedSnapshot.snapshot} date={selectedDate} />
       ) : selectedDate ? (
-        <div className="rounded-2xl bg-surface-low p-4 sm:p-6 text-center space-y-2">
+        <div className="rounded-2xl glass-card p-4 sm:p-6 text-center space-y-2">
           <p className="text-on-surface-variant">
             No synced activity for {selectedDate}.
           </p>
@@ -169,7 +169,7 @@ export function HistoryClient() {
         </div>
       ) : null}
 
-      <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-3">
+      <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Available Days</h2>
           <span className="text-xs text-on-surface-variant">

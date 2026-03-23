@@ -155,7 +155,7 @@ export function DashboardClient() {
     return (
       <div className="px-4 sm:px-6 py-6 sm:py-8 max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
-        <div className="rounded-2xl bg-surface-low p-4 sm:p-6 animate-pulse h-40" />
+        <div className="rounded-2xl glass-card p-4 sm:p-6 animate-pulse h-40" />
       </div>
     );
   }
@@ -195,7 +195,7 @@ export function DashboardClient() {
           </Link>
         </div>
 
-        <div className="flex items-center justify-between rounded-2xl bg-surface-low p-3">
+        <div className="flex items-center justify-between rounded-2xl glass-card p-3">
           <button
             type="button"
             onClick={() => selectDate(shiftDate(selectedDate, -1))}
@@ -217,7 +217,7 @@ export function DashboardClient() {
           </button>
         </div>
 
-        <div className="rounded-2xl bg-surface-low p-4 sm:p-6 text-center space-y-2">
+        <div className="rounded-2xl glass-card p-4 sm:p-6 text-center space-y-2">
           {availableDates.length > 0 ? (
             <p className="text-on-surface-variant">
               No activity was synced for this day.
@@ -265,7 +265,7 @@ export function DashboardClient() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between rounded-2xl bg-surface-low p-3">
+      <div className="flex items-center justify-between rounded-2xl glass-card p-3">
         <button
           type="button"
           onClick={() => selectDate(shiftDate(selectedDate, -1))}
@@ -287,7 +287,7 @@ export function DashboardClient() {
         </button>
       </div>
 
-      <div className="flex items-center gap-4 sm:gap-6 rounded-2xl bg-surface-low p-4 sm:p-6">
+      <div className="flex items-center gap-4 sm:gap-6 rounded-2xl glass-card p-4 sm:p-6">
         <ScoreRing score={snapshot.focusScore || 0} size={100} />
         <div className="flex-1 space-y-3">
           <div>
@@ -311,14 +311,14 @@ export function DashboardClient() {
       </div>
 
       {categoryTotals.length > 0 && (
-        <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-4">
+        <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-4">
           <h2 className="text-lg font-semibold">Categories</h2>
           <CategoryBar totals={categoryTotals} />
         </section>
       )}
 
       {topApps.length > 0 && (
-        <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-3">
+        <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Top Apps</h2>
             <Link
@@ -358,7 +358,7 @@ export function DashboardClient() {
       )}
 
       {topDomains.length > 0 && (
-        <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-3">
+        <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-3">
           <h2 className="text-lg font-semibold">Top Sites</h2>
           <TopSitesList domains={topDomains} />
         </section>
@@ -367,7 +367,7 @@ export function DashboardClient() {
       {(snapshot.focusSessions?.length || 0) > 0 && (
         <Link
           href={`/focus/${selectedDate}`}
-          className="block rounded-2xl bg-surface-low p-4 sm:p-6 card-hover"
+          className="block rounded-2xl glass-card p-4 sm:p-6 card-hover"
         >
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Focus Sessions</h2>

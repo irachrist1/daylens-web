@@ -36,7 +36,7 @@ export default async function AppsPage({
           &larr; History
         </Link>
         <h1 className="text-2xl font-bold">{formatFullDate(date)}</h1>
-        <div className="rounded-2xl bg-surface-low p-8 text-center">
+        <div className="rounded-2xl glass-card p-8 text-center">
           <p className="text-on-surface-variant">No data for this day.</p>
         </div>
       </div>
@@ -55,7 +55,7 @@ export default async function AppsPage({
       <h1 className="text-2xl font-bold">{formatFullDate(date)}</h1>
 
       {/* Score + Stats */}
-      <div className="flex items-center gap-4 sm:gap-6 rounded-2xl bg-surface-low p-4 sm:p-6">
+      <div className="flex items-center gap-4 sm:gap-6 rounded-2xl glass-card p-4 sm:p-6">
         <ScoreRing score={snapshot.focusScore || 0} />
         <div className="flex-1 space-y-3">
           <div>
@@ -85,14 +85,14 @@ export default async function AppsPage({
 
       {/* Categories */}
       {categoryTotals.length > 0 && (
-        <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-4">
+        <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-4">
           <h2 className="text-lg font-semibold">Categories</h2>
           <CategoryBar totals={categoryTotals} />
         </section>
       )}
 
       {/* All Apps */}
-      <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-3">
+      <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-3">
         <h2 className="text-lg font-semibold">All Apps</h2>
         <div className="space-y-3">
           {apps.map(
@@ -139,7 +139,7 @@ export default async function AppsPage({
 
       {/* Top Domains */}
       {topDomains.length > 0 && (
-        <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-3">
+        <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-3">
           <h2 className="text-lg font-semibold">Top Sites</h2>
           <TopSitesList domains={topDomains} showCategory />
         </section>
@@ -147,7 +147,7 @@ export default async function AppsPage({
 
       {/* AI Summary */}
       {snapshot.aiSummary && (
-        <section className="rounded-2xl bg-surface-low p-4 sm:p-6 space-y-3">
+        <section className="rounded-2xl glass-card p-4 sm:p-6 space-y-3">
           <h2 className="text-lg font-semibold">AI Summary</h2>
           <p className="text-sm leading-relaxed text-on-surface/90">
             {snapshot.aiSummary}

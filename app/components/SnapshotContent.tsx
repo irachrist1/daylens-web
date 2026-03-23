@@ -52,7 +52,7 @@ export function SnapshotContent({ snapshot, date, showAllApps = false }: Snapsho
   return (
     <div className="space-y-6">
       {/* Focus Score + Quick Stats */}
-      <div className="flex items-center gap-6 rounded-2xl bg-surface-low p-6">
+      <div className="flex items-center gap-6 rounded-2xl glass-card p-6">
         <ScoreRing score={snapshot.focusScore || 0} />
         <div className="flex-1 space-y-3">
           <div>
@@ -77,7 +77,7 @@ export function SnapshotContent({ snapshot, date, showAllApps = false }: Snapsho
 
       {/* Category Breakdown */}
       {categoryTotals.length > 0 && (
-        <section className="rounded-2xl bg-surface-low p-6 space-y-4">
+        <section className="rounded-2xl glass-card p-6 space-y-4">
           <h2 className="text-lg font-semibold">Categories</h2>
           <CategoryBar totals={categoryTotals} />
         </section>
@@ -85,7 +85,7 @@ export function SnapshotContent({ snapshot, date, showAllApps = false }: Snapsho
 
       {/* Apps */}
       {topApps.length > 0 && (
-        <section className="rounded-2xl bg-surface-low p-6 space-y-3">
+        <section className="rounded-2xl glass-card p-6 space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">
               {showAllApps ? "All Apps" : "Top Apps"}
@@ -127,7 +127,7 @@ export function SnapshotContent({ snapshot, date, showAllApps = false }: Snapsho
 
       {/* Top Sites */}
       {topDomains.length > 0 && (
-        <section className="rounded-2xl bg-surface-low p-6 space-y-3">
+        <section className="rounded-2xl glass-card p-6 space-y-3">
           <h2 className="text-lg font-semibold">Top Sites</h2>
           <TopSitesList domains={topDomains} showCategory={showAllApps} />
         </section>
@@ -137,7 +137,7 @@ export function SnapshotContent({ snapshot, date, showAllApps = false }: Snapsho
       {focusSessions.length > 0 && (
         <Link
           href={`/focus/${date}`}
-          className="block rounded-2xl bg-surface-low p-6 card-hover"
+          className="block rounded-2xl glass-card p-6 card-hover"
         >
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Focus Sessions</h2>
@@ -148,7 +148,7 @@ export function SnapshotContent({ snapshot, date, showAllApps = false }: Snapsho
 
       {/* AI Summary (historical days) */}
       {snapshot.aiSummary && (
-        <section className="rounded-2xl bg-surface-low p-6 space-y-3">
+        <section className="rounded-2xl glass-card p-6 space-y-3">
           <h2 className="text-lg font-semibold">AI Summary</h2>
           <p className="text-sm leading-relaxed text-on-surface/90">{snapshot.aiSummary}</p>
         </section>

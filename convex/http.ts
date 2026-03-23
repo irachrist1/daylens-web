@@ -75,6 +75,16 @@ function isValidSnapshotV1(snapshot: unknown): snapshot is DaySnapshot {
   const candidate = snapshot as Record<string, unknown>;
   const hasArrayField = (key: string) => Array.isArray(candidate[key]);
 
+  // Normalize categoryOverrides: accept missing, null, or array by converting to {}
+  if (
+    candidate.categoryOverrides === undefined ||
+    candidate.categoryOverrides === null ||
+    Array.isArray(candidate.categoryOverrides) ||
+    typeof candidate.categoryOverrides !== "object"
+  ) {
+    candidate.categoryOverrides = {};
+  }
+
   return (
     candidate.schemaVersion === 1 &&
     typeof candidate.deviceId === "string" &&
@@ -88,10 +98,9 @@ function isValidSnapshotV1(snapshot: unknown): snapshot is DaySnapshot {
     hasArrayField("categoryTotals") &&
     hasArrayField("timeline") &&
     hasArrayField("topDomains") &&
-    typeof candidate.categoryOverrides === "object" &&
-    candidate.categoryOverrides !== null &&
-    !Array.isArray(candidate.categoryOverrides) &&
-    (candidate.aiSummary === null || typeof candidate.aiSummary === "string") &&
+    (candidate.aiSummary === null ||
+      candidate.aiSummary === undefined ||
+      typeof candidate.aiSummary === "string") &&
     hasArrayField("focusSessions")
   );
 }
@@ -139,7 +148,21 @@ http.route({
     const workspaceId = identity.workspaceId as Id<"workspaces">;
     const deviceId = identity.deviceId;
 
-    if (typeof deviceId !== "string" || typeof localDate !== "string" || !isValidSnapshotV1(snapshot)) {
+    if (typeof deviceId !== "string" || typeof localDate !== "string") {
+      console.error("[uploadSnapshot] Missing deviceId or localDate", { deviceId: typeof deviceId, localDate: typeof localDate });
+      return jsonResponse({ error: "Missing or invalid required fields" }, 400);
+    }
+
+    if (!isValidSnapshotV1(snapshot)) {
+      const s = snapshot as Record<string, unknown> | null;
+      console.error("[uploadSnapshot] Invalid snapshot", {
+        schemaVersion: s?.schemaVersion,
+        hasDeviceId: typeof s?.deviceId === "string",
+        platform: s?.platform,
+        date: s?.date,
+        hasAppSummaries: Array.isArray(s?.appSummaries),
+        hasFocusSessions: Array.isArray(s?.focusSessions),
+      });
       return jsonResponse({ error: "Missing or invalid required fields" }, 400);
     }
 
@@ -176,8 +199,10 @@ http.route({
         deviceId,
       });
 
+      console.log("[uploadSnapshot] OK", { localDate, deviceId, id });
       return jsonResponse({ success: true, id }, 200);
-    } catch {
+    } catch (err) {
+      console.error("[uploadSnapshot] Upload failed", { localDate, deviceId, error: err instanceof Error ? err.message : String(err) });
       return jsonResponse({ error: "Upload failed" }, 500);
     }
   }),
