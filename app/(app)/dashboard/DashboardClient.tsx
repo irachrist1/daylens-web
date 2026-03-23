@@ -125,6 +125,32 @@ export function DashboardClient() {
     };
   }, [selectedDate]);
 
+  // Poll for fresh data every 60s
+  useEffect(() => {
+    if (!selectedDate) return;
+
+    const poll = () => {
+      void fetch(`/api/snapshots?date=${selectedDate}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((json) => {
+          if (json?.snapshot) {
+            setData(json.snapshot);
+            if (json.snapshot.localDate === today) {
+              setIsInitialLatestFallback(false);
+            }
+            // Add to available dates if new
+            setAvailableDates((prev) =>
+              prev.includes(selectedDate) ? prev : [...prev, selectedDate].sort((a, b) => b.localeCompare(a))
+            );
+          }
+        })
+        .catch(() => {});
+    };
+
+    const interval = window.setInterval(poll, 60_000);
+    return () => window.clearInterval(interval);
+  }, [selectedDate, today]);
+
   if (!selectedDate || data === undefined) {
     return (
       <div className="px-4 sm:px-6 py-6 sm:py-8 max-w-2xl mx-auto">

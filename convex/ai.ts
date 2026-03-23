@@ -28,23 +28,34 @@ export const askQuestion = action({
       return { response: "No activity data found for this date." };
     }
 
-    // Load encrypted API key
-    const keyDocs = await ctx.runQuery(internal.encryptedKeys.getByWorkspace, {
-      workspaceId: identity.workspaceId,
-    });
+    // Load API key: try user's encrypted key first, fall back to server key
+    let anthropicKey: string | undefined;
 
-    if (!keyDocs) {
+    try {
+      const keyDocs = await ctx.runQuery(internal.encryptedKeys.getByWorkspace, {
+        workspaceId: identity.workspaceId,
+      });
+
+      if (keyDocs) {
+        anthropicKey = decrypt(
+          keyDocs.encryptedAnthropicKey,
+          identity.workspaceId
+        );
+      }
+    } catch {
+      // Decryption failed — fall through to server key
+    }
+
+    if (!anthropicKey) {
+      anthropicKey = process.env.ANTHROPIC_API_KEY;
+    }
+
+    if (!anthropicKey) {
       return {
         response:
           "No API key configured. Add your Anthropic API key in Daylens settings in your desktop app.",
       };
     }
-
-    // Decrypt key
-    const anthropicKey = decrypt(
-      keyDocs.encryptedAnthropicKey,
-      identity.workspaceId
-    );
 
     // Build prompt using the shared prompt builder
     const activityContext = buildDayContext(snapshotDoc.snapshot);
