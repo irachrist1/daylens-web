@@ -43,6 +43,25 @@ function getLocalDate(): string {
   return new Date().toLocaleDateString("en-CA");
 }
 
+/** Strip www. and lowercase so "www.YouTube.com" → "youtube.com" */
+function normalizeDomain(domain: string): string {
+  return domain.replace(/^www\./, "").toLowerCase();
+}
+
+/**
+ * Returns true if `domain` should be hidden.
+ * Hiding "youtube.com" also hides "music.youtube.com", "m.youtube.com", etc.
+ */
+function isDomainHidden(domain: string, hiddenDomains: Set<string>): boolean {
+  const normalized = normalizeDomain(domain);
+  for (const hidden of hiddenDomains) {
+    const h = normalizeDomain(hidden);
+    if (normalized === h) return true;
+    if (normalized.endsWith(`.${h}`)) return true;
+  }
+  return false;
+}
+
 function shiftDate(date: string, deltaDays: number) {
   const nextDate = new Date(`${date}T12:00:00`);
   nextDate.setDate(nextDate.getDate() + deltaDays);
@@ -64,7 +83,7 @@ export function DashboardClient() {
       .then((prefs) => {
         if (prefs) {
           setHiddenApps(new Set(prefs.hiddenApps ?? []));
-          setHiddenDomains(new Set(prefs.hiddenDomains ?? []));
+          setHiddenDomains(new Set((prefs.hiddenDomains ?? []).map(normalizeDomain)));
         }
       })
       .catch(() => {});
@@ -86,15 +105,16 @@ export function DashboardClient() {
   }
 
   function hideCurrentDomain(domain: string) {
-    setHiddenDomains((prev) => new Set([...prev, domain]));
+    const normalized = normalizeDomain(domain);
+    setHiddenDomains((prev) => new Set([...prev, normalized]));
     void fetch("/api/preferences", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "hideDomain", domain }),
+      body: JSON.stringify({ action: "hideDomain", domain: normalized }),
     }).catch(() => {
       setHiddenDomains((prev) => {
         const next = new Set(prev);
-        next.delete(domain);
+        next.delete(normalized);
         return next;
       });
     });
@@ -211,7 +231,7 @@ export function DashboardClient() {
     .slice(0, 8);
   const categoryTotals = snapshot?.categoryTotals || [];
   const topDomains = (snapshot?.topDomains || [])
-    .filter((d) => !hiddenDomains.has(d.domain))
+    .filter((d) => !isDomainHidden(d.domain, hiddenDomains))
     .slice(0, 5);
   const hiddenCount = hiddenApps.size + hiddenDomains.size;
   const earliestDate =
