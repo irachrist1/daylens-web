@@ -164,7 +164,7 @@ function LinkPageContent() {
         {/* Hero */}
         <div className="text-center space-y-2">
           <div className="mx-auto mb-3">
-            <img src="/app-icon.png" alt="Daylens" width={44} height={44} style={{ borderRadius: 11 }} />
+            <img src="/daylens/app-icon.png" alt="Daylens" width={44} height={44} style={{ borderRadius: 11 }} />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-on-surface">
             Connect to Daylens
