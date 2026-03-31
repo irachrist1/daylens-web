@@ -11,6 +11,7 @@ export default function RecoverPage() {
   const router = useRouter();
 
   const wordCount = mnemonic.trim().split(/\s+/).filter(Boolean).length;
+  const isComplete = wordCount === 12;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -42,52 +43,94 @@ export default function RecoverPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-6">
-      <div className="w-full max-w-sm space-y-8">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-primary">
-            Recover
-          </h1>
-          <p className="mt-2 text-sm text-on-surface-variant">
-            Enter your 12-word recovery phrase to restore access
-          </p>
-        </div>
+    <div className="lp">
+      <div className="lp-recover-layout">
+        <div className="lp-recover-inner">
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <textarea
-              value={mnemonic}
-              onChange={(e) => setMnemonic(e.target.value.toLowerCase())}
-              placeholder="Enter your 12-word recovery phrase..."
-              rows={4}
-              className="w-full rounded-lg bg-surface-low px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/30 focus:outline-none focus:ring-2 focus:ring-primary-container resize-none"
-              autoFocus
-            />
-            <p className="mt-1 text-xs text-on-surface-variant/60 text-right">
-              {wordCount}/12 words
-            </p>
+          <Link href="/" className="lp-recover-logo">
+            <img src="/daylens/app-icon.png" alt="Daylens" width={28} height={28} style={{ borderRadius: 7 }} />
+            Daylens
+          </Link>
+
+          <div className="lp-accent-rule" style={{ marginBottom: "1.5rem" }} />
+
+          <p className="text-label" style={{ color: "var(--lp-accent)", marginBottom: "0.875rem" }}>
+            Account Recovery
+          </p>
+
+          <h1 className="text-display-md" style={{ color: "var(--lp-bone)", margin: "0 0 0.875rem" }}>
+            Restore your account.
+          </h1>
+
+          <p style={{ fontSize: "0.9375rem", fontWeight: 300, lineHeight: 1.65, color: "rgba(252,249,248,0.4)", margin: "0 0 2.5rem" }}>
+            Enter your 12-word recovery phrase to regain access to your web companion.
+          </p>
+
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div>
+              <label
+                htmlFor="mnemonic"
+                className="text-label"
+                style={{ color: "rgba(252,249,248,0.3)", display: "block", marginBottom: "0.75rem" }}
+              >
+                Recovery phrase
+              </label>
+
+              <textarea
+                id="mnemonic"
+                value={mnemonic}
+                onChange={(e) => setMnemonic(e.target.value.toLowerCase())}
+                placeholder="word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12"
+                rows={4}
+                className="lp-textarea"
+                autoFocus
+              />
+
+              <p
+                className="lp-word-count"
+                style={{ color: isComplete ? "var(--lp-accent)" : "rgba(252,249,248,0.25)" }}
+              >
+                {wordCount} / 12 words{isComplete ? " ✓" : ""}
+              </p>
+            </div>
+
+            {error && (
+              <p className="lp-error-msg">{error}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading || !isComplete}
+              className="lp-btn-primary"
+              style={{
+                width: "100%",
+                justifyContent: "center",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                opacity: (loading || !isComplete) ? 0.4 : 1,
+              }}
+            >
+              {loading ? (
+                <>
+                  <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Restoring…
+                </>
+              ) : (
+                "Restore Workspace →"
+              )}
+            </button>
+          </form>
+
+          <div className="lp-recover-footer">
+            <Link href="/link" className="lp-ghost-link lp-ghost-link--accent">
+              Have a link code instead? Connect a device
+            </Link>
           </div>
 
-          {error && (
-            <p className="text-center text-sm text-error">{error}</p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading || wordCount !== 12}
-            className="w-full rounded-lg bg-gradient-to-br from-primary-container to-primary px-4 py-3 font-semibold text-on-primary transition-transform active:scale-[0.98] disabled:opacity-40"
-          >
-            {loading ? "Recovering..." : "Restore Workspace"}
-          </button>
-        </form>
-
-        <div className="text-center">
-          <Link
-            href="/"
-            className="text-xs text-on-surface-variant hover:text-primary transition-colors"
-          >
-            Have a link code instead? Go back
-          </Link>
         </div>
       </div>
     </div>

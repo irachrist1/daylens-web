@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import posthog from "posthog-js";
 
 type BarcodeDetectorCtor = new (options: {
@@ -119,7 +120,6 @@ function LinkPageContent() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!token.trim()) return;
-
     await submitToken(token);
   }
 
@@ -130,7 +130,7 @@ function LinkPageContent() {
       return;
     }
 
-    posthog.capture('link_pairing_started')
+    posthog.capture("link_pairing_started");
     setLoading(true);
     setError("");
     setScannerError("");
@@ -150,7 +150,7 @@ function LinkPageContent() {
         return;
       }
 
-      posthog.capture('link_pairing_completed')
+      posthog.capture("link_pairing_completed");
       router.push("/dashboard");
     } catch {
       setError("Connection failed. Please try again.");
@@ -159,181 +159,187 @@ function LinkPageContent() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-5">
-      <div className="w-full max-w-md space-y-7">
-        {/* Hero */}
-        <div className="text-center space-y-2">
-          <div className="mx-auto mb-3">
-            <img src="/app-icon.png" alt="Daylens" width={44} height={44} style={{ borderRadius: 11 }} />
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight text-on-surface">
-            Connect to Daylens
-          </h1>
-          <p className="text-on-surface-variant text-sm leading-relaxed max-w-[280px] mx-auto">
-            Link your desktop app to view activity data in the browser.
-          </p>
-        </div>
+    <div className="lp">
+      <div className="lp-connect-layout">
 
-        {/* Steps */}
-        <div className="space-y-3">
-          <h2 className="text-[10px] font-semibold tracking-widest uppercase text-on-surface-variant/60 px-1">
-            How to connect
-          </h2>
-          <div className="rounded-xl bg-surface-low p-4 space-y-3">
-            <Step
-              number={1}
-              title="Open Daylens on your computer"
-              description="Go to Settings → Web Companion."
-            />
-            <div className="border-t border-outline-variant/10" />
-            <Step
-              number={2}
-              title='Click "Connect to Web"'
-              description="A QR code and link token will appear."
-            />
-            <div className="border-t border-outline-variant/10" />
-            <Step
-              number={3}
-              title="Scan or paste below"
-              description="Point your camera at the QR code, or paste the token."
-            />
-          </div>
-        </div>
+        {/* ── Left: Form ── */}
+        <div className="lp-connect-form">
+          <div className="lp-connect-form-inner">
 
-        {/* Connect Section */}
-        <div className="space-y-3">
-          {/* Primary: QR scan on mobile */}
-          <button
-            type="button"
-            onClick={() => {
-              setScannerError("");
-              setScanning((current) => !current);
-            }}
-            className="w-full rounded-xl bg-gradient-to-br from-primary-container to-primary px-5 py-3.5 font-semibold text-on-primary transition-transform active:scale-[0.98] flex items-center justify-center gap-3"
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 7V5a2 2 0 012-2h2" />
-              <path d="M17 3h2a2 2 0 012 2v2" />
-              <path d="M21 17v2a2 2 0 01-2 2h-2" />
-              <path d="M7 21H5a2 2 0 01-2-2v-2" />
-              <line x1="7" y1="12" x2="17" y2="12" />
-            </svg>
-            {scanning ? "Stop Camera" : "Scan QR Code"}
-          </button>
+            <Link href="/" className="lp-connect-logo">
+              <img src="/daylens/app-icon.png" alt="Daylens" width={28} height={28} style={{ borderRadius: 7 }} />
+              Daylens
+            </Link>
 
-          {scanning && (
-            <div className="rounded-xl overflow-hidden">
-              <video
-                ref={videoRef}
-                className="w-full rounded-xl bg-black/60"
-                muted
-                playsInline
-              />
-            </div>
-          )}
+            <div className="lp-accent-rule" style={{ marginBottom: "1.5rem" }} />
 
-          {scannerError && (
-            <p className="text-xs text-error text-center">{scannerError}</p>
-          )}
+            <p className="text-label" style={{ color: "var(--lp-accent)", marginBottom: "0.875rem" }}>
+              Connect Device
+            </p>
 
-          {/* Divider */}
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-outline-variant/15" />
-            <span className="text-xs text-on-surface-variant/50 font-medium">or</span>
-            <div className="flex-1 h-px bg-outline-variant/15" />
-          </div>
+            <h1 className="text-display-md" style={{ color: "var(--lp-bone)", margin: "0 0 0.75rem" }}>
+              Link your web companion.
+            </h1>
 
-          {/* Secondary: paste token */}
-          {!showManualEntry ? (
+            <p style={{ fontSize: "0.9375rem", fontWeight: 300, lineHeight: 1.65, color: "rgba(252,249,248,0.45)", margin: "0 0 2.5rem" }}>
+              Connect your desktop app once. Access your data from any device.
+            </p>
+
+            {/* QR scan button */}
             <button
               type="button"
-              onClick={() => setShowManualEntry(true)}
-              className="w-full rounded-xl border border-outline-variant/20 bg-surface-low px-5 py-3.5 text-sm text-on-surface-variant hover:text-on-surface hover:border-outline-variant/30 transition-colors text-center"
+              onClick={() => {
+                setScannerError("");
+                setScanning((current) => !current);
+              }}
+              className={scanning ? "lp-btn-ghost-light" : "lp-btn-primary"}
+              style={{ width: "100%", justifyContent: "center", display: "flex", alignItems: "center", gap: "0.625rem" }}
             >
-              Paste link token manually
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 7V5a2 2 0 012-2h2" />
+                <path d="M17 3h2a2 2 0 012 2v2" />
+                <path d="M21 17v2a2 2 0 01-2 2h-2" />
+                <path d="M7 21H5a2 2 0 01-2-2v-2" />
+                <rect x="7" y="7" width="4" height="4" rx="0.5" />
+                <rect x="13" y="7" width="4" height="4" rx="0.5" />
+                <rect x="7" y="13" width="4" height="4" rx="0.5" />
+                <line x1="13" y1="13" x2="13" y2="13" strokeWidth="3" />
+              </svg>
+              {scanning ? "Stop Camera" : "Scan QR Code"}
             </button>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="rounded-xl bg-surface-low p-4 space-y-3">
-                <label className="block text-xs font-medium text-on-surface-variant">
-                  Link token from your desktop app
-                </label>
-                <input
-                  type="text"
-                  value={token}
-                  onChange={(e) => setToken(e.target.value.toLowerCase())}
-                  placeholder="Paste the code here"
-                  maxLength={32}
-                  className="w-full rounded-lg bg-surface px-4 py-3 text-center text-base font-mono text-on-surface placeholder:text-on-surface-variant/30 focus:outline-none focus:ring-2 focus:ring-primary-container"
-                  autoFocus
-                />
-                <p className="text-[0.6875rem] text-on-surface-variant/50 text-center">
-                  This is the long code shown in Settings &rarr; Web Companion
-                </p>
+
+            {scanning && (
+              <div className="lp-scanner-wrapper" style={{ marginTop: "1rem" }}>
+                <video ref={videoRef} className="lp-scanner-video" muted playsInline />
+                <div className="lp-scanner-corners" />
               </div>
+            )}
 
+            {scannerError && <p className="lp-error-msg">{scannerError}</p>}
+
+            {/* OR divider */}
+            <div className="lp-or-divider">
+              <div className="lp-or-line" />
+              <span className="lp-or-label">or</span>
+              <div className="lp-or-line" />
+            </div>
+
+            {/* Manual token entry */}
+            {!showManualEntry ? (
               <button
-                type="submit"
-                disabled={loading || token.trim().length !== 32}
-                className="w-full rounded-xl bg-gradient-to-br from-primary-container to-primary px-5 py-3.5 font-semibold text-on-primary transition-transform active:scale-[0.98] disabled:opacity-40"
+                type="button"
+                onClick={() => setShowManualEntry(true)}
+                className="lp-btn-ghost-light"
+                style={{ width: "100%", justifyContent: "center", display: "flex" }}
               >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    Connecting...
-                  </span>
-                ) : (
-                  "Connect"
-                )}
+                Enter link token manually
               </button>
-            </form>
-          )}
+            ) : (
+              <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+                <div>
+                  <label
+                    htmlFor="link-token"
+                    className="text-label"
+                    style={{ color: "rgba(252,249,248,0.35)", display: "block", marginBottom: "0.625rem" }}
+                  >
+                    Link token from your desktop app
+                  </label>
+                  <input
+                    id="link-token"
+                    type="text"
+                    value={token}
+                    onChange={(e) => setToken(e.target.value.toLowerCase())}
+                    placeholder="Paste the 32-character code"
+                    maxLength={32}
+                    className="lp-input lp-input--mono"
+                    autoFocus
+                  />
+                  <p className="lp-hint-text">Found in Settings → Web Companion on your desktop</p>
+                </div>
 
-          {error && (
-            <p className="text-center text-sm text-error">{error}</p>
-          )}
+                <button
+                  type="submit"
+                  disabled={loading || token.trim().length !== 32}
+                  className="lp-btn-primary"
+                  style={{ width: "100%", justifyContent: "center", display: "flex", alignItems: "center", gap: "0.5rem", opacity: (loading || token.trim().length !== 32) ? 0.4 : 1 }}
+                >
+                  {loading ? (
+                    <>
+                      <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      Connecting…
+                    </>
+                  ) : (
+                    "Connect →"
+                  )}
+                </button>
+              </form>
+            )}
+
+            {error && <p className="lp-error-msg">{error}</p>}
+
+            {/* Footer links */}
+            <div className="lp-connect-footer">
+              <Link href="/recover" className="lp-ghost-link lp-ghost-link--accent">
+                Already linked? Restore with recovery phrase
+              </Link>
+              <Link href="/" className="lp-ghost-link">
+                ← Back to home
+              </Link>
+            </div>
+
+          </div>
         </div>
 
-        {/* Footer */}
-        <div className="text-center space-y-3 pb-8">
-          <a
-            href="/recover"
-            className="text-xs text-on-surface-variant/60 hover:text-primary transition-colors block"
-          >
-            Already linked? Restore with recovery phrase
-          </a>
-          <a
-            href="/"
-            className="text-xs text-on-surface-variant/40 hover:text-on-surface-variant transition-colors block"
-          >
-            Back to home
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
+        {/* ── Right: How-it-works panel ── */}
+        <div className="lp-connect-panel">
+          <div className="lp-connect-panel-inner">
 
-function Step({
-  number,
-  title,
-  description,
-}: {
-  number: number;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="flex gap-3 items-start">
-      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/15 flex items-center justify-center mt-0.5">
-        <span className="text-[10px] font-bold text-primary">{number}</span>
-      </div>
-      <div>
-        <p className="text-[13px] font-medium text-on-surface leading-snug">{title}</p>
-        <p className="text-[11px] text-on-surface-variant/70 mt-0.5 leading-relaxed">{description}</p>
+            <p className="text-label" style={{ color: "rgba(252,249,248,0.3)", marginBottom: "2.5rem" }}>
+              How to connect
+            </p>
+
+            <h2 className="text-headline" style={{ color: "rgba(252,249,248,0.85)", margin: "0 0 2rem", lineHeight: 1.3 }}>
+              Three steps.<br />No account needed.
+            </h2>
+
+            <div>
+              {[
+                {
+                  n: "01",
+                  title: "Open Daylens on your computer",
+                  desc: "Go to Settings → Web Companion.",
+                },
+                {
+                  n: "02",
+                  title: 'Click "Connect to Web"',
+                  desc: "A QR code and link token will appear on screen.",
+                },
+                {
+                  n: "03",
+                  title: "Scan or paste below",
+                  desc: "Point your camera at the QR code, or paste the token manually.",
+                },
+              ].map((step) => (
+                <div key={step.n} className="lp-connect-step">
+                  <p className="text-label lp-connect-step-num">{step.n}</p>
+                  <div>
+                    <p className="lp-connect-step-title">{step.title}</p>
+                    <p className="lp-connect-step-desc">{step.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <p style={{ fontSize: "0.75rem", fontWeight: 300, color: "rgba(252,249,248,0.2)", lineHeight: 1.65, marginTop: "2.5rem" }}>
+              Your data stays on your device. The web companion syncs only what you explicitly share.
+            </p>
+
+          </div>
+        </div>
+
       </div>
     </div>
   );
@@ -341,7 +347,7 @@ function Step({
 
 export default function LinkPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-surface" />}>
+    <Suspense fallback={<div style={{ minHeight: "100vh", background: "var(--lp-surface)" }} />}>
       <LinkPageContent />
     </Suspense>
   );

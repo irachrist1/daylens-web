@@ -169,7 +169,7 @@ export function LandingClient() {
           <a href="#features" className="lp-nav-link">Features</a>
           <a href="#how-it-works" className="lp-nav-link">How it works</a>
           <Link href="/docs" className="lp-nav-link">Docs</Link>
-          <Link href="/link" className="lp-nav-cta">
+          <Link href="/dashboard" className="lp-nav-cta">
             Open Dashboard <span>→</span>
           </Link>
         </nav>
@@ -195,7 +195,7 @@ export function LandingClient() {
             <a href="#features" className="lp-mobile-link">Features</a>
             <a href="#how-it-works" className="lp-mobile-link">How it works</a>
             <Link href="/docs" className="lp-mobile-link">Docs</Link>
-            <Link href="/link" className="lp-mobile-link lp-mobile-link--cta">
+            <Link href="/dashboard" className="lp-mobile-link lp-mobile-link--cta">
               Open Dashboard →
             </Link>
           </div>

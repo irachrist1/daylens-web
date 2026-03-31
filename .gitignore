@@ -40,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local AI instructions — not for public repo
+CLAUDE.md
+AGENTS.md
+DEPLOYMENT.md
