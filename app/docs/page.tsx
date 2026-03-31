@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { MarketingFooter, MarketingInnerNav } from "../components/MarketingChrome";
+import { MarketingCursor } from "../components/MarketingEffects";
 
 export const metadata = {
   title: "Docs — Daylens",
@@ -21,21 +23,8 @@ const TOC = [
 export default function DocsPage() {
   return (
     <div className="lp">
-
-      {/* ── Fixed Nav ── */}
-      <header className="lp-docs-nav">
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 9, textDecoration: "none", color: "var(--lp-bone)", fontSize: "0.9375rem", fontWeight: 500, letterSpacing: "-0.01em" }}>
-          <img src="/daylens/app-icon.png" alt="Daylens" width={26} height={26} style={{ borderRadius: 7 }} />
-          Daylens
-        </Link>
-        <nav className="lp-docs-nav-links">
-          <Link href="/" className="lp-footer-link">Home</Link>
-          <Link href="/link" className="lp-footer-link">Connect</Link>
-          <Link href="/link" className="lp-btn-primary" style={{ padding: "0.5rem 1.25rem", fontSize: "0.8125rem" }}>
-            Connect Device
-          </Link>
-        </nav>
-      </header>
+      <MarketingCursor />
+      <MarketingInnerNav current="docs" />
 
       {/* ── Hero ── */}
       <section className="lp-docs-hero">
@@ -344,40 +333,7 @@ export default function DocsPage() {
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="lp-footer">
-        <div className="lp-container">
-          <div className="lp-footer-grid">
-            <div>
-              <div className="lp-footer-logo">
-                <img src="/daylens/app-icon.png" alt="Daylens" width={24} height={24} style={{ borderRadius: 6 }} />
-                Daylens
-              </div>
-              <p className="lp-footer-desc">
-                Your day, finally visible. Activity tracking that thinks alongside you.
-              </p>
-            </div>
-            <div className="lp-footer-col">
-              <span className="text-label lp-footer-heading">Product</span>
-              <Link href="/" className="lp-footer-link">Home</Link>
-              <Link href="/docs" className="lp-footer-link">Documentation</Link>
-              <a href="https://github.com/irachrist1/daylens" target="_blank" rel="noopener noreferrer" className="lp-footer-link">GitHub</a>
-            </div>
-            <div className="lp-footer-col">
-              <span className="text-label lp-footer-heading">Access</span>
-              <Link href="/link" className="lp-footer-link">Connect Device</Link>
-              <Link href="/recover" className="lp-footer-link">Recover Account</Link>
-              <a href="/daylens/api/download/mac" className="lp-footer-link">Download for Mac</a>
-              <a href="/daylens/api/download/windows" className="lp-footer-link">Download for Windows</a>
-            </div>
-          </div>
-          <div className="lp-footer-bar">
-            <p className="lp-footer-copy">© 2026 Daylens. Free and open source.</p>
-          </div>
-        </div>
-      </footer>
-
+      <MarketingFooter />
     </div>
   );
 }
-
