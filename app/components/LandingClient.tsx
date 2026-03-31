@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import posthog from "posthog-js";
-import { MarketingFooter } from "./MarketingChrome";
+import { MarketingFooter, MarketingInnerNav } from "./MarketingChrome";
 import { MarketingCursor, useReveal } from "./MarketingEffects";
 
 // ── Marquee items ──────────────────────────────────────────────────────────────
@@ -25,71 +24,13 @@ const MARQUEE_ITEMS = [
 // ── Main component ─────────────────────────────────────────────────────────────
 export function LandingClient() {
   useReveal();
-  const [navScrolled, setNavScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setNavScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   const doubled = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
 
   return (
     <div className="lp">
       <MarketingCursor />
-
-      {/* ── Navigation ──────────────────────────────────────────────────────── */}
-      <header className={`lp-nav${navScrolled ? " lp-nav--scrolled" : ""}`}>
-        <Link href="/" className="lp-logo">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/daylens/app-icon.png"
-            alt="Daylens"
-            width={26}
-            height={26}
-            style={{ borderRadius: 6 }}
-          />
-          <span>Daylens</span>
-        </Link>
-
-        <nav className="lp-nav-links">
-          <a href="#features" className="lp-nav-link">Features</a>
-          <a href="#how-it-works" className="lp-nav-link">How it works</a>
-          <Link href="/docs" className="lp-nav-link">Docs</Link>
-          <Link href="/dashboard" className="lp-nav-cta">
-            Open Dashboard <span>→</span>
-          </Link>
-        </nav>
-
-        <button
-          className="lp-hamburger"
-          onClick={() => setMobileMenuOpen((v) => !v)}
-          aria-label="Toggle menu"
-        >
-          {mobileMenuOpen ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M3 12h18M3 6h18M3 18h18" />
-            </svg>
-          )}
-        </button>
-
-        {mobileMenuOpen && (
-          <div className="lp-mobile-menu" onClick={() => setMobileMenuOpen(false)}>
-            <a href="#features" className="lp-mobile-link">Features</a>
-            <a href="#how-it-works" className="lp-mobile-link">How it works</a>
-            <Link href="/docs" className="lp-mobile-link">Docs</Link>
-            <Link href="/dashboard" className="lp-mobile-link lp-mobile-link--cta">
-              Open Dashboard →
-            </Link>
-          </div>
-        )}
-      </header>
+      <MarketingInnerNav current="home" theme="dark" variant="capsule" />
 
       {/* ── Hero ────────────────────────────────────────────────────────────── */}
       <section className="lp-hero">

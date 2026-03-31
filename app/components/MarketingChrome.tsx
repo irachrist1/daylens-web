@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-type MarketingNavKey = "docs" | "roadmap" | "changelog";
+type MarketingNavKey = "home" | "docs" | "roadmap" | "changelog";
 
 const NAV_LINKS: Array<{ href: string; label: string; key: MarketingNavKey }> =
   [
@@ -49,7 +49,18 @@ export function MarketingInnerNav({
       </Link>
 
       <nav className="lp-docs-nav-links">
-        <Link href="/" className="lp-footer-link">
+        <Link
+          href="/"
+          className="lp-footer-link"
+          style={
+            current === "home"
+              ? {
+                  color:
+                    theme === "light" ? "var(--lp-ink)" : "var(--lp-bone)",
+                }
+              : undefined
+          }
+        >
           Home
         </Link>
         {NAV_LINKS.map((link) => (

@@ -24,7 +24,7 @@ export default function DocsPage() {
   return (
     <div className="lp">
       <MarketingCursor />
-      <MarketingInnerNav current="docs" />
+      <MarketingInnerNav current="docs" theme="dark" variant="capsule" />
 
       {/* ── Hero ── */}
       <section className="lp-docs-hero">
