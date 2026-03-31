@@ -1,114 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import posthog from "posthog-js";
-
-// ── Reveal hook ────────────────────────────────────────────────────────────────
-function useReveal() {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const els = document.querySelectorAll(
-        ".reveal, .reveal-left, .reveal-scale, .img-reveal"
-      );
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((e) => {
-            if (e.isIntersecting) {
-              e.target.classList.add("is-visible");
-              observer.unobserve(e.target);
-            }
-          });
-        },
-        { threshold: 0.01, rootMargin: "0px 0px -10px 0px" }
-      );
-      els.forEach((el) => observer.observe(el));
-      return () => observer.disconnect();
-    }, 120);
-    return () => clearTimeout(timer);
-  }, []);
-}
-
-// ── Custom cursor ──────────────────────────────────────────────────────────────
-function CustomCursor() {
-  const dotRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
-  const ringPos = useRef({ x: -100, y: -100 });
-  const mousePos = useRef({ x: -100, y: -100 });
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    let raf: number;
-
-    const onMove = (e: MouseEvent) => {
-      if (!visible) setVisible(true);
-      mousePos.current = { x: e.clientX, y: e.clientY };
-      if (dotRef.current) {
-        dotRef.current.style.left = `${e.clientX}px`;
-        dotRef.current.style.top = `${e.clientY}px`;
-      }
-    };
-
-    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-    const animate = () => {
-      ringPos.current.x = lerp(ringPos.current.x, mousePos.current.x, 0.12);
-      ringPos.current.y = lerp(ringPos.current.y, mousePos.current.y, 0.12);
-      if (ringRef.current) {
-        ringRef.current.style.left = `${ringPos.current.x}px`;
-        ringRef.current.style.top = `${ringPos.current.y}px`;
-      }
-      raf = requestAnimationFrame(animate);
-    };
-
-    const onHoverIn = () => {
-      if (ringRef.current) {
-        ringRef.current.style.width = "52px";
-        ringRef.current.style.height = "52px";
-        ringRef.current.style.borderColor = "rgba(212,130,42,0.8)";
-      }
-    };
-    const onHoverOut = () => {
-      if (ringRef.current) {
-        ringRef.current.style.width = "32px";
-        ringRef.current.style.height = "32px";
-        ringRef.current.style.borderColor = "rgba(212,130,42,0.5)";
-      }
-    };
-
-    document.addEventListener("mousemove", onMove);
-    raf = requestAnimationFrame(animate);
-
-    const addListeners = () => {
-      const interactives = document.querySelectorAll("a, button, [data-hover]");
-      interactives.forEach((el) => {
-        el.addEventListener("mouseenter", onHoverIn);
-        el.addEventListener("mouseleave", onHoverOut);
-      });
-      return interactives;
-    };
-
-    const interactives = addListeners();
-
-    return () => {
-      document.removeEventListener("mousemove", onMove);
-      cancelAnimationFrame(raf);
-      interactives.forEach((el) => {
-        el.removeEventListener("mouseenter", onHoverIn);
-        el.removeEventListener("mouseleave", onHoverOut);
-      });
-    };
-  }, [visible]);
-
-  if (!visible) return null;
-
-  return (
-    <>
-      <div id="cursor-dot" ref={dotRef} />
-      <div id="cursor-ring" ref={ringRef} />
-    </>
-  );
-}
+import { MarketingFooter } from "./MarketingChrome";
+import { MarketingCursor, useReveal } from "./MarketingEffects";
 
 // ── Marquee items ──────────────────────────────────────────────────────────────
 const MARQUEE_ITEMS = [
@@ -133,13 +29,6 @@ export function LandingClient() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    document.body.style.cursor = "none";
-    return () => {
-      document.body.style.cursor = "";
-    };
-  }, []);
-
-  useEffect(() => {
     const onScroll = () => setNavScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -149,7 +38,7 @@ export function LandingClient() {
 
   return (
     <div className="lp">
-      <CustomCursor />
+      <MarketingCursor />
 
       {/* ── Navigation ──────────────────────────────────────────────────────── */}
       <header className={`lp-nav${navScrolled ? " lp-nav--scrolled" : ""}`}>
@@ -205,23 +94,6 @@ export function LandingClient() {
       {/* ── Hero ────────────────────────────────────────────────────────────── */}
       <section className="lp-hero">
         <div className="lp-hero-grid" aria-hidden="true" />
-
-        {/* Floating dashboard screenshot — desktop only */}
-        <div
-          className="lp-hero-screenshot"
-          style={{ animation: "lp-fadeUp 1s var(--ease-out-expo) 0.7s both" }}
-          aria-hidden="true"
-        >
-          <Image
-            src="/daylens/screenshots/screenshot-dashboard.png"
-            alt="Daylens dashboard"
-            width={580}
-            height={420}
-            priority
-            className="lp-hero-screenshot-img"
-          />
-        </div>
-
         <div className="lp-hero-content">
           <span
             className="text-label lp-overline"
@@ -309,17 +181,35 @@ export function LandingClient() {
             </p>
           </div>
 
-          {/* Feature 1: Timeline visibility */}
+          {/* Feature 1: Visibility */}
           <div className="lp-split">
             <div className="lp-split-visual reveal">
-              <div className="lp-screenshot-frame img-reveal">
-                <Image
-                  src="/daylens/screenshots/screenshot-timeline.png"
-                  alt="Daylens timeline view showing daily activity blocks — Tax Filing, Development, and more"
-                  fill
-                  className="object-cover object-top"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
+              <div className="img-container">
+                <div className="img-reveal lp-visual-applist">
+                  <div className="lp-visual-header">
+                    <span className="text-label" style={{ color: "rgba(252,249,248,0.3)" }}>Today&apos;s usage</span>
+                    <span className="lp-focus-badge">78% focus</span>
+                  </div>
+                  {[
+                    { name: "Figma", time: "3h 22m", pct: 78, color: "#8B5CF6" },
+                    { name: "VS Code", time: "2h 14m", pct: 52, color: "#3B82F6" },
+                    { name: "Slack", time: "1h 08m", pct: 26, color: "#10B981" },
+                    { name: "Safari", time: "0h 47m", pct: 18, color: "#F59E0B" },
+                    { name: "Terminal", time: "0h 31m", pct: 12, color: "#6B7280" },
+                  ].map((app) => (
+                    <div key={app.name} className="lp-app-row">
+                      <span className="lp-app-dot" style={{ background: app.color }} />
+                      <span className="lp-app-name">{app.name}</span>
+                      <div className="lp-app-bar-track">
+                        <div
+                          className="lp-app-bar"
+                          style={{ width: `${app.pct}%`, background: app.color }}
+                        />
+                      </div>
+                      <span className="lp-app-time">{app.time}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -334,7 +224,7 @@ export function LandingClient() {
               </p>
               <ul className="lp-bullets">
                 <li>— Every app and browser tab, automatically logged</li>
-                <li>— Grouped into meaningful work blocks, not raw events</li>
+                <li>— Organized by category: Work, Social, Entertainment</li>
                 <li>— Minute-by-minute timeline of your entire day</li>
                 <li>— Focus score calculated from your real patterns</li>
               </ul>
@@ -359,7 +249,7 @@ export function LandingClient() {
                 <li>— Natural language questions about your activity</li>
                 <li>— Answers grounded in your real usage data</li>
                 <li>— Trend analysis across days and weeks</li>
-                <li>— Weekly summaries and pattern detection</li>
+                <li>— Conversation history saved for context</li>
               </ul>
               <Link href="/chat" className="lp-btn-ghost-dark">
                 Try AI chat <span>→</span>
@@ -367,38 +257,27 @@ export function LandingClient() {
             </div>
 
             <div className="lp-split-visual reveal">
-              <div className="lp-screenshot-frame img-reveal">
-                <Image
-                  src="/daylens/screenshots/screenshot-chat.png"
-                  alt="Daylens AI chat showing focus pattern analysis and weekly breakdown"
-                  fill
-                  className="object-cover object-top"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Feature 3: Deep drill-down — full-width cinematic */}
-          <div className="lp-feature-wide reveal">
-            <div className="lp-screenshot-frame-wide img-reveal">
-              <Image
-                src="/daylens/screenshots/screenshot-popover.png"
-                alt="Daylens timeline popover showing detailed work block analysis — what sites you visited, apps used, and context switches"
-                fill
-                className="object-cover object-top"
-                sizes="100vw"
-              />
-              <div className="lp-feature-wide-overlay" />
-              <div className="lp-feature-wide-content">
-                <div className="lp-accent-rule" />
-                <h3 className="text-display-md" style={{ color: "rgba(252,249,248,0.97)", marginBottom: "0.75rem" }}>
-                  Every block,<br />fully explained.
-                </h3>
-                <p style={{ fontSize: "0.9375rem", color: "rgba(252,249,248,0.6)", fontWeight: 300, maxWidth: "38ch", lineHeight: 1.7 }}>
-                  Click any time block to see every site visited, every app used, every
-                  context switch — with AI-generated summaries of what you were actually doing.
-                </p>
+              <div className="img-container">
+                <div className="img-reveal lp-visual-chat">
+                  <div className="lp-chat-msg lp-chat-msg--user">
+                    How was my focus today?
+                  </div>
+                  <div className="lp-chat-msg lp-chat-msg--ai">
+                    <span className="lp-chat-label">Daylens AI</span>
+                    Strong morning — 78% focus score before noon. You spent 3h 22m in
+                    Figma with minimal switching. Afternoon dropped after 2pm: 8 context
+                    switches in 90 minutes, mostly Slack and email.
+                  </div>
+                  <div className="lp-chat-msg lp-chat-msg--user">
+                    What should I change?
+                  </div>
+                  <div className="lp-chat-msg lp-chat-msg--ai">
+                    <span className="lp-chat-label">Daylens AI</span>
+                    <span className="lp-typing-dots">
+                      <span /><span /><span />
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -595,52 +474,7 @@ export function LandingClient() {
       </section>
 
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
-      <footer className="lp-footer">
-        <div className="lp-container">
-          <div className="lp-footer-grid">
-            <div className="lp-footer-brand">
-              <div className="lp-footer-logo">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/daylens/app-icon.png"
-                  alt="Daylens"
-                  width={22}
-                  height={22}
-                  style={{ borderRadius: 5 }}
-                />
-                <span>Daylens</span>
-              </div>
-              <p className="lp-footer-desc">
-                Understand how you spend your time. Private, local, powerful.
-              </p>
-              <p className="lp-footer-credit">Made by Christian Tonny</p>
-            </div>
-
-            <div className="lp-footer-col">
-              <span className="text-label lp-footer-heading">Product</span>
-              <Link href="/link" className="lp-footer-link">Connect Device</Link>
-              <Link href="/dashboard" className="lp-footer-link">Dashboard</Link>
-              <Link href="/chat" className="lp-footer-link">AI Chat</Link>
-              <Link href="/history" className="lp-footer-link">History</Link>
-            </div>
-
-            <div className="lp-footer-col">
-              <span className="text-label lp-footer-heading">Support</span>
-              <Link href="/docs" className="lp-footer-link">Documentation</Link>
-              <Link href="/recover" className="lp-footer-link">Recover Account</Link>
-              <a href="/daylens/api/download/mac" className="lp-footer-link">Download for Mac</a>
-              <a href="/daylens/api/download/windows" className="lp-footer-link">
-                Download for Windows
-              </a>
-            </div>
-          </div>
-
-          <div className="lp-footer-bar">
-            <p className="lp-footer-copy">© 2025 Daylens</p>
-            <p className="lp-footer-copy">Privacy first. Always.</p>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }

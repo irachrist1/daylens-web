@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import posthog from "posthog-js";
+import { MarketingCursor } from "../components/MarketingEffects";
 
 type BarcodeDetectorCtor = new (options: {
   formats: string[];
@@ -160,6 +161,7 @@ function LinkPageContent() {
 
   return (
     <div className="lp">
+      <MarketingCursor />
       <div className="lp-connect-layout">
 
         {/* ── Left: Form ── */}
