@@ -231,6 +231,7 @@ body {
   --lp-btn-deep:   #1642b8;
   --lp-surface:    #141210;
   --lp-divider:    rgba(26,24,22,0.1);
+  --lp-shell-radius: 1.25rem;
 }
 
 /* Typography scale */
@@ -907,6 +908,7 @@ body {
   padding: 0.75rem 1.625rem;
   background: var(--lp-btn-blue);
   color: var(--lp-bone);
+  border-radius: var(--lp-shell-radius);
   font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.02em;
   text-decoration: none;
   transition: background 0.2s ease, transform 0.2s ease;
@@ -917,6 +919,7 @@ body {
 .lp-btn-ghost-light {
   display: inline-flex; align-items: center; gap: 0.5rem;
   padding: 0.75rem 0;
+  border-radius: var(--lp-shell-radius);
   color: rgba(252,249,248,0.75); border-color: rgba(252,249,248,0.3);
   font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.02em;
   text-decoration: none;
@@ -931,6 +934,7 @@ body {
 .lp-btn-ghost-dark {
   display: inline-flex; align-items: center; gap: 0.5rem;
   padding: 0.75rem 0;
+  border-radius: var(--lp-shell-radius);
   color: var(--lp-ink); border-color: rgba(26,24,22,0.2);
   font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.02em;
   text-decoration: none;
@@ -1794,7 +1798,7 @@ body {
   right: 1.5rem;
   width: min(1180px, calc(100vw - 3rem));
   margin: 0 auto;
-  border-radius: 1.25rem;
+  border-radius: var(--lp-shell-radius);
   border: 1px solid rgba(252,249,248,0.08);
   box-shadow: inset 0 1px 0 rgba(252,249,248,0.03);
 }
@@ -2123,7 +2127,7 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.55rem;
+  border-radius: var(--lp-shell-radius);
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.035);
   color: rgba(214,218,228,0.62);
@@ -2179,7 +2183,7 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
 .lp-ray-board-filter-reset {
   min-height: 2.25rem;
   padding: 0 0.8rem;
-  border-radius: 999px;
+  border-radius: var(--lp-shell-radius);
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.035);
   color: rgba(225,229,237,0.72);
@@ -2270,7 +2274,7 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
 .lp-ray-roadmap-card {
   width: 100%;
   padding: 1rem;
-  border-radius: 0.9rem;
+  border-radius: var(--lp-shell-radius);
   border: 1px solid rgba(255,255,255,0.06);
   background:
     linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)),
@@ -2381,7 +2385,7 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
   gap: 0.45rem;
   min-height: 2.4rem;
   padding: 0 1rem;
-  border-radius: 999px;
+  border-radius: var(--lp-shell-radius);
   background: transparent;
   border: none;
   color: rgba(214,218,228,0.58);
@@ -2691,7 +2695,7 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
   margin: 1rem 1rem 0 auto;
   width: 2rem;
   height: 2rem;
-  border-radius: 0.65rem;
+  border-radius: var(--lp-shell-radius);
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.04);
   color: rgba(240,243,248,0.78);
@@ -2946,7 +2950,7 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
   border: 1px solid rgba(26,24,22,0.12);
   background: rgba(255,255,255,0.66);
   color: var(--lp-ink-faint);
-  border-radius: 999px;
+  border-radius: var(--lp-shell-radius);
   padding: 0.65rem 0.95rem;
   font: inherit;
   font-size: 0.875rem;
