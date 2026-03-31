@@ -46,5 +46,5 @@ export async function getSession(): Promise<Session | null> {
 }
 
 export function setSessionCookie(token: string): string {
-  return `${SESSION_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Strict; Secure; Max-Age=${60 * 60 * 24 * 30}`;
+  return `${SESSION_COOKIE}=${token}; Path=/daylens; HttpOnly; SameSite=Strict; Secure; Max-Age=${60 * 60 * 24 * 30}`;
 }
