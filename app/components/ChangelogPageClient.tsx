@@ -8,11 +8,12 @@ type SurfaceId = (typeof generatedChangelogData.surfaces)[number]["id"];
 type SurfaceRecord = {
   id: SurfaceId;
   name: string;
+  description: string;
   version: string;
   latestCommitDate: string | null;
   latestCommitDateTime: string | null;
   latestCommitHash: string | null;
-  recentCommits: Array<{
+  recentCommits: ReadonlyArray<{
     date: string;
     dateTime: string;
     shortHash: string;
@@ -81,122 +82,58 @@ function monthAnchor(isoDate: string) {
 }
 
 function createEntry(
-  surfaceId: SurfaceId,
-  title: string,
-  intro: string,
-  sections: ReleaseEntry["sections"],
-  moreUpdates: string[]
+  surface: SurfaceRecord
 ): ReleaseEntry {
-  const surface = generatedChangelogData.surfaces.find(
-    (item) => item.id === surfaceId
-  ) as SurfaceRecord | undefined;
-  if (!surface) {
-    throw new Error(`Missing changelog surface for ${surfaceId}`);
+  const latestCommit = surface.recentCommits[0];
+  const shippedCommits = surface.recentCommits.slice(0, 4);
+  const followUpCommits = surface.recentCommits.slice(4, 7);
+  const extraCommits = surface.recentCommits.slice(7, 11);
+  const cleanedLatest = latestCommit
+    ? latestCommit.subject.replace(/^(feat|fix|docs|chore):\s*/i, "")
+    : `Latest work in ${surface.name}`;
+  const cleanedTitle =
+    cleanedLatest.length > 52
+      ? `${surface.name} update`
+      : cleanedLatest.charAt(0).toUpperCase() + cleanedLatest.slice(1);
+  const intro = latestCommit
+    ? `Latest work in the ${surface.name.toLowerCase()} is centered on “${cleanedLatest}.” ${surface.description}`
+    : surface.description;
+  const sections: ReleaseEntry["sections"] = [
+    {
+      title: "Latest shipped",
+      bullets: shippedCommits.map((commit) => commit.subject),
+    },
+  ];
+
+  if (followUpCommits.length) {
+    sections.push({
+      title: "Supporting work",
+      bullets: followUpCommits.map((commit) => commit.subject),
+    });
   }
 
   return {
-    id: `${surfaceId}-${surface.version.replaceAll(".", "-")}`,
-    surfaceId,
+    id: `${surface.id}-${surface.version.replaceAll(".", "-")}`,
+    surfaceId: surface.id,
     surfaceName: surface.name,
     version: surface.version,
     isoDate: surface.latestCommitDate ?? generatedChangelogData.generatedAt.slice(0, 10),
     isoDateTime:
       surface.latestCommitDateTime ??
       `${surface.latestCommitDate ?? generatedChangelogData.generatedAt.slice(0, 10)}T12:00:00Z`,
-    title,
+    title: cleanedTitle,
     intro,
     sections,
-    moreUpdates,
+    moreUpdates: extraCommits.map((commit) => commit.subject),
     commitHash: surface.latestCommitHash ?? "unknown",
-    commitUrl: `${REPO_URLS[surfaceId]}/commit/${surface.latestCommitHash ?? ""}`,
+    commitUrl: `${REPO_URLS[surface.id]}/commit/${surface.latestCommitHash ?? ""}`,
   };
 }
 
 function buildReleaseEntries(): ReleaseEntry[] {
-  const windows = generatedChangelogData.surfaces.find(
-    (surface) => surface.id === "windows"
-  ) as SurfaceRecord | undefined;
-  const mac = generatedChangelogData.surfaces.find(
-    (surface) => surface.id === "mac"
-  ) as SurfaceRecord | undefined;
-  const web = generatedChangelogData.surfaces.find(
-    (surface) => surface.id === "web"
-  ) as SurfaceRecord | undefined;
-
-  if (!windows || !mac || !web) {
-    return [];
-  }
-
-  return [
-    createEntry(
-      "windows",
-      "Multi-provider AI on Windows",
-      `Daylens for Windows just took a real step forward. Version ${windows.version} adds multi-provider AI support across Anthropic, OpenAI, and Google, so the app no longer assumes one backend or one model path when you open Insights.`,
-      [
-        {
-          title: "Choose the model stack that fits your setup.",
-          body:
-            "Provider and model selection now live directly in onboarding and Settings, which means Windows users can choose how they want Daylens to think instead of being locked into a single provider decision.",
-        },
-        {
-          title: "Credentials now follow the provider.",
-          body:
-            "API keys are stored per provider through the OS credential vault, and the app now resolves the active backend from your selected provider and configured key before sending a message.",
-        },
-        {
-          title: "The surrounding product got tighter too.",
-          bullets: [
-            "Insights and onboarding copy now adapt to the selected provider.",
-            "Updater IPC and install flow were tightened as part of the same push.",
-            "This shipped as commit e3c64de across 16 files and more than a thousand added lines.",
-          ],
-        },
-      ],
-      windows.recentCommits.slice(1, 4).map((commit) => commit.subject)
-    ),
-    createEntry(
-      "mac",
-      "Reports, widgets, and stronger review on macOS",
-      `The macOS app keeps pushing the core Daylens idea forward: cleaner recall, stronger reports, and a better explanation of what your day actually contained. The latest build keeps that native surface as the clearest expression of the product.`,
-      [
-        {
-          title: "Reports and review keep getting more grounded.",
-          body:
-            "Recent macOS work added reports, widgets, stronger Insights routing, and focus improvements so the app does a better job turning tracked activity into something you can revisit and understand.",
-        },
-        {
-          title: "Planning and timeline context keep getting sharper.",
-          bullets: [
-            "Focus planner work landed as part of the 1.0.21 release prep.",
-            "Reports, profiles, and work context timeline improvements all moved in together.",
-            "Fullscreen playback tracking and updater reliability kept getting patched underneath.",
-          ],
-        },
-      ],
-      mac.recentCommits.slice(1, 5).map((commit) => commit.subject)
-    ),
-    createEntry(
-      "web",
-      "The web companion catches up",
-      `The web companion has been catching up to the product itself. Instead of feeling like a utility wrapper around the desktop apps, it now reads more like a proper Daylens surface with docs, roadmap, changelog, recovery, and pairing all moving into one calmer system.`,
-      [
-        {
-          title: "The public product pages now read like a real product journal.",
-          body:
-            "Docs, roadmap, and changelog were rebuilt as first-class pages, and the changelog now pulls directly from local repo history instead of hand-written summaries.",
-        },
-        {
-          title: "The web shell got cleaner in the details.",
-          bullets: [
-            "Font handling and favicon paths were fixed for the /daylens basePath.",
-            "Public route access and unauthenticated redirects were tightened.",
-            "The landing copy now explains Daylens in the same terms as the app itself.",
-          ],
-        },
-      ],
-      web.recentCommits.slice(1, 5).map((commit) => commit.subject)
-    ),
-  ].sort((a, b) => b.isoDateTime.localeCompare(a.isoDateTime));
+  return (generatedChangelogData.surfaces as readonly SurfaceRecord[])
+    .map((surface) => createEntry(surface))
+    .sort((a, b) => b.isoDateTime.localeCompare(a.isoDateTime));
 }
 
 export function ChangelogPageClient() {
