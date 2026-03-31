@@ -997,12 +997,13 @@ body {
 /* ── Feature splits ── */
 .lp-split {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(3rem, 6vw, 6rem);
+  grid-template-columns: 1.25fr 1fr;
+  gap: clamp(2.5rem, 5vw, 5rem);
   align-items: center;
   margin-bottom: clamp(4rem, 8vw, 7rem);
 }
-.lp-split--reversed { direction: rtl; }
+/* For reversed splits, swap column weights so the visual stays the bigger column */
+.lp-split--reversed { direction: rtl; grid-template-columns: 1fr 1.25fr; }
 .lp-split--reversed > * { direction: ltr; }
 
 .img-container { overflow: hidden; }
@@ -1010,22 +1011,69 @@ body {
 /* ── Screenshot frames ── */
 .lp-screenshot-frame {
   position: relative;
-  aspect-ratio: 16/10;
-  border-radius: 10px;
+  aspect-ratio: 4/3;
+  border-radius: 12px;
   overflow: hidden;
   box-shadow:
-    0 32px 72px rgba(0,0,0,0.28),
-    0 0 0 1px rgba(26,24,22,0.1);
+    0 48px 96px rgba(0,0,0,0.22),
+    0 16px 40px rgba(0,0,0,0.14),
+    0 0 0 1px rgba(26,24,22,0.08);
+}
+
+/* macOS window chrome bar */
+.lp-screenshot-frame::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 32px;
+  background: #1a1816;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Traffic light dots */
+.lp-screenshot-frame::after {
+  content: "";
+  position: absolute;
+  top: 11px; left: 14px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #ff5f57;
+  box-shadow: 18px 0 0 #febc2e, 36px 0 0 #28c840;
+  z-index: 6;
+  pointer-events: none;
 }
 
 .lp-screenshot-frame-wide {
   position: relative;
-  aspect-ratio: 21/10;
-  border-radius: 10px;
+  aspect-ratio: 16/7;
+  border-radius: 12px;
   overflow: hidden;
   box-shadow:
-    0 32px 72px rgba(0,0,0,0.3),
+    0 48px 96px rgba(0,0,0,0.35),
     0 0 0 1px rgba(252,249,248,0.06);
+}
+
+/* macOS chrome on wide frame */
+.lp-screenshot-frame-wide::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 32px;
+  background: rgba(20,18,16,0.85);
+  z-index: 5;
+  pointer-events: none;
+}
+.lp-screenshot-frame-wide::after {
+  content: "";
+  position: absolute;
+  top: 11px; left: 14px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #ff5f57;
+  box-shadow: 18px 0 0 #febc2e, 36px 0 0 #28c840;
+  z-index: 6;
+  pointer-events: none;
 }
 
 .lp-feature-wide {
@@ -1046,17 +1094,39 @@ body {
 /* ── Hero screenshot ── */
 .lp-hero-screenshot {
   position: absolute;
-  right: clamp(2rem, 6vw, 8rem);
+  right: clamp(2rem, 5vw, 6rem);
   top: 50%;
-  transform: translateY(-42%);
-  width: min(520px, 40vw);
+  transform: translateY(-44%) rotate(1.5deg);
+  width: min(580px, 44vw);
   z-index: 2;
   border-radius: 12px;
   overflow: hidden;
   box-shadow:
-    0 60px 120px rgba(0,0,0,0.55),
-    0 24px 48px rgba(0,0,0,0.35),
-    0 0 0 1px rgba(252,249,248,0.08);
+    0 80px 140px rgba(0,0,0,0.6),
+    0 30px 60px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(252,249,248,0.1);
+}
+
+/* macOS chrome on hero screenshot */
+.lp-hero-screenshot::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 32px;
+  background: #1a1816;
+  z-index: 5;
+  pointer-events: none;
+}
+.lp-hero-screenshot::after {
+  content: "";
+  position: absolute;
+  top: 11px; left: 14px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #ff5f57;
+  box-shadow: 18px 0 0 #febc2e, 36px 0 0 #28c840;
+  z-index: 6;
+  pointer-events: none;
 }
 
 .lp-hero-screenshot-img {
