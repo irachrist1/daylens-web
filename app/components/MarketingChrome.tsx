@@ -9,9 +9,19 @@ const NAV_LINKS: Array<{ href: string; label: string; key: MarketingNavKey }> =
     { href: "/changelog", label: "Changelog", key: "changelog" },
   ];
 
-export function MarketingInnerNav({ current }: { current: MarketingNavKey }) {
+export function MarketingInnerNav({
+  current,
+  theme = "dark",
+}: {
+  current: MarketingNavKey;
+  theme?: "dark" | "light";
+}) {
   return (
-    <header className="lp-docs-nav">
+    <header
+      className={`lp-docs-nav${
+        theme === "light" ? " lp-docs-nav--light" : ""
+      }`}
+    >
       <Link
         href="/"
         style={{
@@ -19,7 +29,7 @@ export function MarketingInnerNav({ current }: { current: MarketingNavKey }) {
           alignItems: "center",
           gap: 9,
           textDecoration: "none",
-          color: "var(--lp-bone)",
+          color: theme === "light" ? "var(--lp-ink)" : "var(--lp-bone)",
           fontSize: "0.9375rem",
           fontWeight: 500,
           letterSpacing: "-0.01em",
@@ -47,7 +57,10 @@ export function MarketingInnerNav({ current }: { current: MarketingNavKey }) {
             className="lp-footer-link"
             style={
               current === link.key
-                ? { color: "var(--lp-bone)" }
+                ? {
+                    color:
+                      theme === "light" ? "var(--lp-ink)" : "var(--lp-bone)",
+                  }
                 : undefined
             }
           >

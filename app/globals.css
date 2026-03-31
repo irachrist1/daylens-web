@@ -1775,6 +1775,19 @@ body {
   border-bottom: 1px solid rgba(252,249,248,0.06);
 }
 
+.lp-docs-nav--light {
+  background: rgba(252,249,248,0.94);
+  border-bottom: 1px solid var(--lp-divider);
+}
+
+.lp-docs-nav--light .lp-footer-link {
+  color: var(--lp-ink-faint);
+}
+
+.lp-docs-nav--light .lp-footer-link:hover {
+  color: var(--lp-ink);
+}
+
 .lp-docs-nav-links {
   margin-left: auto;
   display: flex;
@@ -2025,6 +2038,261 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
 /* ═══════════════════════════════════════════════════════════════════════════════
    Roadmap / Changelog pages
    ═══════════════════════════════════════════════════════════════════════════════ */
+
+.lp-dia-page {
+  background: #f8f8f6;
+  color: var(--lp-ink);
+}
+
+.lp-dia-main {
+  padding: 6.75rem 0 clamp(4rem, 8vw, 6rem);
+  background: #f8f8f6;
+}
+
+.lp-dia-shell {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: clamp(2.5rem, 7vw, 6rem);
+  align-items: start;
+}
+
+.lp-dia-archive {
+  display: none;
+}
+
+.lp-dia-archive-title,
+.lp-dia-mobile-title {
+  margin: 0 0 1.5rem;
+  font-size: 2rem;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-weight: 300;
+  color: var(--lp-ink);
+}
+
+.lp-dia-archive-copy,
+.lp-dia-mobile-copy {
+  margin: 0 0 2rem;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  font-weight: 300;
+  color: var(--lp-ink-muted);
+  max-width: 20rem;
+}
+
+.lp-dia-archive-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.lp-dia-archive-year {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lp-dia-year-label {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+  color: var(--lp-ink);
+}
+
+.lp-dia-month-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.lp-dia-month-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: max-content;
+  color: var(--lp-ink-faint);
+  text-decoration: none;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.lp-dia-month-link:hover {
+  color: var(--lp-ink);
+}
+
+.lp-dia-month-dot,
+.lp-dia-month-rail-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(26,24,22,0.24);
+  display: inline-block;
+}
+
+.lp-dia-content {
+  min-width: 0;
+}
+
+.lp-dia-mobile-heading {
+  margin-bottom: 2.5rem;
+}
+
+.lp-dia-month-group {
+  display: flex;
+  gap: 1.25rem;
+  margin-bottom: clamp(3rem, 7vw, 4.5rem);
+}
+
+.lp-dia-month-rail {
+  width: 1.5rem;
+  flex-shrink: 0;
+}
+
+.lp-dia-month-rail-inner {
+  position: sticky;
+  top: 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lp-dia-month-short {
+  font-size: 0.875rem;
+  line-height: 1.2;
+  font-weight: 400;
+  color: var(--lp-ink-faint);
+}
+
+.lp-dia-month-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.lp-dia-entry + .lp-dia-entry {
+  margin-top: clamp(3rem, 6vw, 4rem);
+}
+
+.lp-dia-entry-head {
+  margin-bottom: 1rem;
+}
+
+.lp-dia-entry-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.lp-dia-version-pill,
+.lp-dia-surface-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.75rem;
+  border-radius: 999px;
+  padding: 0 0.7rem;
+  border: 1px solid rgba(26,24,22,0.16);
+  color: var(--lp-ink);
+  font-size: 0.875rem;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.lp-dia-surface-chip {
+  color: var(--lp-ink-faint);
+}
+
+.lp-dia-entry-date {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--lp-ink-faint);
+}
+
+.lp-dia-entry-title {
+  display: inline-block;
+  width: max-content;
+  max-width: 18ch;
+  text-decoration: none;
+  color: var(--lp-ink);
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  font-weight: 300;
+}
+
+.lp-dia-entry-title:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+
+.lp-dia-entry-body {
+  max-width: 46rem;
+}
+
+.lp-dia-entry-body p,
+.lp-dia-bullet-list li {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.8;
+  font-weight: 300;
+  color: rgba(26,24,22,0.84);
+}
+
+.lp-dia-section + .lp-dia-section {
+  margin-top: 1.4rem;
+}
+
+.lp-dia-section-title {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  color: var(--lp-ink);
+}
+
+.lp-dia-bullet-list {
+  list-style: disc;
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.lp-dia-entry-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.lp-dia-entry-link,
+.lp-dia-entry-repo {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--lp-ink-faint);
+}
+
+.lp-dia-entry-link {
+  text-decoration: none;
+  border-bottom: 1px solid rgba(26,24,22,0.18);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.lp-dia-entry-link:hover {
+  color: var(--lp-ink);
+  border-color: rgba(26,24,22,0.4);
+}
 
 .lp-story-hero {
   min-height: 100vh;
@@ -2617,6 +2885,15 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
 }
 
 @media (max-width: 1100px) {
+  .lp-dia-shell {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .lp-dia-archive {
+    display: none;
+  }
+
   .lp-story-hero-shell {
     grid-template-columns: 1fr;
   }
@@ -2648,6 +2925,15 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
 }
 
 @media (max-width: 768px) {
+  .lp-dia-main {
+    padding-top: 5.75rem;
+  }
+
+  .lp-dia-entry-title {
+    max-width: none;
+    width: auto;
+  }
+
   .lp-story-hero {
     padding-top: 6.5rem;
   }
@@ -2668,6 +2954,19 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
 }
 
 @media (max-width: 640px) {
+  .lp-dia-mobile-heading {
+    margin-bottom: 2rem;
+  }
+
+  .lp-dia-entry-meta {
+    gap: 0.55rem;
+  }
+
+  .lp-dia-entry-body p,
+  .lp-dia-bullet-list li {
+    font-size: 0.9375rem;
+  }
+
   .lp-story-hero {
     min-height: auto;
     padding-bottom: 3rem;
@@ -2695,5 +2994,21 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
 
   .lp-issue-card-value {
     text-align: left;
+  }
+}
+
+@media (min-width: 1000px) {
+  .lp-dia-archive {
+    display: block;
+    position: sticky;
+    top: 8.5rem;
+  }
+
+  .lp-dia-mobile-heading {
+    display: none;
+  }
+
+  .lp-dia-month-rail {
+    display: none;
   }
 }

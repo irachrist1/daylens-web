@@ -1,437 +1,347 @@
 "use client";
 
-import Link from "next/link";
 import { generatedChangelogData } from "../changelog/generatedChangelogData";
 import { MarketingFooter, MarketingInnerNav } from "./MarketingChrome";
-import { MarketingCursor, useReveal } from "./MarketingEffects";
+import { MarketingCursor } from "./MarketingEffects";
 
-const REPO_LABELS: Record<string, string> = {
+type SurfaceId = (typeof generatedChangelogData.surfaces)[number]["id"];
+
+type ReleaseEntry = {
+  id: string;
+  surfaceId: SurfaceId;
+  surfaceName: string;
+  version: string;
+  isoDate: string;
+  title: string;
+  intro: string;
+  sections: Array<{ title?: string; body?: string; bullets?: string[] }>;
+  moreUpdates: string[];
+  commitHash: string;
+  commitUrl: string;
+};
+
+const REPO_LABELS: Record<SurfaceId, string> = {
   web: "daylens-web",
   mac: "daylens",
   windows: "daylens-windows",
 };
 
+const REPO_URLS: Record<SurfaceId, string> = {
+  web: "https://github.com/irachrist1/daylens-web",
+  mac: "https://github.com/irachrist1/daylens",
+  windows: "https://github.com/irachrist1/daylens-windows",
+};
+
+function formatMonthLabel(isoDate: string) {
+  return new Date(`${isoDate}T12:00:00Z`).toLocaleString("en-US", {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+function formatMonthShort(isoDate: string) {
+  return new Date(`${isoDate}T12:00:00Z`).toLocaleString("en-US", {
+    month: "short",
+    timeZone: "UTC",
+  });
+}
+
+function formatFullDate(isoDate: string) {
+  return new Date(`${isoDate}T12:00:00Z`).toLocaleString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+function monthAnchor(isoDate: string) {
+  const [year, month] = isoDate.split("-");
+  return `${month}-${year}`;
+}
+
+function createEntry(
+  surfaceId: SurfaceId,
+  title: string,
+  intro: string,
+  sections: ReleaseEntry["sections"],
+  moreUpdates: string[]
+): ReleaseEntry {
+  const surface = generatedChangelogData.surfaces.find((item) => item.id === surfaceId);
+  if (!surface) {
+    throw new Error(`Missing changelog surface for ${surfaceId}`);
+  }
+
+  return {
+    id: `${surfaceId}-${surface.version.replaceAll(".", "-")}`,
+    surfaceId,
+    surfaceName: surface.name,
+    version: surface.version,
+    isoDate: surface.latestCommitDate ?? generatedChangelogData.generatedAt.slice(0, 10),
+    title,
+    intro,
+    sections,
+    moreUpdates,
+    commitHash: surface.latestCommitHash ?? "unknown",
+    commitUrl: `${REPO_URLS[surfaceId]}/commit/${surface.latestCommitHash ?? ""}`,
+  };
+}
+
+function buildReleaseEntries(): ReleaseEntry[] {
+  const windows = generatedChangelogData.surfaces.find((surface) => surface.id === "windows");
+  const mac = generatedChangelogData.surfaces.find((surface) => surface.id === "mac");
+  const web = generatedChangelogData.surfaces.find((surface) => surface.id === "web");
+
+  if (!windows || !mac || !web) {
+    return [];
+  }
+
+  return [
+    createEntry(
+      "windows",
+      `What’s new in Daylens Windows ${windows.version}`,
+      `Daylens for Windows just took a real step forward. Version ${windows.version} adds multi-provider AI support across Anthropic, OpenAI, and Google, so the app no longer assumes one backend or one model path when you open Insights.`,
+      [
+        {
+          title: "Choose the model stack that fits your setup.",
+          body:
+            "Provider and model selection now live directly in onboarding and Settings, which means Windows users can choose how they want Daylens to think instead of being locked into a single provider decision.",
+        },
+        {
+          title: "Credentials now follow the provider.",
+          body:
+            "API keys are stored per provider through the OS credential vault, and the app now resolves the active backend from your selected provider and configured key before sending a message.",
+        },
+        {
+          title: "The surrounding product got tighter too.",
+          bullets: [
+            "Insights and onboarding copy now adapt to the selected provider.",
+            "Updater IPC and install flow were tightened as part of the same push.",
+            "This shipped as commit e3c64de across 16 files and more than a thousand added lines.",
+          ],
+        },
+      ],
+      windows.recentCommits.slice(1, 4).map((commit) => commit.subject)
+    ),
+    createEntry(
+      "mac",
+      `What’s new in Daylens for macOS ${mac.version}`,
+      `The macOS app keeps pushing the core Daylens idea forward: cleaner recall, stronger reports, and a better explanation of what your day actually contained. The latest build keeps that native surface as the clearest expression of the product.`,
+      [
+        {
+          title: "Reports and review keep getting more grounded.",
+          body:
+            "Recent macOS work added reports, widgets, stronger Insights routing, and focus improvements so the app does a better job turning tracked activity into something you can revisit and understand.",
+        },
+        {
+          title: "Planning and timeline context keep getting sharper.",
+          bullets: [
+            "Focus planner work landed as part of the 1.0.21 release prep.",
+            "Reports, profiles, and work context timeline improvements all moved in together.",
+            "Fullscreen playback tracking and updater reliability kept getting patched underneath.",
+          ],
+        },
+      ],
+      mac.recentCommits.slice(1, 5).map((commit) => commit.subject)
+    ),
+    createEntry(
+      "web",
+      `What’s new in the Daylens web companion ${web.version}`,
+      `The web companion has been catching up to the product itself. Instead of feeling like a utility wrapper around the desktop apps, it now reads more like a proper Daylens surface with docs, roadmap, changelog, recovery, and pairing all moving into one calmer system.`,
+      [
+        {
+          title: "The public product pages now read like a real product journal.",
+          body:
+            "Docs, roadmap, and changelog were rebuilt as first-class pages, and the changelog now pulls directly from local repo history instead of hand-written summaries.",
+        },
+        {
+          title: "The web shell got cleaner in the details.",
+          bullets: [
+            "Font handling and favicon paths were fixed for the /daylens basePath.",
+            "Public route access and unauthenticated redirects were tightened.",
+            "The landing copy now explains Daylens in the same terms as the app itself.",
+          ],
+        },
+      ],
+      web.recentCommits.slice(1, 5).map((commit) => commit.subject)
+    ),
+  ].sort((a, b) => b.isoDate.localeCompare(a.isoDate));
+}
+
 export function ChangelogPageClient() {
-  useReveal();
-  const surfaceMap = Object.fromEntries(
-    generatedChangelogData.surfaces.map((surface) => [surface.id, surface])
-  );
-  const webSurface = surfaceMap.web;
-  const macSurface = surfaceMap.mac;
-  const windowsSurface = surfaceMap.windows;
+  const entries = buildReleaseEntries();
+  const monthGroups = Array.from(
+    entries.reduce((acc, entry) => {
+      const key = monthAnchor(entry.isoDate);
+      const existing = acc.get(key);
+      if (existing) {
+        existing.entries.push(entry);
+        return acc;
+      }
 
-  const marqueeItems = generatedChangelogData.surfaces.flatMap((surface) => [
-    `${surface.name} v${surface.version}`,
-    `Latest ${surface.latestCommitDate ?? "unknown"}`,
-    surface.recentCommits[0]?.subject ?? "No recent commits",
-  ]);
-
-  const ticker = [...marqueeItems, ...marqueeItems];
-  const refreshedAt = new Date(generatedChangelogData.generatedAt).toLocaleString(
-    "en-US",
-    {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    }
+      acc.set(key, {
+        key,
+        label: formatMonthLabel(entry.isoDate),
+        shortLabel: formatMonthShort(entry.isoDate),
+        year: entry.isoDate.slice(0, 4),
+        entries: [entry],
+      });
+      return acc;
+    }, new Map<string, { key: string; label: string; shortLabel: string; year: string; entries: ReleaseEntry[] }>())
+      .values()
   );
-  const latestWindowsCommit = windowsSurface?.recentCommits[0];
-  const hasFeaturedWindowsMoment =
-    latestWindowsCommit?.subject === "Add multi-provider AI support for Windows";
+
+  const archiveYears = Array.from(
+    monthGroups.reduce((acc, group) => {
+      const existing = acc.get(group.year);
+      if (existing) {
+        existing.push(group);
+      } else {
+        acc.set(group.year, [group]);
+      }
+      return acc;
+    }, new Map<string, typeof monthGroups>())
+  );
 
   return (
-    <div className="lp">
+    <div className="lp lp-dia-page">
       <MarketingCursor />
-      <MarketingInnerNav current="changelog" />
+      <MarketingInnerNav current="changelog" theme="light" />
 
-      <section className="lp-story-hero lp-story-hero--issue">
-        <div className="lp-story-hero-bg" aria-hidden="true" />
-
-        <div className="lp-container lp-story-hero-shell">
-          <div className="lp-story-hero-copy">
-            <div
-              className="lp-accent-rule"
-              style={{ animation: "lp-fadeIn 0.6s var(--ease-out-expo) 0.2s both" }}
-            />
-            <p
-              className="text-label lp-overline"
-              style={{ animation: "lp-fadeIn 0.6s var(--ease-out-expo) 0.2s both" }}
-            >
+      <main className="lp-dia-main">
+        <section className="lp-container lp-dia-shell" aria-labelledby="daylens-changelog-title">
+          <aside className="lp-dia-archive" aria-label="Changelog archive">
+            <h1 id="daylens-changelog-title" className="lp-dia-archive-title">
               Changelog
-            </p>
-            <h1
-              className="text-display-xl lp-story-hero-title"
-              style={{ animation: "lp-fadeUp 0.8s var(--ease-out-expo) 0.4s both" }}
-            >
-              Recent commits.
-              <br />
-              No guesswork.
             </h1>
-            <p
-              className="lp-story-hero-sub"
-              style={{ animation: "lp-fadeUp 0.8s var(--ease-out-expo) 0.65s both" }}
-            >
-              This page now reads from the real local git history for the web
-              companion, the macOS app, and the Windows app. If the repos moved,
-              the page should move with them.
+            <p className="lp-dia-archive-copy">
+              Real shipped updates across Daylens for macOS, Windows, and the
+              web companion.
             </p>
-            <div
-              className="lp-hero-ctas"
-              style={{ animation: "lp-fadeUp 0.8s var(--ease-out-expo) 0.85s both" }}
-            >
-              <Link href="/roadmap" className="lp-btn-primary">
-                See what&apos;s next <span>→</span>
-              </Link>
-              <a href="/daylens/api/download/mac" className="lp-btn-ghost-light">
-                Download Daylens <span>→</span>
-              </a>
-            </div>
-            <p
-              className="lp-fine"
-              style={{ animation: "lp-fadeIn 0.8s var(--ease-out-expo) 1.05s both" }}
-            >
-              Refreshed from local repos on {refreshedAt}.
-            </p>
-          </div>
 
-          <div className="lp-issue-card reveal-scale">
-            <div className="lp-issue-card-row">
-              <span className="text-label lp-issue-card-label">Surfaces tracked</span>
-              <span className="lp-issue-card-value">
-                {generatedChangelogData.surfaces.length}
-              </span>
-            </div>
-            <div className="lp-issue-card-row">
-              <span className="text-label lp-issue-card-label">Current web build</span>
-              <span className="lp-issue-card-value">
-                v{webSurface?.version ?? "unknown"}
-              </span>
-            </div>
-            <div className="lp-issue-card-row">
-              <span className="text-label lp-issue-card-label">Current mac build</span>
-              <span className="lp-issue-card-value">
-                v{macSurface?.version ?? "unknown"}
-              </span>
-            </div>
-            <div className="lp-issue-card-row">
-              <span className="text-label lp-issue-card-label">Current Windows build</span>
-              <span className="lp-issue-card-value">
-                v{windowsSurface?.version ?? "unknown"}
-              </span>
-            </div>
-          </div>
-        </div>
+            <nav className="lp-dia-archive-nav" aria-label="Release notes by month">
+              {archiveYears.map(([year, groups]) => (
+                <div key={year} className="lp-dia-archive-year">
+                  <p className="lp-dia-year-label">{year}</p>
+                  <div className="lp-dia-month-links">
+                    {groups.map((group) => (
+                      <a key={group.key} href={`#${group.key}`} className="lp-dia-month-link">
+                        <span className="lp-dia-month-dot" />
+                        <span>{group.label.split(" ")[0]}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </nav>
+          </aside>
 
-        <div
-          className="lp-scroll-hint"
-          style={{ animation: "lp-fadeIn 0.6s ease 1.4s both" }}
-        >
-          <div className="lp-scroll-line" />
-          <span className="text-label">scroll</span>
-        </div>
-      </section>
-
-      <div className="lp-proof-strip" aria-hidden="true">
-        <div className="lp-marquee-track">
-          {ticker.map((item, index) => (
-            <span
-              key={`${item}-${index}`}
-              className="lp-marquee-item text-label"
-              style={{
-                color:
-                  index % 3 === 2
-                    ? "var(--lp-accent)"
-                    : "rgba(252,249,248,0.2)",
-              }}
-            >
-              {item}
-              <span className="lp-marquee-sep">·</span>
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {hasFeaturedWindowsMoment ? (
-        <section className="lp-section lp-section--light">
-          <div className="lp-container">
-            <div className="lp-section-intro reveal">
-              <span className="text-label lp-overline-dark">Featured release</span>
-              <p className="lp-section-desc">
-                This one deserves more than a line item. The latest Windows push
-                changes what the app can be, not just how it looks.
+          <div className="lp-dia-content">
+            <div className="lp-dia-mobile-heading">
+              <h1 className="lp-dia-mobile-title">Changelog</h1>
+              <p className="lp-dia-mobile-copy">
+                Real shipped updates across the Daylens product surfaces.
               </p>
             </div>
 
-            <div className="lp-featured-release">
-              <div className="lp-featured-release-body reveal">
-                <div className="lp-accent-rule" />
-                <h2 className="text-display-md lp-feature-title">
-                  Windows got
-                  <br />
-                  its AI stack.
-                </h2>
-                <p className="lp-feature-body">
-                  Daylens for Windows v{windowsSurface?.version} just landed
-                  multi-provider AI support. This is a real product step: the
-                  app now supports Anthropic, OpenAI, and Google models, lets
-                  people choose their provider in onboarding and settings, and
-                  routes Insights through the selected backend instead of
-                  assuming a single model path.
-                </p>
-                <ul className="lp-bullets">
-                  <li>— Provider and model selection now live in onboarding and Settings</li>
-                  <li>— API keys are stored per provider through the OS credential vault</li>
-                  <li>— Insights copy and flows now adapt to the selected AI backend</li>
-                  <li>— Updater and IPC paths were tightened as part of the same push</li>
-                </ul>
-                <p className="lp-featured-release-note">
-                  Source: commit {windowsSurface?.latestCommitHash} in{" "}
-                  {REPO_LABELS.windows}, dated {windowsSurface?.latestCommitDate}.
-                </p>
-              </div>
-
-              <div className="lp-featured-release-panel reveal delay-200">
-                <div className="lp-featured-release-stat">
-                  <span className="text-label lp-story-mini-label">Current build</span>
-                  <p className="lp-story-surface-title">v{windowsSurface?.version}</p>
-                  <p className="lp-story-surface-copy">Windows app</p>
-                </div>
-                <div className="lp-featured-release-grid">
-                  <div className="lp-featured-release-cell">
-                    <span className="text-label lp-story-mini-label">Providers</span>
-                    <p className="lp-featured-release-value">3</p>
-                    <p className="lp-story-surface-copy">Anthropic, OpenAI, Google</p>
-                  </div>
-                  <div className="lp-featured-release-cell">
-                    <span className="text-label lp-story-mini-label">Scope</span>
-                    <p className="lp-featured-release-value">16</p>
-                    <p className="lp-story-surface-copy">files changed in the commit</p>
-                  </div>
-                  <div className="lp-featured-release-cell">
-                    <span className="text-label lp-story-mini-label">Added</span>
-                    <p className="lp-featured-release-value">1,094</p>
-                    <p className="lp-story-surface-copy">lines shipped in the push</p>
-                  </div>
-                  <div className="lp-featured-release-cell">
-                    <span className="text-label lp-story-mini-label">Commit</span>
-                    <p className="lp-featured-release-value">
-                      {windowsSurface?.latestCommitHash}
-                    </p>
-                    <p className="lp-story-surface-copy">major Windows product step</p>
+            {monthGroups.map((group) => (
+              <section
+                key={group.key}
+                id={group.key}
+                className="lp-dia-month-group"
+                aria-labelledby={`${group.key}-heading`}
+              >
+                <div className="lp-dia-month-rail" aria-hidden="true">
+                  <div className="lp-dia-month-rail-inner">
+                    <span className="lp-dia-month-short">{group.shortLabel}</span>
+                    <span className="lp-dia-month-rail-dot" />
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      ) : null}
 
-      <section className="lp-section lp-section--light">
-        <div className="lp-container">
-          <div className="lp-section-intro reveal">
-            <span className="text-label lp-overline-dark">Source of truth</span>
-            <p className="lp-section-desc">
-              The changelog is generated from three local repos. No fake release
-              summaries, no guessed version numbers, and no assumptions about
-              what made it into a release unless the git history says so.
-            </p>
-          </div>
+                <div className="lp-dia-month-content">
+                  <h2 id={`${group.key}-heading`} className="sr-only">
+                    {group.label}
+                  </h2>
 
-          <div className="lp-split">
-            <div className="lp-split-visual reveal">
-              <div className="lp-story-note-panel img-reveal">
-                <span className="text-label lp-story-note-kicker">Tracked repos</span>
-                <div className="lp-story-note-list">
-                  {generatedChangelogData.surfaces.map((surface) => (
-                    <div key={surface.id} className="lp-story-note-item">
-                      <span className="lp-story-note-dot" />
-                      {REPO_LABELS[surface.id]} — v{surface.version}
-                    </div>
+                  {group.entries.map((entry) => (
+                    <article
+                      key={entry.id}
+                      id={entry.id}
+                      className="lp-dia-entry"
+                      aria-labelledby={`${entry.id}-title`}
+                    >
+                      <div className="lp-dia-entry-head">
+                        <div className="lp-dia-entry-meta">
+                          <span className="lp-dia-version-pill">v{entry.version}</span>
+                          <time dateTime={entry.isoDate} className="lp-dia-entry-date">
+                            {formatFullDate(entry.isoDate)}
+                          </time>
+                          <span className="lp-dia-surface-chip">{entry.surfaceName}</span>
+                        </div>
+                        <a
+                          id={`${entry.id}-title`}
+                          href={`#${entry.id}`}
+                          className="lp-dia-entry-title"
+                        >
+                          {entry.title}
+                        </a>
+                      </div>
+
+                      <div className="lp-dia-entry-body">
+                        <p>{entry.intro}</p>
+
+                        {entry.sections.map((section, index) => (
+                          <section key={`${entry.id}-section-${index}`} className="lp-dia-section">
+                            {section.title ? (
+                              <h3 className="lp-dia-section-title">{section.title}</h3>
+                            ) : null}
+                            {section.body ? <p>{section.body}</p> : null}
+                            {section.bullets?.length ? (
+                              <ul className="lp-dia-bullet-list">
+                                {section.bullets.map((bullet) => (
+                                  <li key={bullet}>{bullet}</li>
+                                ))}
+                              </ul>
+                            ) : null}
+                          </section>
+                        ))}
+
+                        {entry.moreUpdates.length ? (
+                          <section className="lp-dia-section">
+                            <h3 className="lp-dia-section-title">
+                              Plus more shipped work in this build:
+                            </h3>
+                            <ul className="lp-dia-bullet-list">
+                              {entry.moreUpdates.map((update) => (
+                                <li key={update}>{update}</li>
+                              ))}
+                            </ul>
+                          </section>
+                        ) : null}
+
+                        <div className="lp-dia-entry-footer">
+                          <a
+                            href={entry.commitUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="lp-dia-entry-link"
+                          >
+                            View commit {entry.commitHash} on GitHub
+                          </a>
+                          <span className="lp-dia-entry-repo">
+                            {REPO_LABELS[entry.surfaceId]}
+                          </span>
+                        </div>
+                      </div>
+                    </article>
                   ))}
                 </div>
-              </div>
-            </div>
-
-            <div className="lp-split-content reveal delay-200">
-              <div className="lp-accent-rule" />
-              <h2 className="text-display-md lp-feature-title">
-                Generated from the
-                <br />
-                actual repos.
-              </h2>
-              <p className="lp-feature-body">
-                The updater reads recent local commits from `daylens-web`,
-                `daylens`, and `daylens-windows`, writes a generated data module,
-                and the page renders directly from that file. The manual refresh
-                path is `npm run sync:changelog-page`, and the reusable Codex
-                skill is `daylens-changelog-sync`.
-              </p>
-              <ul className="lp-bullets">
-                <li>— Web version comes from this repo&apos;s package.json</li>
-                <li>— macOS version comes from the public changelog top entry</li>
-                <li>— Windows version comes from the current package.json build</li>
-                <li>— Recent commit subjects are shown exactly as written</li>
-              </ul>
-              <Link href="/roadmap" className="lp-btn-ghost-dark">
-                Compare with the roadmap <span>→</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="lp-section lp-section--dark lp-section--gridded">
-        <div className="lp-container">
-          <div className="lp-signature">
-            <div className="lp-signature-text reveal-left">
-              <span className="text-label lp-overline">Current builds</span>
-              <h2 className="text-display-lg lp-sig-title">
-                One product.
-                <br />
-                Three codebases.
-              </h2>
-              <p className="lp-sig-body">
-                Daylens is shipping through three active repos right now. This
-                section shows the current build version and latest commit date for
-                each one, straight from the local checkout.
-              </p>
-              <ul className="lp-sig-bullets">
-                <li>
-                  <span className="lp-bullet-dot" />
-                  The web companion is the public surface and the access layer
-                </li>
-                <li>
-                  <span className="lp-bullet-dot" />
-                  The macOS app is the native core and report-heavy product surface
-                </li>
-                <li>
-                  <span className="lp-bullet-dot" />
-                  The Windows app is its own build stream with separate packaging
-                </li>
-                <li>
-                  <span className="lp-bullet-dot" />
-                  The changelog now reflects that split instead of flattening it
-                </li>
-              </ul>
-            </div>
-
-            <div className="lp-story-signature-visual reveal">
-              <div className="lp-story-surface-grid">
-                {generatedChangelogData.surfaces.map((surface) => (
-                  <div
-                    key={surface.id}
-                    className={`lp-story-surface-card${
-                      surface.id === "windows" ? " lp-story-surface-card--wide" : ""
-                    }`}
-                  >
-                    <span className="text-label lp-story-mini-label">{surface.name}</span>
-                    <p className="lp-story-surface-title">v{surface.version}</p>
-                    <p className="lp-story-surface-copy">{surface.description}</p>
-                    <p className="lp-story-surface-meta">
-                      Latest commit: {surface.latestCommitDate ?? "unknown"} ·{" "}
-                      {surface.latestCommitHash ?? "n/a"}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="lp-section lp-section--light">
-        <div className="lp-container">
-          <div className="reveal">
-            <span className="text-label lp-overline-dark">Recent commit streams</span>
-            <h2 className="text-display-md lp-metrics-title">
-              The latest repo history,
-              <br />
-              without interpretation.
-            </h2>
-          </div>
-
-          <div className="lp-release-list">
-            {generatedChangelogData.surfaces.map((surface, index) => (
-              <article
-                key={surface.id}
-                className={`lp-release-entry reveal delay-${(index + 1) * 100}`}
-              >
-                <aside className="lp-release-meta">
-                  <span className="text-label lp-release-kicker">{surface.name}</span>
-                  <div className="lp-release-meta-block">
-                    <span className="lp-release-meta-label">Current build</span>
-                    <span className="lp-release-meta-value">v{surface.version}</span>
-                  </div>
-                  <div className="lp-release-meta-block">
-                    <span className="lp-release-meta-label">Latest commit</span>
-                    <span className="lp-release-meta-value">
-                      {surface.latestCommitDate ?? "unknown"} ·{" "}
-                      {surface.latestCommitHash ?? "n/a"}
-                    </span>
-                  </div>
-                  <div className="lp-release-meta-block">
-                    <span className="lp-release-meta-label">Repo</span>
-                    <span className="lp-release-meta-value">
-                      {REPO_LABELS[surface.id]}
-                    </span>
-                  </div>
-                </aside>
-
-                <div className="lp-release-body">
-                  <h3 className="text-display-md lp-release-title">
-                    {surface.name} · v{surface.version}
-                  </h3>
-                  <p className="lp-release-intro">{surface.description}</p>
-
-                  <section className="lp-release-group">
-                    <span className="text-label lp-release-group-label">
-                      Recent commits
-                    </span>
-                    <ul className="lp-release-commit-list">
-                      {surface.recentCommits.map((commit) => (
-                        <li key={`${surface.id}-${commit.shortHash}`} className="lp-release-commit-item">
-                          <span className="lp-release-commit-subject">{commit.subject}</span>
-                          <span className="lp-release-commit-meta">
-                            {commit.date} · {commit.shortHash}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
-                </div>
-              </article>
+              </section>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="lp-section lp-section--dark">
-        <div className="lp-container">
-          <div className="lp-cta-block reveal">
-            <div className="lp-accent-rule" />
-            <h2 className="text-display-lg lp-cta-title">
-              Refresh the data.
-              <br />
-              Then ship again.
-            </h2>
-            <p className="lp-cta-sub">
-              Run `npm run sync:changelog-page` whenever the repos move, or use
-              the `daylens-changelog-sync` skill to refresh the generated data
-              and rebuild the page.
-            </p>
-            <div className="lp-cta-actions">
-              <Link href="/roadmap" className="lp-btn-primary">
-                Open the roadmap <span>→</span>
-              </Link>
-              <Link href="/docs" className="lp-btn-ghost-light">
-                Explore documentation <span>→</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
       <MarketingFooter />
     </div>
