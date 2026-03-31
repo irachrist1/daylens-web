@@ -43,6 +43,17 @@ const surfaces = [
     description:
       "Electron app focused on parity, updater flow, Windows packaging, and UI polish.",
   },
+  {
+    id: "mcp",
+    name: "MCP server",
+    repoPath: path.resolve(repoRoot, "..", "daylens-mcp"),
+    versionSource: () =>
+      JSON.parse(
+        readFileSync(path.resolve(repoRoot, "..", "daylens-mcp", "package.json"), "utf8")
+      ).version,
+    description:
+      "MCP server that connects Claude Code, Cursor, Windsurf, and Claude Desktop to your local Daylens activity database.",
+  },
 ];
 
 function git(repoPath, args) {

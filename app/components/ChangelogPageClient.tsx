@@ -16,21 +16,24 @@ const SURFACE_LABELS: Record<SurfaceId, string> = {
   mac: "macOS",
   windows: "Windows",
   web: "Web",
+  mcp: "MCP",
 };
 
 const SURFACE_ICONS: Record<SurfaceId, string> = {
   mac: "◉",
   windows: "◫",
   web: "◎",
+  mcp: "◈",
 };
 
 const REPO_URLS: Record<SurfaceId, string> = {
   web: "https://github.com/irachrist1/daylens-web",
   mac: "https://github.com/irachrist1/daylens",
   windows: "https://github.com/irachrist1/daylens-windows",
+  mcp: "https://github.com/irachrist1/daylens-mcp",
 };
 
-const PLATFORM_ORDER: SurfaceId[] = ["mac", "windows", "web"];
+const PLATFORM_ORDER: SurfaceId[] = ["mac", "windows", "web", "mcp"];
 
 function cleanSubject(subject: string) {
   return subject.replace(/^(feat|fix|docs|chore):\s*/i, "").trim();
@@ -67,6 +70,10 @@ function headlineFromSurface(surface: SurfaceRecord) {
     return "Roadmap, changelog, and web polish";
   }
 
+  if (surface.id === "mcp") {
+    return "Ask your AI what you were working on";
+  }
+
   return sentenceCase(
     subject
       .replace(/^add\s+/i, "")
@@ -78,6 +85,12 @@ function headlineFromSurface(surface: SurfaceRecord) {
 }
 
 function introFromSurface(surface: SurfaceRecord) {
+  if (surface.id === "mcp") {
+    return [
+      "Daylens now has an MCP server. Connect Claude Code, Cursor, Windsurf, or Claude Desktop to your local activity history and ask anything.",
+      "\"Write my performance review for last quarter.\" \"When am I most focused?\" \"Why did that feature take three weeks?\" Answered from your own machine — zero cloud, zero API keys.",
+    ];
+  }
   return [
     `${surface.name} v${surface.version} centers on ${headlineFromSurface(surface).toLowerCase()}.`,
     surface.description,
