@@ -1,508 +1,251 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { MarketingFooter, MarketingInnerNav } from "./MarketingChrome";
-import { MarketingCursor, useReveal } from "./MarketingEffects";
+import { MarketingCursor } from "./MarketingEffects";
 
-const ROADMAP_TICKER = [
-  "Desktop accuracy",
-  "Windows parity",
-  "Web companion depth",
-  "Report grounding",
-  "Browser fidelity",
-  "Saved reports",
-  "Firefox support",
-  "Pairing and recovery",
-  "Auto-update",
-  "ARM64 Windows",
-  "Weekly review",
-  "Shared intelligence",
+type RoadmapFilter =
+  | "All"
+  | "Tracking"
+  | "Understanding"
+  | "Companion"
+  | "Windows"
+  | "macOS";
+
+type RoadmapItem = {
+  title: string;
+  status: "Now" | "Next" | "Queued" | "Exploring";
+  category: Exclude<RoadmapFilter, "All">;
+  surface: "Cross-platform" | "Windows" | "macOS" | "Web companion";
+  summary: string;
+  whyItMatters: string;
+  bullets: string[];
+};
+
+const FILTERS: RoadmapFilter[] = [
+  "All",
+  "Tracking",
+  "Understanding",
+  "Companion",
+  "Windows",
+  "macOS",
 ];
 
-const DELIVERY_LANES = [
+const ROADMAP_ITEMS: RoadmapItem[] = [
   {
-    label: "Now",
-    title: "Tighter desktop truth",
-    body: "The first job is making the evidence harder to doubt: cleaner browser capture, stabler labels, and fewer edge-case gaps so the timeline keeps feeling like an honest record of the day.",
+    title: "Desktop evidence you can trust",
+    status: "Now",
+    category: "Tracking",
+    surface: "Cross-platform",
+    summary:
+      "Tighten browser evidence, calmer session grouping, and fewer edge-case gaps so the timeline keeps feeling like a faithful record instead of a raw log.",
+    whyItMatters:
+      "If tracking is noisy, every report, score, and AI explanation built on top of it gets weaker too.",
+    bullets: [
+      "Stabilize session boundaries and reduce carryover errors.",
+      "Improve app and site evidence so labels stay grounded.",
+      "Keep context-switch counts reliable enough to compare over time.",
+    ],
   },
   {
-    label: "Next",
-    title: "Understanding gets deeper",
-    body: "Once the tracking is solid, the next layer is better explanation: clearer reports, stronger weekly review, and block-level analysis that feels closer to understanding than summarization.",
+    title: "Windows browser fidelity",
+    status: "Now",
+    category: "Windows",
+    surface: "Windows",
+    summary:
+      "Verify real production browser paths, improve history discovery, and keep Windows parity moving with fewer install and updater rough edges.",
+    whyItMatters:
+      "Windows should feel like the same Daylens product, not a partial port with tracking caveats.",
+    bullets: [
+      "Verify Chromium history paths on real installs.",
+      "Add Firefox support where profile discovery is required.",
+      "Keep installer, updater, and trust flows smooth.",
+    ],
   },
   {
-    label: "Queued",
-    title: "The companion becomes useful",
-    body: "Dashboard, history, chat, and recovery are in place. The next step is making the web companion feel less like a mirror of the desktop app and more like the place you can actually revisit, review, and ask.",
+    title: "Reports that explain the week",
+    status: "Next",
+    category: "Understanding",
+    surface: "macOS",
+    summary:
+      "Move from recall toward explanation with better saved reports, stronger Week in Review, and more evidence-led summaries before raw tables appear.",
+    whyItMatters:
+      "People do not just want to look back at activity. They want the product to tell the story of the week clearly.",
+    bullets: [
+      "Saved reports tied to the exact day or week selected.",
+      "Week review that stays useful before the week is over.",
+      "Cleaner summaries that surface the signal before the detail.",
+    ],
   },
   {
-    label: "Exploring",
-    title: "Help starts with context",
-    body: "The longer arc is an assistant that does not begin from zero. It already knows what you have been doing, where attention has been leaking, and what context is missing before you ask for help.",
+    title: "A web companion worth revisiting",
+    status: "Next",
+    category: "Companion",
+    surface: "Web companion",
+    summary:
+      "Push the web companion past access and recovery into a true review surface for dashboard, history, reports, and mobile reading.",
+    whyItMatters:
+      "The web layer should be somewhere you actually revisit your work, not just a utility for linking devices.",
+    bullets: [
+      "Stronger mobile reading for day and week review.",
+      "Reports and history that keep context intact across sessions.",
+      "A calmer companion flow from pairing through recovery.",
+    ],
+  },
+  {
+    title: "Insight continuity that holds the thread",
+    status: "Queued",
+    category: "Understanding",
+    surface: "Cross-platform",
+    summary:
+      "Improve follow-up continuity so Insights can hold onto what the user is asking across a session instead of making them rebuild the thread.",
+    whyItMatters:
+      "The product direction is help that starts with context. That falls apart if the conversation resets every time.",
+    bullets: [
+      "Better multi-turn continuity in Insights.",
+      "Stronger timeframe grounding across follow-up questions.",
+      "More natural transitions from block detail to higher-level review.",
+    ],
+  },
+  {
+    title: "Shared product language across surfaces",
+    status: "Queued",
+    category: "Companion",
+    surface: "Cross-platform",
+    summary:
+      "Keep macOS, Windows, and the web companion reading like the same product through shared patterns, calmer copy, and tighter navigation between surfaces.",
+    whyItMatters:
+      "Three separate surfaces are fine. Three separate personalities are not.",
+    bullets: [
+      "Shared patterns for onboarding, recovery, and settings.",
+      "Consistent copy around focus, history, and insights.",
+      "A more obvious handoff between desktop and web surfaces.",
+    ],
+  },
+  {
+    title: "The assistant stops starting from zero",
+    status: "Exploring",
+    category: "Understanding",
+    surface: "Cross-platform",
+    summary:
+      "Build toward an assistant that already knows the day’s context, where attention leaked, and which threads matter before the user types the first prompt.",
+    whyItMatters:
+      "That is the actual long-term Daylens idea: not just tracking work, but carrying enough context forward that help begins from the picture already in view.",
+    bullets: [
+      "Use tracked context as the starting point for assistance.",
+      "Surface the right documents, pages, and sessions automatically.",
+      "Turn history into the next useful move instead of another dashboard.",
+    ],
+  },
+  {
+    title: "macOS as the clearest expression of the product",
+    status: "Now",
+    category: "macOS",
+    surface: "macOS",
+    summary:
+      "Keep the native app pushing the strongest version of Daylens through reports, widgets, timeline understanding, and better daily review.",
+    whyItMatters:
+      "macOS is still where the product idea feels most complete, so it sets the standard for the others.",
+    bullets: [
+      "Continue improving reports and widgets.",
+      "Sharpen timeline understanding and focus review.",
+      "Keep native polish high while the product expands.",
+    ],
   },
 ];
 
-const PROCESS_STEPS = [
-  {
-    n: "01",
-    title: "Watch real behavior",
-    body: "We start from how the product is actually used across macOS, Windows, and the web companion, not from abstract feature wishlists.",
-  },
-  {
-    n: "02",
-    title: "Fix the evidence chain",
-    body: "Tracking fidelity comes first. If app names, browser history, or context switches are wrong, every downstream insight gets weaker.",
-  },
-  {
-    n: "03",
-    title: "Sharpen the explanation",
-    body: "New surfaces only ship when they tell a cleaner story than the raw timeline already does.",
-  },
-  {
-    n: "04",
-    title: "Ship across surfaces",
-    body: "The goal is one Daylens feeling carried through native desktop apps and the companion web app, not disconnected feature islands.",
-  },
-];
+function itemMatchesFilter(item: RoadmapItem, filter: RoadmapFilter) {
+  if (filter === "All") return true;
+  return item.category === filter;
+}
 
 export function RoadmapPageClient() {
-  useReveal();
-  const marqueeItems = [...ROADMAP_TICKER, ...ROADMAP_TICKER];
+  const [activeFilter, setActiveFilter] = useState<RoadmapFilter>("All");
+  const visibleItems = ROADMAP_ITEMS.filter((item) =>
+    itemMatchesFilter(item, activeFilter)
+  );
 
   return (
-    <div className="lp">
+    <div className="lp lp-hub-page">
       <MarketingCursor />
-      <MarketingInnerNav current="roadmap" />
+      <MarketingInnerNav current="roadmap" theme="light" />
 
-      <section className="lp-story-hero">
-        <div className="lp-story-hero-bg" aria-hidden="true" />
-
-        <div className="lp-container lp-story-hero-shell">
-          <div className="lp-story-hero-copy">
-            <div
-              className="lp-accent-rule"
-              style={{ animation: "lp-fadeIn 0.6s var(--ease-out-expo) 0.2s both" }}
-            />
-            <p
-              className="text-label lp-overline"
-              style={{ animation: "lp-fadeIn 0.6s var(--ease-out-expo) 0.2s both" }}
-            >
-              Product Roadmap
-            </p>
-            <h1
-              className="text-display-xl lp-story-hero-title"
-              style={{ animation: "lp-fadeUp 0.8s var(--ease-out-expo) 0.4s both" }}
-            >
-              Tracking first.
+      <main className="lp-hub-main">
+        <section className="lp-container lp-hub-shell" aria-labelledby="roadmap-title">
+          <div className="lp-hub-header">
+            <div className="lp-hub-breadcrumb">
+              <span>Product</span>
+              <span>/</span>
+              <span>Roadmap</span>
+            </div>
+            <h1 id="roadmap-title" className="lp-hub-title">
+              Explore where
               <br />
-              Understanding next.
+              Daylens is going
             </h1>
-            <p
-              className="lp-story-hero-sub"
-              style={{ animation: "lp-fadeUp 0.8s var(--ease-out-expo) 0.65s both" }}
-            >
-              Daylens already captures what happened. The roadmap is about making
-              that history more trustworthy, more explainable, and eventually
-              useful enough that an assistant no longer needs to be caught up.
-            </p>
-            <div
-              className="lp-hero-ctas"
-              style={{ animation: "lp-fadeUp 0.8s var(--ease-out-expo) 0.85s both" }}
-            >
-              <Link href="/changelog" className="lp-btn-primary">
-                Read the changelog <span>→</span>
-              </Link>
-              <a href="/daylens/api/download/mac" className="lp-btn-ghost-light">
-                Download Daylens <span>→</span>
-              </a>
-            </div>
-            <p
-              className="lp-fine"
-              style={{ animation: "lp-fadeIn 0.8s var(--ease-out-expo) 1.05s both" }}
-            >
-              Directional, not date-locked. Built in the open.
+            <p className="lp-hub-intro">
+              The roadmap is a working map of what we are building next across
+              tracking, understanding, and the companion surfaces. This is not a
+              feature dump. It is the product direction, organized.
             </p>
           </div>
 
-          <div className="lp-story-floating-card lp-story-floating-card--stack reveal-scale">
-            <div className="lp-story-stack-card">
-              <span className="text-label lp-story-floating-label">Active tracks</span>
-              <div className="lp-stat-num">3</div>
-              <p className="lp-story-floating-copy">
-                macOS, Windows, and the web companion are being shaped as one
-                quiet product, not three unrelated surfaces.
-              </p>
-            </div>
-            <div className="lp-story-mini-grid">
-              <div className="lp-story-mini-cell">
-                <span className="text-label lp-story-mini-label">macOS</span>
-                <p className="lp-story-mini-copy">Reports, recall, weekly review</p>
-              </div>
-              <div className="lp-story-mini-cell">
-                <span className="text-label lp-story-mini-label">Windows</span>
-                <p className="lp-story-mini-copy">Parity, browser fidelity, polish</p>
-              </div>
-              <div className="lp-story-mini-cell">
-                <span className="text-label lp-story-mini-label">Web</span>
-                <p className="lp-story-mini-copy">Access, pairing, mobile reading</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="lp-scroll-hint"
-          style={{ animation: "lp-fadeIn 0.6s ease 1.4s both" }}
-        >
-          <div className="lp-scroll-line" />
-          <span className="text-label">scroll</span>
-        </div>
-      </section>
-
-      <div className="lp-proof-strip" aria-hidden="true">
-        <div className="lp-marquee-track">
-          {marqueeItems.map((item, index) => (
-            <span
-              key={`${item}-${index}`}
-              className="lp-marquee-item text-label"
-              style={{
-                color:
-                  index % 3 === 2
-                    ? "var(--lp-accent)"
-                    : "rgba(252,249,248,0.2)",
-              }}
-            >
-              {item}
-              <span className="lp-marquee-sep">·</span>
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <section className="lp-section lp-section--light">
-        <div className="lp-container">
-          <div className="lp-section-intro reveal">
-            <span className="text-label lp-overline-dark">What&apos;s next</span>
-            <p className="lp-section-desc">
-              The roadmap is not feature-count theatre. It follows the actual
-              product arc: track the day faithfully, understand it well, then use
-              that understanding to offer better help across every surface.
-            </p>
-          </div>
-
-          <div className="lp-split">
-            <div className="lp-split-visual reveal">
-              <div className="lp-story-note-panel img-reveal">
-                <span className="text-label lp-story-note-kicker">Accuracy work</span>
-                <div className="lp-story-note-lines">
-                  <div className="lp-story-note-line lp-story-note-line--strong" />
-                  <div className="lp-story-note-line" />
-                  <div className="lp-story-note-line lp-story-note-line--short" />
-                </div>
-                <div className="lp-story-note-list">
-                  <div className="lp-story-note-item">
-                    <span className="lp-story-note-dot" />
-                    Browser path verification
-                  </div>
-                  <div className="lp-story-note-item">
-                    <span className="lp-story-note-dot" />
-                    Firefox profile discovery
-                  </div>
-                  <div className="lp-story-note-item">
-                    <span className="lp-story-note-dot" />
-                    Calmer session grouping
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="lp-split-content reveal delay-200">
-              <div className="lp-accent-rule" />
-              <h2 className="text-display-md lp-feature-title">
-                Desktop capture.
-                <br />
-                You trust.
-              </h2>
-              <p className="lp-feature-body">
-                The immediate priority is accuracy. That means verifying browser
-                paths in production on Windows, tightening app and site evidence,
-                and keeping labels stable enough that the timeline reads like a
-                memory instead of a log dump. If the evidence is weak, every later
-                insight gets weaker too.
-              </p>
-              <ul className="lp-bullets">
-                <li>— Verify Windows Chromium history paths with real-user installs</li>
-                <li>— Add Firefox support where profile discovery is required</li>
-                <li>— Reduce edge-case carryover and icon recovery misses</li>
-                <li>— Keep context-switch counts and session grouping calmer</li>
-              </ul>
-              <Link href="/docs#timeline" className="lp-btn-ghost-dark">
-                Read how tracking works <span>→</span>
-              </Link>
-            </div>
-          </div>
-
-          <div className="lp-split lp-split--reversed">
-            <div className="lp-split-content reveal delay-200">
-              <div className="lp-accent-rule" />
-              <h2 className="text-display-md lp-feature-title">
-                Reviews that
-                <br />
-                explain the week.
-              </h2>
-              <p className="lp-feature-body">
-                Daylens is moving from recall toward explanation. The best recent
-                work already points there: richer reports, better timeframe
-                grounding, and follow-up continuity inside Insights so the system
-                can hold onto the thread of what your week is showing you.
-              </p>
-              <ul className="lp-bullets">
-                <li>— Saved reports that stay tied to the day or week you chose</li>
-                <li>— Week in Review that stays useful mid-week, not just after</li>
-                <li>— Better continuity across follow-up questions in Insights</li>
-                <li>— More evidence-led summaries before the raw table appears</li>
-              </ul>
-              <Link href="/changelog" className="lp-btn-ghost-dark">
-                See what already shipped <span>→</span>
-              </Link>
-            </div>
-
-            <div className="lp-split-visual reveal">
-              <div className="lp-story-chat-panel img-reveal">
-                <span className="text-label lp-story-note-kicker">Review system</span>
-                <div className="lp-story-chat-bubble lp-story-chat-bubble--user">
-                  What changed this week?
-                </div>
-                <div className="lp-story-chat-bubble lp-story-chat-bubble--ai">
-                  Your strongest days stayed clustered in the morning, but the
-                  week picked up more fragmented browser research after lunch.
-                </div>
-                <div className="lp-story-chat-bubble lp-story-chat-bubble--ai">
-                  Saved reports and better follow-ups are making this layer much
-                  easier to revisit without rebuilding the context by hand.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="lp-feature-wide reveal">
-            <div className="lp-story-wide-panel img-reveal">
-              <div className="lp-feature-wide-content">
-                <div className="lp-accent-rule" />
-                <h2
-                  className="text-display-md"
-                  style={{
-                    color: "rgba(252,249,248,0.97)",
-                    marginBottom: "0.75rem",
-                  }}
-                >
-                  The web companion
-                  <br />
-                  becomes a real review surface.
-                </h2>
-                <p
-                  style={{
-                    fontSize: "0.9375rem",
-                    color: "rgba(252,249,248,0.6)",
-                    fontWeight: 300,
-                    maxWidth: "40ch",
-                    lineHeight: 1.7,
-                  }}
-                >
-                  Pairing, recovery, dashboard, history, and chat are already in
-                  place. The next web work is about moving beyond access and
-                  toward real day review, calmer mobile reading, and reports you
-                  can return to without losing the thread.
-                </p>
-                <div className="lp-story-wide-stats">
-                  <div className="lp-story-wide-stat">
-                    <span className="text-label lp-story-mini-label">Shipped</span>
-                    <p className="lp-story-mini-copy">Dashboard, history, chat, pairing</p>
-                  </div>
-                  <div className="lp-story-wide-stat">
-                    <span className="text-label lp-story-mini-label">Next</span>
-                    <p className="lp-story-mini-copy">Reports, mobile review, stronger continuity</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="lp-section lp-section--dark lp-section--gridded">
-        <div className="lp-container">
-          <div className="lp-signature">
-            <div className="lp-signature-text reveal-left">
-              <span className="text-label lp-overline">Platform shape</span>
-              <h2 className="text-display-lg lp-sig-title">
-                One product.
-                <br />
-                Three surfaces.
-              </h2>
-              <p className="lp-sig-body">
-                The macOS app sets the pace, Windows is closing the gap fast, and
-                the web companion is becoming the place you can revisit from
-                anywhere. The goal is not three disconnected tools. It is one
-                product that sees your work clearly wherever you open it.
-              </p>
-              <ul className="lp-sig-bullets">
-                <li>
-                  <span className="lp-bullet-dot" />
-                  macOS keeps pushing reports, recall, and calmer daily review
-                </li>
-                <li>
-                  <span className="lp-bullet-dot" />
-                  Windows focuses on parity, browser fidelity, and install polish
-                </li>
-                <li>
-                  <span className="lp-bullet-dot" />
-                  The web companion keeps mobile access and pairing friction low
-                </li>
-                <li>
-                  <span className="lp-bullet-dot" />
-                  Shared intelligence should read like one story everywhere
-                </li>
-              </ul>
-              <Link href="/docs#web-companion" className="lp-btn-ghost-light">
-                Explore the companion flow <span>→</span>
-              </Link>
-            </div>
-
-            <div className="lp-story-signature-visual reveal">
-              <div className="lp-story-surface-grid">
-                <div className="lp-story-surface-card">
-                  <span className="text-label lp-story-mini-label">macOS</span>
-                  <p className="lp-story-surface-title">Sets the pace.</p>
-                  <p className="lp-story-surface-copy">
-                    Reports, recall, and the clearest articulation of the Daylens
-                    product idea.
-                  </p>
-                </div>
-                <div className="lp-story-surface-card">
-                  <span className="text-label lp-story-mini-label">Windows</span>
-                  <p className="lp-story-surface-title">Closes the gap.</p>
-                  <p className="lp-story-surface-copy">
-                    Parity work with sharper browser support and better release polish.
-                  </p>
-                </div>
-                <div className="lp-story-surface-card lp-story-surface-card--wide">
-                  <span className="text-label lp-story-mini-label">Web companion</span>
-                  <p className="lp-story-surface-title">Shows up everywhere else.</p>
-                  <p className="lp-story-surface-copy">
-                    Pair once, recover when needed, and revisit your day from any device.
-                  </p>
-                </div>
-              </div>
-              <div className="lp-stat-card">
-                <div className="lp-stat-num">1</div>
-                <div className="lp-stat-label">Shared product story</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="lp-section lp-section--light">
-        <div className="lp-container">
-          <div className="reveal">
-            <span className="text-label lp-overline-dark">Roadmap in numbers</span>
-            <h2 className="text-display-md lp-metrics-title">
-              Built around
-              <br />
-              one useful picture.
-            </h2>
-          </div>
-          <div className="lp-metrics-grid reveal delay-200">
-              {[
-                { num: "3", label: "Active product surfaces moving in parallel" },
-                { num: "2", label: "Core phases: tracking first, understanding next" },
-                { num: "0", label: "Accounts required for the core desktop experience" },
-                { num: "1", label: "North star: an assistant that starts with context" },
-              ].map((metric) => (
-              <div key={metric.label} className="lp-metric-cell">
-                <div className="text-display-md lp-metric-num">{metric.num}</div>
-                <p className="lp-metric-desc">{metric.label}</p>
-              </div>
+          <div className="lp-hub-filter-row" role="tablist" aria-label="Roadmap filters">
+            {FILTERS.map((filter) => (
+              <button
+                key={filter}
+                type="button"
+                className={`lp-hub-filter${
+                  activeFilter === filter ? " is-active" : ""
+                }`}
+                onClick={() => setActiveFilter(filter)}
+                aria-pressed={activeFilter === filter}
+              >
+                {filter}
+              </button>
             ))}
           </div>
-        </div>
-      </section>
 
-      <section className="lp-section lp-section--dark">
-        <div className="lp-container">
-          <div className="reveal">
-            <span className="text-label lp-overline">Delivery lanes</span>
-            <h2 className="text-display-md lp-story-dark-title">
-              What is solid,
-              <br />
-              what comes next.
-            </h2>
-          </div>
-          <div className="lp-roadmap-grid">
-            {DELIVERY_LANES.map((lane, index) => (
-              <article
-                key={lane.label}
-                className={`lp-roadmap-card reveal delay-${(index + 1) * 100}`}
-              >
-                <span className="text-label lp-roadmap-card-label">{lane.label}</span>
-                <h3 className="text-headline lp-roadmap-card-title">{lane.title}</h3>
-                <p className="lp-roadmap-card-body">{lane.body}</p>
+          <div className="lp-hub-grid">
+            {visibleItems.map((item) => (
+              <article key={`${item.title}-${item.surface}`} className="lp-hub-card">
+                <div className="lp-hub-card-top">
+                  <div className="lp-hub-card-meta">
+                    <span className="lp-hub-status">{item.status}</span>
+                    <span className="lp-hub-surface">{item.surface}</span>
+                  </div>
+                  <h2 className="lp-hub-card-title">{item.title}</h2>
+                  <p className="lp-hub-card-summary">{item.summary}</p>
+                </div>
+
+                <div className="lp-hub-card-section">
+                  <p className="lp-hub-card-label">Why this matters</p>
+                  <p className="lp-hub-card-copy">{item.whyItMatters}</p>
+                </div>
+
+                <div className="lp-hub-card-section">
+                  <p className="lp-hub-card-label">Current focus</p>
+                  <ul className="lp-hub-card-list">
+                    {item.bullets.map((bullet) => (
+                      <li key={bullet}>{bullet}</li>
+                    ))}
+                  </ul>
+                </div>
               </article>
             ))}
           </div>
-        </div>
-      </section>
 
-      <section className="lp-section lp-section--stone">
-        <div className="lp-container">
-          <div className="reveal">
-            <span className="text-label lp-overline-dark">How we ship</span>
-            <h2 className="text-display-md lp-how-title">
-              Build the picture.
-              <br />
-              Then build on it.
-            </h2>
-          </div>
-          <div className="lp-steps-grid">
-            {PROCESS_STEPS.map((step, index) => (
-              <div
-                key={step.n}
-                className={`lp-step-cell reveal delay-${(index + 1) * 100}`}
-              >
-                <span className="text-label lp-step-num">{step.n}</span>
-                <h3 className="text-headline lp-step-title">{step.title}</h3>
-                <p className="lp-step-body">{step.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="lp-section lp-section--dark">
-        <div className="lp-container">
-          <div className="lp-cta-block reveal">
-            <div className="lp-accent-rule" />
-            <h2 className="text-display-lg lp-cta-title">
-              Follow the shift
-              <br />
-              from tracking to help.
-            </h2>
-            <p className="lp-cta-sub">
-              The roadmap sets the direction. The changelog shows the exact repo
-              work when it is real.
+          <div className="lp-hub-footer-note">
+            <p className="lp-hub-note-copy">
+              Looking for what is already real instead of what is planned?
             </p>
-            <div className="lp-cta-actions">
-              <Link href="/changelog" className="lp-btn-primary">
-                Open the changelog <span>→</span>
-              </Link>
-              <Link href="/docs" className="lp-btn-ghost-light">
-                Read the docs <span>→</span>
-              </Link>
-            </div>
+            <Link href="/changelog" className="lp-hub-note-link">
+              Open the changelog →
+            </Link>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
       <MarketingFooter />
     </div>

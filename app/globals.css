@@ -2044,6 +2044,206 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
   color: var(--lp-ink);
 }
 
+.lp-hub-page {
+  background: #f8f8f6;
+  color: var(--lp-ink);
+}
+
+.lp-hub-main {
+  background: #f8f8f6;
+  padding: 6.75rem 0 clamp(4rem, 8vw, 6rem);
+}
+
+.lp-hub-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.lp-hub-header {
+  max-width: 52rem;
+}
+
+.lp-hub-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--lp-ink-faint);
+}
+
+.lp-hub-title {
+  margin: 0 0 1rem;
+  font-size: clamp(2.7rem, 6vw, 4.8rem);
+  line-height: 0.96;
+  letter-spacing: -0.045em;
+  font-weight: 300;
+  color: var(--lp-ink);
+  max-width: 11ch;
+}
+
+.lp-hub-intro {
+  margin: 0;
+  max-width: 42rem;
+  font-size: 1rem;
+  line-height: 1.8;
+  font-weight: 300;
+  color: var(--lp-ink-muted);
+}
+
+.lp-hub-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.lp-hub-filter {
+  appearance: none;
+  border: 1px solid rgba(26,24,22,0.12);
+  background: rgba(255,255,255,0.66);
+  color: var(--lp-ink-faint);
+  border-radius: 999px;
+  padding: 0.65rem 0.95rem;
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.lp-hub-filter:hover {
+  border-color: rgba(26,24,22,0.24);
+  color: var(--lp-ink);
+}
+
+.lp-hub-filter.is-active {
+  background: var(--lp-ink);
+  border-color: var(--lp-ink);
+  color: var(--lp-bone);
+}
+
+.lp-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.lp-hub-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  min-height: 26rem;
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(26,24,22,0.08);
+  background: rgba(255,255,255,0.82);
+}
+
+.lp-hub-card-top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.lp-hub-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.lp-hub-status,
+.lp-hub-surface {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.65rem;
+  padding: 0 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+.lp-hub-status {
+  background: rgba(212,130,42,0.12);
+  color: var(--lp-accent);
+}
+
+.lp-hub-surface {
+  background: rgba(26,24,22,0.05);
+  color: var(--lp-ink-faint);
+}
+
+.lp-hub-card-title {
+  margin: 0;
+  font-size: clamp(1.55rem, 2.7vw, 2.2rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-weight: 300;
+  color: var(--lp-ink);
+  max-width: 14ch;
+}
+
+.lp-hub-card-summary,
+.lp-hub-card-copy,
+.lp-hub-card-list li,
+.lp-hub-note-copy {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  font-weight: 300;
+  color: var(--lp-ink-muted);
+}
+
+.lp-hub-card-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(26,24,22,0.08);
+}
+
+.lp-hub-card-label {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lp-ink-faint);
+}
+
+.lp-hub-card-list {
+  margin: 0;
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.lp-hub-footer-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.5rem;
+}
+
+.lp-hub-note-link {
+  color: var(--lp-ink);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(26,24,22,0.18);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  transition: border-color 0.2s ease;
+}
+
+.lp-hub-note-link:hover {
+  border-color: rgba(26,24,22,0.42);
+}
+
 .lp-dia-main {
   padding: 6.75rem 0 clamp(4rem, 8vw, 6rem);
   background: #f8f8f6;
@@ -2859,6 +3059,10 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
 }
 
 @media (max-width: 1100px) {
+  .lp-hub-grid {
+    grid-template-columns: 1fr;
+  }
+
   .lp-dia-shell {
     grid-template-columns: 1fr;
     gap: 0;
@@ -2899,6 +3103,14 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
 }
 
 @media (max-width: 768px) {
+  .lp-hub-main {
+    padding-top: 5.75rem;
+  }
+
+  .lp-hub-title {
+    max-width: none;
+  }
+
   .lp-dia-main {
     padding-top: 5.75rem;
   }
@@ -2927,6 +3139,20 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
 }
 
 @media (max-width: 640px) {
+  .lp-hub-filter-row {
+    gap: 0.55rem;
+  }
+
+  .lp-hub-filter {
+    font-size: 0.8125rem;
+    padding: 0.6rem 0.85rem;
+  }
+
+  .lp-hub-card {
+    min-height: auto;
+    padding: 1.2rem;
+  }
+
   .lp-dia-mobile-heading {
     margin-bottom: 2rem;
   }
