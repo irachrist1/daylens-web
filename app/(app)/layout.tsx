@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Poller } from "@/app/components/Poller";
 
@@ -8,8 +9,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Desktop header */}
       <header className="hidden md:flex items-center justify-between px-6 py-4 glass-header">
         <Link href="/dashboard" className="flex items-center gap-2.5 text-xl font-bold text-primary no-underline">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/daylens/app-icon.png" alt="Daylens" width={28} height={28} style={{ borderRadius: 7 }} />
+          <Image src="/app-icon.png" alt="Daylens" width={28} height={28} style={{ borderRadius: 7 }} />
           Daylens
         </Link>
         <nav className="flex items-center gap-6">
