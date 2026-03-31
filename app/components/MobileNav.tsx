@@ -30,7 +30,7 @@ export function MobileNav() {
           <Link href="/link" className="landing-mobile-link landing-mobile-link-accent">
             Connect Device
           </Link>
-          <Link href="/dashboard" className="landing-mobile-link-btn">
+          <Link href="/link" className="landing-mobile-link-btn">
             Open Dashboard
           </Link>
         </div>

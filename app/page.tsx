@@ -26,7 +26,7 @@ export default async function LandingPage({
         <Link href="/" className="landing-logo">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/app-icon.png"
+            src="/daylens/app-icon.png"
             alt="Daylens"
             width={36}
             height={36}
@@ -40,7 +40,7 @@ export default async function LandingPage({
           <Link href="/link" className="landing-nav-link landing-nav-link-accent">
             Connect Device
           </Link>
-          <Link href="/dashboard" className="landing-nav-btn">
+          <Link href="/link" className="landing-nav-btn">
             Open Dashboard
           </Link>
         </nav>
