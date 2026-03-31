@@ -12,15 +12,16 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Daylens",
   description: "Your activity companion — view desktop usage insights on any device",
-  manifest: "/manifest.json",
+  manifest: "/daylens/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "Daylens",
   },
   icons: {
-    icon: "/icon-192.svg",
-    apple: "/icon-192.svg",
+    icon: [{ url: "/daylens/app-icon.png", type: "image/png" }],
+    apple: [{ url: "/daylens/app-icon.png", type: "image/png" }],
+    shortcut: "/daylens/app-icon.png",
   },
 };
 
