@@ -4,11 +4,6 @@
       "source": "/",
       "destination": "https://christian-tonny.dev/daylens",
       "permanent": false
-    },
-    {
-      "source": "/daylens",
-      "destination": "https://christian-tonny.dev/daylens",
-      "permanent": false
     }
   ]
 }
