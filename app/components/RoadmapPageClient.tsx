@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo, useRef, useState } from "react";
 import { MarketingFooter, MarketingInnerNav } from "./MarketingChrome";
 import { MarketingCursor } from "./MarketingEffects";
 
@@ -10,13 +11,20 @@ type RoadmapStatus =
   | "Ready to ship"
   | "Done";
 
+type RoadmapSurface = "Cross-platform" | "Windows" | "macOS" | "Web companion";
+
 type RoadmapItem = {
   title: string;
   status: RoadmapStatus;
   summary: string;
+  whyItMatters: string;
+  currentFocus: string[];
   tags: string[];
-  surface: "Cross-platform" | "Windows" | "macOS" | "Web companion";
+  surface: RoadmapSurface;
   deliverables: number;
+  board: string;
+  updated: string;
+  owner: string;
 };
 
 const ROADMAP_ORDER: RoadmapStatus[] = [
@@ -27,132 +35,279 @@ const ROADMAP_ORDER: RoadmapStatus[] = [
   "Done",
 ];
 
+const SURFACE_FILTERS: RoadmapSurface[] = [
+  "Cross-platform",
+  "Windows",
+  "macOS",
+  "Web companion",
+];
+
 const ROADMAP_ITEMS: RoadmapItem[] = [
   {
     title: "Timeline recall on mobile",
     status: "Backlog",
     summary:
       "Bring the day view and weekly review to the web companion in a format that still feels readable on a phone.",
+    whyItMatters:
+      "The companion should be somewhere you can genuinely revisit your day, not just a place to link a device and leave.",
+    currentFocus: [
+      "Condense the day view for smaller screens without losing chronology.",
+      "Keep weekly review readable when opened from the phone.",
+      "Preserve session context and labels on narrow layouts.",
+    ],
     tags: ["History", "Companion", "Mobile"],
     surface: "Web companion",
     deliverables: 3,
+    board: "Companion surfaces",
+    updated: "Planned next cycle",
+    owner: "Christian",
   },
   {
     title: "Assistant that starts with context",
     status: "Backlog",
     summary:
       "Use real tracked context so follow-up help begins from the day already in view instead of another blank prompt.",
+    whyItMatters:
+      "The long-term Daylens direction is help that starts with the picture already in memory, not with the user re-explaining their work.",
+    currentFocus: [
+      "Carry the active day and review context into Insights.",
+      "Surface likely relevant blocks before the user asks.",
+      "Reduce how often the assistant starts from zero.",
+    ],
     tags: ["Insights", "Context", "AI"],
     surface: "Cross-platform",
     deliverables: 3,
+    board: "Understanding",
+    updated: "Exploration",
+    owner: "Christian",
   },
   {
     title: "Cross-device day stitching",
     status: "Backlog",
     summary:
       "Make sessions feel continuous when work starts on desktop and gets reviewed later from the web companion.",
+    whyItMatters:
+      "A day should still read like one day even when the user moves between surfaces to review it.",
+    currentFocus: [
+      "Keep linked device identity stable.",
+      "Make review jumps between desktop and web feel seamless.",
+      "Avoid duplicate or fragmented day summaries.",
+    ],
     tags: ["Sync", "Timeline", "Companion"],
     surface: "Cross-platform",
     deliverables: 2,
+    board: "Companion surfaces",
+    updated: "Researching",
+    owner: "Christian",
   },
   {
     title: "Windows browser fidelity",
     status: "Next up",
     summary:
       "Push Windows closer to parity with stronger browser evidence, profile discovery, and fewer edge-case gaps in activity capture.",
+    whyItMatters:
+      "Windows should feel like the same Daylens product, not the version with tracking caveats and missing proof.",
+    currentFocus: [
+      "Verify Chromium and Firefox evidence paths on real installs.",
+      "Reduce silent misses around profiles and history access.",
+      "Keep parity moving without introducing updater regressions.",
+    ],
     tags: ["Windows", "Tracking", "Parity"],
     surface: "Windows",
     deliverables: 3,
+    board: "Tracking quality",
+    updated: "Queued after current Windows push",
+    owner: "Christian",
   },
   {
     title: "Weekly review that explains the week",
     status: "Next up",
     summary:
       "Shift reports from raw totals toward clearer explanations of where the week went and where focus kept breaking.",
+    whyItMatters:
+      "People do not just want a log. They want the product to tell the story of the week with evidence, not noise.",
+    currentFocus: [
+      "Make saved reports easier to revisit.",
+      "Improve in-progress week summaries before the week ends.",
+      "Surface key focus breaks before raw tables and charts.",
+    ],
     tags: ["Reports", "Review", "Understanding"],
     surface: "macOS",
     deliverables: 3,
+    board: "Review and reports",
+    updated: "Lined up after current macOS polish",
+    owner: "Christian",
   },
   {
     title: "Shared language across surfaces",
     status: "Next up",
     summary:
       "Align desktop and companion copy so history, focus, recovery, and Insights read like one product everywhere.",
+    whyItMatters:
+      "Three surfaces are fine. Three separate personalities are not.",
+    currentFocus: [
+      "Unify public page copy with app behavior.",
+      "Keep onboarding, recovery, and settings language consistent.",
+      "Make navigation feel like one product system.",
+    ],
     tags: ["Copy", "Navigation", "Companion"],
     surface: "Cross-platform",
     deliverables: 2,
+    board: "Product language",
+    updated: "Next writing pass",
+    owner: "Christian",
   },
   {
     title: "Evidence you can trust",
     status: "In progress",
     summary:
       "Tighten session boundaries, cut noisy carryover, and keep switch counts grounded enough to compare over time.",
+    whyItMatters:
+      "If the underlying tracking is noisy, every score, report, and explanation built on top of it gets weaker too.",
+    currentFocus: [
+      "Reduce carryover between adjacent sessions.",
+      "Improve switch counting on long work blocks.",
+      "Keep labels grounded in better evidence.",
+    ],
     tags: ["Tracking", "Sessions", "Accuracy"],
     surface: "Cross-platform",
     deliverables: 3,
+    board: "Tracking quality",
+    updated: "Active work",
+    owner: "Christian",
   },
   {
     title: "Web companion review surface",
     status: "In progress",
     summary:
       "Move the web layer beyond pairing and recovery into a place you revisit for timeline review, reports, and clean reading.",
+    whyItMatters:
+      "The web companion should be a real review surface, not a side utility wrapped around the desktop apps.",
+    currentFocus: [
+      "Build stronger history and changelog surfaces.",
+      "Keep review pages clean on desktop and mobile.",
+      "Preserve the calm companion tone across new pages.",
+    ],
     tags: ["Dashboard", "Companion", "Reports"],
     surface: "Web companion",
     deliverables: 3,
+    board: "Companion surfaces",
+    updated: "Active work",
+    owner: "Christian",
   },
   {
     title: "Insights continuity",
     status: "In progress",
     summary:
       "Hold follow-up context better so Daylens can keep the thread between a block detail, a daily review, and a broader question.",
+    whyItMatters:
+      "The assistant becomes much more useful when it remembers the thread instead of making the user rebuild it.",
+    currentFocus: [
+      "Keep timeframes stable across follow-up questions.",
+      "Preserve block context when moving into broader review.",
+      "Tighten prompt grounding around current context.",
+    ],
     tags: ["Insights", "AI", "Continuity"],
     surface: "Cross-platform",
     deliverables: 3,
+    board: "Understanding",
+    updated: "Active work",
+    owner: "Christian",
   },
   {
     title: "Focus review polish",
     status: "Ready to ship",
     summary:
       "Sharpen the readout around focus score, context switches, and block summaries so the product tells a clearer story at a glance.",
+    whyItMatters:
+      "The focus surface is where the product has to prove it can explain the day quickly and credibly.",
+    currentFocus: [
+      "Reduce visual noise in focus summaries.",
+      "Keep block language more direct.",
+      "Tighten stats hierarchy for quicker scanning.",
+    ],
     tags: ["Focus", "Review", "UI"],
     surface: "macOS",
     deliverables: 2,
+    board: "Focus surfaces",
+    updated: "Awaiting final polish",
+    owner: "Christian",
   },
   {
     title: "Provider-aware Windows onboarding",
     status: "Ready to ship",
     summary:
       "Finish the surrounding onboarding and settings copy now that Windows supports multiple AI providers and model paths.",
+    whyItMatters:
+      "The model picker and provider flow should feel deliberate, not like a powerful feature bolted onto rough onboarding.",
+    currentFocus: [
+      "Clarify provider choice in setup.",
+      "Mirror selected provider in settings and Insights copy.",
+      "Keep key storage and defaults understandable.",
+    ],
     tags: ["Windows", "AI", "Onboarding"],
     surface: "Windows",
     deliverables: 2,
+    board: "Windows AI",
+    updated: "Final wording and QA",
+    owner: "Christian",
   },
   {
     title: "Public product pages",
     status: "Done",
     summary:
       "Docs, roadmap, and changelog now live as first-class public pages instead of feeling like leftover support screens.",
+    whyItMatters:
+      "The product finally has a public surface that explains what Daylens is and where it is going.",
+    currentFocus: [
+      "Keep the public pages aligned with the actual product.",
+      "Tighten the shared navigation and footer shell.",
+      "Make roadmap and changelog easier to revisit.",
+    ],
     tags: ["Web", "Docs", "Public pages"],
     surface: "Web companion",
     deliverables: 3,
+    board: "Public pages",
+    updated: "Shipped",
+    owner: "Christian",
   },
   {
     title: "Multi-provider AI on Windows",
     status: "Done",
     summary:
       "Windows now supports Anthropic, OpenAI, and Google with provider-aware model selection and stored credentials.",
+    whyItMatters:
+      "This turned the Windows app from one hardcoded AI path into a real user-controlled setup.",
+    currentFocus: [
+      "Provider-aware model selection.",
+      "Stored credentials per provider.",
+      "Cleaner updater and onboarding follow-through.",
+    ],
     tags: ["Windows", "AI", "Providers"],
     surface: "Windows",
     deliverables: 4,
+    board: "Windows AI",
+    updated: "Shipped March 31",
+    owner: "Christian",
   },
   {
     title: "Reports and widgets on macOS",
     status: "Done",
     summary:
       "macOS keeps pushing the strongest expression of Daylens through reports, widgets, and stronger daily review.",
+    whyItMatters:
+      "macOS is still the clearest expression of the product, so it sets the bar for everything else.",
+    currentFocus: [
+      "Saved reports and richer outputs.",
+      "Cleaner review surfaces.",
+      "Stronger daily and weekly readback.",
+    ],
     tags: ["macOS", "Reports", "Widgets"],
     surface: "macOS",
     deliverables: 3,
+    board: "Review and reports",
+    updated: "Shipped March 30",
+    owner: "Christian",
   },
 ];
 
@@ -163,10 +318,6 @@ const STATUS_TONES: Record<RoadmapStatus, string> = {
   "Ready to ship": "rose",
   Done: "green",
 };
-
-function groupedItems(status: RoadmapStatus) {
-  return ROADMAP_ITEMS.filter((item) => item.status === status);
-}
 
 function IconButton({ type }: { type: "search" | "filter" | "share" }) {
   if (type === "search") {
@@ -202,6 +353,72 @@ function IconButton({ type }: { type: "search" | "filter" | "share" }) {
 }
 
 export function RoadmapPageClient() {
+  const [selectedItem, setSelectedItem] = useState<RoadmapItem | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [shareState, setShareState] = useState<"idle" | "copied">("idle");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [surfaceFilters, setSurfaceFilters] = useState<RoadmapSurface[]>([]);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (searchOpen) {
+      searchInputRef.current?.focus();
+    }
+  }, [searchOpen]);
+
+  useEffect(() => {
+    if (!selectedItem) return undefined;
+
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedItem(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [selectedItem]);
+
+  const visibleItems = useMemo(() => {
+    return ROADMAP_ITEMS.filter((item) => {
+      const matchesSurface =
+        surfaceFilters.length === 0 || surfaceFilters.includes(item.surface);
+      const search = searchQuery.trim().toLowerCase();
+      const haystack = [
+        item.title,
+        item.summary,
+        item.whyItMatters,
+        item.surface,
+        ...item.tags,
+        ...item.currentFocus,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      const matchesSearch = search.length === 0 || haystack.includes(search);
+      return matchesSurface && matchesSearch;
+    });
+  }, [searchQuery, surfaceFilters]);
+
+  function toggleSurface(surface: RoadmapSurface) {
+    setSurfaceFilters((current) =>
+      current.includes(surface)
+        ? current.filter((value) => value !== surface)
+        : [...current, surface]
+    );
+  }
+
+  async function handleShare() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShareState("copied");
+      window.setTimeout(() => setShareState("idle"), 1600);
+    } catch {
+      setShareState("idle");
+    }
+  }
+
   return (
     <div className="lp lp-ray-board-page">
       <MarketingCursor />
@@ -225,32 +442,94 @@ export function RoadmapPageClient() {
               </p>
             </div>
 
-            <div className="lp-ray-board-actions" aria-hidden="true">
-              <button type="button" className="lp-ray-board-action">
+            <div className="lp-ray-board-actions">
+              <button
+                type="button"
+                className={`lp-ray-board-action${searchOpen ? " is-active" : ""}`}
+                aria-label="Search roadmap"
+                onClick={() => {
+                  setSearchOpen((current) => !current);
+                  if (filterOpen) setFilterOpen(false);
+                }}
+              >
                 <IconButton type="search" />
               </button>
-              <button type="button" className="lp-ray-board-action">
+              <button
+                type="button"
+                className={`lp-ray-board-action${filterOpen ? " is-active" : ""}`}
+                aria-label="Filter roadmap"
+                onClick={() => {
+                  setFilterOpen((current) => !current);
+                  if (searchOpen) setSearchOpen(false);
+                }}
+              >
                 <IconButton type="filter" />
               </button>
-              <button type="button" className="lp-ray-board-action">
+              <button
+                type="button"
+                className={`lp-ray-board-action${
+                  shareState === "copied" ? " is-active" : ""
+                }`}
+                aria-label="Copy roadmap link"
+                onClick={handleShare}
+              >
                 <IconButton type="share" />
               </button>
             </div>
           </div>
 
+          {(searchOpen || filterOpen) && (
+            <div className="lp-ray-board-toolbar">
+              {searchOpen ? (
+                <label className="lp-ray-board-search">
+                  <span className="sr-only">Search roadmap</span>
+                  <input
+                    ref={searchInputRef}
+                    type="search"
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder="Search initiatives, tags, and focus areas"
+                  />
+                </label>
+              ) : null}
+
+              {filterOpen ? (
+                <div className="lp-ray-board-filters">
+                  {SURFACE_FILTERS.map((surface) => (
+                    <button
+                      key={surface}
+                      type="button"
+                      className={`lp-ray-board-filter-chip${
+                        surfaceFilters.includes(surface) ? " is-active" : ""
+                      }`}
+                      onClick={() => toggleSurface(surface)}
+                    >
+                      {surface}
+                    </button>
+                  ))}
+                  {surfaceFilters.length > 0 ? (
+                    <button
+                      type="button"
+                      className="lp-ray-board-filter-reset"
+                      onClick={() => setSurfaceFilters([])}
+                    >
+                      Clear filters
+                    </button>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+          )}
+
           <div className="lp-ray-board-scroll">
             <div className="lp-ray-board-columns">
               {ROADMAP_ORDER.map((status) => {
-                const items = groupedItems(status);
+                const items = visibleItems.filter((item) => item.status === status);
 
                 return (
                   <section key={status} className="lp-ray-board-column">
                     <header className="lp-ray-column-head">
-                      <span
-                        className={`lp-ray-column-pill is-${
-                          STATUS_TONES[status]
-                        }`}
-                      >
+                      <span className={`lp-ray-column-pill is-${STATUS_TONES[status]}`}>
                         {status}
                       </span>
                       <span className="lp-ray-column-count">{items.length}</span>
@@ -258,35 +537,28 @@ export function RoadmapPageClient() {
 
                     <div className="lp-ray-card-stack">
                       {items.map((item) => (
-                        <article
+                        <button
                           key={`${item.status}-${item.title}`}
+                          type="button"
                           className="lp-ray-roadmap-card"
+                          onClick={() => setSelectedItem(item)}
                         >
                           <h2 className="lp-ray-roadmap-card-title">{item.title}</h2>
-                          <p className="lp-ray-roadmap-card-summary">
-                            {item.summary}
-                          </p>
+                          <p className="lp-ray-roadmap-card-summary">{item.summary}</p>
 
                           <div className="lp-ray-roadmap-card-tags">
                             {item.tags.map((tag) => (
-                              <span
-                                key={`${item.title}-${tag}`}
-                                className="lp-ray-roadmap-tag"
-                              >
+                              <span key={`${item.title}-${tag}`} className="lp-ray-roadmap-tag">
                                 {tag}
                               </span>
                             ))}
                           </div>
 
                           <div className="lp-ray-roadmap-card-footer">
-                            <span className="lp-ray-roadmap-surface">
-                              {item.surface}
-                            </span>
-                            <span className="lp-ray-roadmap-card-count">
-                              {item.deliverables}
-                            </span>
+                            <span className="lp-ray-roadmap-surface">{item.surface}</span>
+                            <span className="lp-ray-roadmap-card-count">{item.deliverables}</span>
                           </div>
-                        </article>
+                        </button>
                       ))}
                     </div>
                   </section>
@@ -296,6 +568,94 @@ export function RoadmapPageClient() {
           </div>
         </section>
       </main>
+
+      {selectedItem ? (
+        <div
+          className="lp-ray-roadmap-overlay"
+          role="presentation"
+          onClick={() => setSelectedItem(null)}
+        >
+          <div
+            className="lp-ray-roadmap-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="roadmap-modal-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="lp-ray-roadmap-close"
+              aria-label="Close roadmap detail"
+              onClick={() => setSelectedItem(null)}
+            >
+              ×
+            </button>
+
+            <div className="lp-ray-roadmap-modal-main">
+              <div className="lp-ray-roadmap-modal-copy">
+                <h2 id="roadmap-modal-title" className="lp-ray-roadmap-modal-title">
+                  {selectedItem.title}
+                </h2>
+                <p className="lp-ray-roadmap-modal-summary">{selectedItem.summary}</p>
+
+                <div className="lp-ray-roadmap-modal-tags">
+                  {selectedItem.tags.map((tag) => (
+                    <span
+                      key={`${selectedItem.title}-${tag}-detail`}
+                      className="lp-ray-roadmap-modal-tag"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                <section className="lp-ray-roadmap-modal-section">
+                  <h3 className="lp-ray-roadmap-modal-label">Why this matters</h3>
+                  <p className="lp-ray-roadmap-modal-paragraph">
+                    {selectedItem.whyItMatters}
+                  </p>
+                </section>
+
+                <section className="lp-ray-roadmap-modal-section">
+                  <h3 className="lp-ray-roadmap-modal-label">Current focus</h3>
+                  <ul className="lp-ray-roadmap-modal-list">
+                    {selectedItem.currentFocus.map((item) => (
+                      <li key={`${selectedItem.title}-${item}`}>{item}</li>
+                    ))}
+                  </ul>
+                </section>
+              </div>
+
+              <aside className="lp-ray-roadmap-modal-side">
+                <div className="lp-ray-roadmap-side-row">
+                  <span>Deliverables</span>
+                  <strong>{selectedItem.deliverables}</strong>
+                </div>
+                <div className="lp-ray-roadmap-side-row">
+                  <span>Status</span>
+                  <strong>{selectedItem.status}</strong>
+                </div>
+                <div className="lp-ray-roadmap-side-row">
+                  <span>Board</span>
+                  <strong>{selectedItem.board}</strong>
+                </div>
+                <div className="lp-ray-roadmap-side-row">
+                  <span>Surface</span>
+                  <strong>{selectedItem.surface}</strong>
+                </div>
+                <div className="lp-ray-roadmap-side-row">
+                  <span>Updated</span>
+                  <strong>{selectedItem.updated}</strong>
+                </div>
+                <div className="lp-ray-roadmap-side-row">
+                  <span>Owner</span>
+                  <strong>{selectedItem.owner}</strong>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <MarketingFooter />
     </div>

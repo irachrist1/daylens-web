@@ -7,10 +7,9 @@ import { MarketingCursor } from "./MarketingEffects";
 
 type SurfaceRecord = (typeof generatedChangelogData.surfaces)[number];
 type SurfaceId = SurfaceRecord["id"];
-type ReleaseSection = {
-  label: "New" | "Improvements" | "Fixes";
-  items: string[];
-};
+type ReleaseRecord = SurfaceRecord["releases"][number];
+
+const PLATFORM_ORDER: SurfaceId[] = ["mac", "windows", "web"];
 
 const SURFACE_LABELS: Record<SurfaceId, string> = {
   mac: "macOS",
@@ -19,138 +18,15 @@ const SURFACE_LABELS: Record<SurfaceId, string> = {
   mcp: "MCP",
 };
 
-const SURFACE_ICONS: Record<SurfaceId, string> = {
-  mac: "◉",
-  windows: "◫",
-  web: "◎",
-  mcp: "◈",
+const SURFACE_PANEL_LABELS: Record<SurfaceId, string> = {
+  mac: "macOS",
+  windows: "Windows",
+  web: "Web companion",
+  mcp: "MCP server",
 };
 
-const REPO_URLS: Record<SurfaceId, string> = {
-  web: "https://github.com/irachrist1/daylens-web",
-  mac: "https://github.com/irachrist1/daylens",
-  windows: "https://github.com/irachrist1/daylens-windows",
-  mcp: "https://github.com/irachrist1/daylens-mcp",
-};
-
-const PLATFORM_ORDER: SurfaceId[] = ["mac", "windows", "web", "mcp"];
-
-function cleanSubject(subject: string) {
-  return subject.replace(/^(feat|fix|docs|chore):\s*/i, "").trim();
-}
-
-function isOperationalCommit(subject: string) {
-  return /^(prepare|release|sync|trim|rebuild|refresh)\b/i.test(cleanSubject(subject));
-}
-
-function pickHeadlineCommit(surface: SurfaceRecord) {
-  return (
-    surface.recentCommits.find((commit) => !isOperationalCommit(commit.subject)) ??
-    surface.recentCommits[0]
-  );
-}
-
-function sentenceCase(value: string) {
-  if (!value) return value;
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
-function headlineFromSurface(surface: SurfaceRecord) {
-  const subject = cleanSubject(pickHeadlineCommit(surface)?.subject ?? surface.name);
-
-  if (surface.id === "windows" && /multi-provider/i.test(subject)) {
-    return "Multi-provider AI on Windows";
-  }
-
-  if (surface.id === "mac" && /reports, widgets/i.test(subject)) {
-    return "Reports, widgets, and focus review";
-  }
-
-  if (surface.id === "web" && /roadmap\/changelog/i.test(subject)) {
-    return "Roadmap, changelog, and web polish";
-  }
-
-  if (surface.id === "mcp") {
-    return "Ask your AI what you were working on";
-  }
-
-  return sentenceCase(
-    subject
-      .replace(/^add\s+/i, "")
-      .replace(/^improve\s+/i, "")
-      .replace(/^support\s+/i, "")
-      .replace(/^prepare\s+/i, "")
-      .replace(/^release\s+/i, "")
-  );
-}
-
-function introFromSurface(surface: SurfaceRecord) {
-  if (surface.id === "mcp") {
-    return [
-      "Daylens now has an MCP server. Connect Claude Code, Cursor, Windsurf, or Claude Desktop to your local activity history and ask anything.",
-      "\"Write my performance review for last quarter.\" \"When am I most focused?\" \"Why did that feature take three weeks?\" Answered from your own machine — zero cloud, zero API keys.",
-    ];
-  }
-  return [
-    `${surface.name} v${surface.version} centers on ${headlineFromSurface(surface).toLowerCase()}.`,
-    surface.description,
-  ];
-}
-
-function sectionForSubject(subject: string): ReleaseSection["label"] {
-  const normalized = cleanSubject(subject).toLowerCase();
-
-  if (
-    /^fix\b/.test(normalized) ||
-    normalized.includes(" guard ") ||
-    normalized.includes("prevent ") ||
-    normalized.includes("cleanup") ||
-    normalized.includes("preserve ")
-  ) {
-    return "Fixes";
-  }
-
-  if (
-    /^add\b/.test(normalized) ||
-    normalized.includes("support") ||
-    normalized.includes("reports") ||
-    normalized.includes("widgets") ||
-    normalized.includes("launch") ||
-    normalized.includes("roadmap") ||
-    normalized.includes("changelog")
-  ) {
-    return "New";
-  }
-
-  return "Improvements";
-}
-
-function sectionsFromSurface(surface: SurfaceRecord) {
-  const relevantCommits = surface.recentCommits
-    .filter((commit) => !isOperationalCommit(commit.subject))
-    .slice(0, 8);
-
-  const grouped = relevantCommits.reduce(
-    (acc, commit) => {
-      const label = sectionForSubject(commit.subject);
-      acc[label].push(cleanSubject(commit.subject));
-      return acc;
-    },
-    {
-      New: [] as string[],
-      Improvements: [] as string[],
-      Fixes: [] as string[],
-    }
-  );
-
-  return (["New", "Improvements", "Fixes"] as const)
-    .map((label) => ({ label, items: grouped[label] }))
-    .filter((section) => section.items.length > 0);
-}
-
-function formatDate(isoDate: string | null) {
-  if (!isoDate) return "Unknown date";
-  return new Date(`${isoDate}T12:00:00Z`).toLocaleString("en-US", {
+function formatDate(date: string) {
+  return new Date(`${date}T12:00:00Z`).toLocaleString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -158,8 +34,57 @@ function formatDate(isoDate: string | null) {
   });
 }
 
-function commitUrl(surface: SurfaceRecord) {
-  return `${REPO_URLS[surface.id]}/commit/${surface.latestCommitHash ?? ""}`;
+function displayTitle(value: string) {
+  const compact = value.split(/[—:,.]/)[0].trim();
+  if (compact.length > 68) {
+    return compact.split(/\s+/).slice(0, 7).join(" ");
+  }
+  return compact || value;
+}
+
+function cleanParagraph(value: string) {
+  return value.replace(/\.\.+$/g, ".").replace(/\s+/g, " ").trim();
+}
+
+function SurfaceIcon({
+  surface,
+  className,
+}: {
+  surface: SurfaceId;
+  className?: string;
+}) {
+  if (surface === "mac") {
+    return (
+      <svg viewBox="0 0 16 16" aria-hidden="true" className={className}>
+        <path
+          fill="currentColor"
+          d="M12.367 8.5c.022 2.422 2.124 3.227 2.147 3.238-.018.056-.336 1.148-1.107 2.275-.667.975-1.36 1.946-2.45 1.966-1.07.02-1.415-.635-2.64-.635s-1.607.615-2.621.655c-1.053.04-1.854-1.054-2.527-2.025C1.795 11.987.745 8.36 2.155 5.912c.7-1.215 1.952-1.985 3.31-2.005 1.034-.02 2.01.695 2.641.695.632 0 1.817-.86 3.063-.733.522.021 1.986.21 2.927 1.587-.076.047-1.747 1.02-1.73 3.044Zm-2.014-5.945c.559-.677.935-1.618.833-2.555-.806.032-1.78.537-2.357 1.213-.518.598-.971 1.556-.85 2.474.899.07 1.816-.456 2.374-1.132Z"
+        />
+      </svg>
+    );
+  }
+
+  if (surface === "windows") {
+    return (
+      <svg viewBox="0 0 16 16" aria-hidden="true" className={className}>
+        <path
+          fill="currentColor"
+          fillRule="evenodd"
+          d="M0 0h7.584v7.584H0zm8.416 0h7.583v7.584H8.416zm-.832 8.416H0V16h7.584zm.832 0h7.583V16H8.416z"
+          clipRule="evenodd"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true" className={className}>
+      <path
+        fill="currentColor"
+        d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13Zm4.824 5.75H10.49a14.4 14.4 0 0 0-.77-3.197A5.03 5.03 0 0 1 12.824 7.25ZM8 3.01c.52.699.972 1.988 1.16 3.24H6.84C7.029 4.998 7.48 3.71 8 3.01ZM6.28 4.053a14.4 14.4 0 0 0-.77 3.197H3.176A5.03 5.03 0 0 1 6.28 4.053ZM3.01 8.75h2.333c.057 1.15.33 2.274.79 3.197A5.03 5.03 0 0 1 3.01 8.75Zm3.83 0h2.32c-.189 1.252-.64 2.54-1.16 3.24-.52-.699-.971-1.988-1.16-3.24Zm2.88 3.197c.46-.923.733-2.047.79-3.197h2.333a5.03 5.03 0 0 1-3.104 3.197Z"
+      />
+    </svg>
+  );
 }
 
 export function ChangelogPageClient() {
@@ -172,13 +97,7 @@ export function ChangelogPageClient() {
     [activeSurface]
   );
 
-  const headline = headlineFromSurface(surface);
-  const intro = introFromSurface(surface);
-  const sections = sectionsFromSurface(surface);
-  const highlights = surface.recentCommits
-    .filter((commit) => !isOperationalCommit(commit.subject))
-    .slice(0, 3)
-    .map((commit) => cleanSubject(commit.subject));
+  const releases = surface.releases as readonly ReleaseRecord[];
 
   return (
     <div className="lp lp-ray-changelog-page">
@@ -204,107 +123,97 @@ export function ChangelogPageClient() {
                 if (!item) return null;
 
                 return (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeSurface === item.id}
-                  className={`lp-ray-platform-pill${
-                    activeSurface === item.id ? " is-active" : ""
-                  }`}
-                  onClick={() => setActiveSurface(item.id)}
-                >
-                  <span className="lp-ray-platform-icon">{SURFACE_ICONS[item.id]}</span>
-                  <span>{SURFACE_LABELS[item.id]}</span>
-                </button>
+                  <button
+                    key={item.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeSurface === item.id}
+                    className={`lp-ray-platform-pill${
+                      activeSurface === item.id ? " is-active" : ""
+                    }`}
+                    onClick={() => setActiveSurface(item.id)}
+                  >
+                    <SurfaceIcon surface={item.id} className="lp-ray-platform-icon" />
+                    <span>{SURFACE_LABELS[item.id]}</span>
+                  </button>
                 );
               })}
             </div>
           </header>
 
-          <article className="lp-ray-release-entry">
-            <aside className="lp-ray-release-meta">
-              <a
-                href={`#${surface.id}`}
-                className="lp-ray-release-version"
-                id={surface.id}
+          <div className="lp-ray-release-stream">
+            {releases.map((release, index) => (
+              <article
+                key={release.id}
+                className={`lp-ray-release-entry${
+                  index === 0 ? " is-first" : ""
+                }`}
+                id={release.id}
               >
-                v{surface.version}
-              </a>
-              <time
-                className="lp-ray-release-date"
-                dateTime={surface.latestCommitDate ?? undefined}
-              >
-                {formatDate(surface.latestCommitDate)}
-              </time>
-            </aside>
+                <aside className="lp-ray-release-meta">
+                  <a href={`#${release.id}`} className="lp-ray-release-version">
+                    v{release.version}
+                  </a>
+                  <time className="lp-ray-release-date" dateTime={release.date}>
+                    {formatDate(release.date)}
+                  </time>
+                </aside>
 
-            <div className="lp-ray-release-body">
-              <h2 className="lp-ray-release-title">
-                {headline}
-              </h2>
+                <div className="lp-ray-release-body">
+                  <h2 className="lp-ray-release-title">{displayTitle(release.title)}</h2>
 
-              <div className={`lp-ray-release-media is-${surface.id}`}>
-                <div className="lp-ray-release-glow" />
-                <div className="lp-ray-release-panel">
-                  <span className="lp-ray-release-panel-kicker">
-                    {SURFACE_LABELS[surface.id]}
-                  </span>
-                  <strong className="lp-ray-release-panel-title">{headline}</strong>
-                  <span className="lp-ray-release-panel-version">v{surface.version}</span>
-                </div>
-                <div className="lp-ray-release-strips" aria-hidden="true">
-                  <span />
-                  <span />
-                </div>
-              </div>
+                  <div className={`lp-ray-release-media is-${surface.id}`}>
+                    <div className="lp-ray-release-glow" />
+                    <div className="lp-ray-release-panel">
+                      <SurfaceIcon surface={surface.id} className="lp-ray-release-panel-icon" />
+                      <span className="lp-ray-release-panel-kicker">
+                        {SURFACE_PANEL_LABELS[surface.id]}
+                      </span>
+                      <strong className="lp-ray-release-panel-title">
+                        {displayTitle(release.title)}
+                      </strong>
+                      <span className="lp-ray-release-panel-version">v{release.version}</span>
+                    </div>
+                    <div className="lp-ray-release-strips" aria-hidden="true">
+                      <span />
+                      <span />
+                    </div>
+                  </div>
 
-              <div className="lp-ray-release-copy">
-                {intro.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
-              </div>
-
-              {sections.map((section) => (
-                <section key={section.label} className="lp-ray-release-section">
-                  <h3 className="lp-ray-release-section-title">{section.label}</h3>
-                  <ul className="lp-ray-release-list">
-                    {section.items.map((item) => (
-                      <li key={`${section.label}-${item}`}>
-                        {item.includes(":") ? (
-                          <>
-                            <strong>{item.split(":")[0]}</strong>
-                            {`:${item.slice(item.indexOf(":") + 1)}`}
-                          </>
-                        ) : (
-                          item
-                        )}
-                      </li>
+                  <div className="lp-ray-release-copy">
+                    {release.intro.map((paragraph) => (
+                      <p key={`${release.id}-${paragraph}`}>{cleanParagraph(paragraph)}</p>
                     ))}
-                  </ul>
-                </section>
-              ))}
+                  </div>
 
-              <div className="lp-ray-release-footer">
-                <div className="lp-ray-release-mini-list">
-                  {highlights.map((item) => (
-                    <span key={item} className="lp-ray-release-mini-pill">
-                      {item}
-                    </span>
+                  {release.sections.map((section) => (
+                    <section
+                      key={`${release.id}-${section.label}`}
+                      className="lp-ray-release-section"
+                    >
+                      <h3 className="lp-ray-release-section-title">{section.label}</h3>
+                      <ul className="lp-ray-release-list">
+                        {section.items.map((item) => (
+                          <li key={`${release.id}-${section.label}-${item}`}>{item}</li>
+                        ))}
+                      </ul>
+                    </section>
                   ))}
-                </div>
 
-                <a
-                  href={commitUrl(surface)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="lp-ray-release-link"
-                >
-                  View latest commit
-                </a>
-              </div>
-            </div>
-          </article>
+                  <div className="lp-ray-release-footer">
+                    <a
+                      href={release.linkUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="lp-ray-release-link"
+                    >
+                      {release.linkLabel}
+                    </a>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
         </section>
       </main>
 
