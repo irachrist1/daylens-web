@@ -27,9 +27,6 @@ export function MobileNav() {
 
       {open && (
         <div className="landing-mobile-menu" onClick={() => setOpen(false)}>
-          <a href="#web-companion" className="landing-mobile-link">
-            Web Companion
-          </a>
           <Link href="/link" className="landing-mobile-link landing-mobile-link-accent">
             Connect Device
           </Link>

@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { DownloadButtons } from "./components/DownloadButtons";
 import { MobileNav } from "./components/MobileNav";
@@ -25,7 +24,8 @@ export default async function LandingPage({
       {/* Header */}
       <header className="landing-header">
         <Link href="/" className="landing-logo">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/app-icon.png"
             alt="Daylens"
             width={36}
@@ -37,9 +37,6 @@ export default async function LandingPage({
 
         {/* Desktop nav — hidden on mobile */}
         <nav className="landing-nav-desktop">
-          <a href="#web-companion" className="landing-nav-link">
-            Web Companion
-          </a>
           <Link href="/link" className="landing-nav-link landing-nav-link-accent">
             Connect Device
           </Link>

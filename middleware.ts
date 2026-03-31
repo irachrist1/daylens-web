@@ -33,7 +33,9 @@ export async function middleware(request: NextRequest) {
 
   const session = request.cookies.get(SESSION_COOKIE)?.value;
   if (!session) {
-    return NextResponse.redirect(new URL("/", request.url));
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
+    return NextResponse.redirect(url);
   }
 
   try {
@@ -45,10 +47,14 @@ export async function middleware(request: NextRequest) {
       payload.sessionKind !== "web" ||
       payload.exp * 1000 <= Date.now()
     ) {
-      return NextResponse.redirect(new URL("/", request.url));
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url);
     }
   } catch {
-    return NextResponse.redirect(new URL("/", request.url));
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
