@@ -2070,16 +2070,6 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
   color: var(--lp-ink);
 }
 
-.lp-dia-archive-copy,
-.lp-dia-mobile-copy {
-  margin: 0 0 2rem;
-  font-size: 0.9375rem;
-  line-height: 1.7;
-  font-weight: 300;
-  color: var(--lp-ink-muted);
-  max-width: 20rem;
-}
-
 .lp-dia-archive-nav {
   display: flex;
   flex-direction: column;
@@ -2189,26 +2179,6 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
 }
 
 .lp-dia-version-pill,
-.lp-dia-surface-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 1.75rem;
-  border-radius: 999px;
-  padding: 0 0.7rem;
-  border: 1px solid rgba(26,24,22,0.16);
-  color: var(--lp-ink);
-  font-size: 0.875rem;
-  line-height: 1;
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  text-decoration: none;
-}
-
-.lp-dia-surface-chip {
-  color: var(--lp-ink-faint);
-}
-
 .lp-dia-entry-date {
   font-size: 0.875rem;
   line-height: 1.4;
@@ -2276,8 +2246,7 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
   margin-top: 1.5rem;
 }
 
-.lp-dia-entry-link,
-.lp-dia-entry-repo {
+.lp-dia-entry-link {
   font-size: 0.8125rem;
   line-height: 1.4;
   color: var(--lp-ink-faint);

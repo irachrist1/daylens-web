@@ -20,12 +20,6 @@ type ReleaseEntry = {
   commitUrl: string;
 };
 
-const REPO_LABELS: Record<SurfaceId, string> = {
-  web: "daylens-web",
-  mac: "daylens",
-  windows: "daylens-windows",
-};
-
 const REPO_URLS: Record<SurfaceId, string> = {
   web: "https://github.com/irachrist1/daylens-web",
   mac: "https://github.com/irachrist1/daylens",
@@ -215,10 +209,6 @@ export function ChangelogPageClient() {
             <h1 id="daylens-changelog-title" className="lp-dia-archive-title">
               Changelog
             </h1>
-            <p className="lp-dia-archive-copy">
-              Real shipped updates across Daylens for macOS, Windows, and the
-              web companion.
-            </p>
 
             <nav className="lp-dia-archive-nav" aria-label="Release notes by month">
               {archiveYears.map(([year, groups]) => (
@@ -240,9 +230,6 @@ export function ChangelogPageClient() {
           <div className="lp-dia-content">
             <div className="lp-dia-mobile-heading">
               <h1 className="lp-dia-mobile-title">Changelog</h1>
-              <p className="lp-dia-mobile-copy">
-                Real shipped updates across the Daylens product surfaces.
-              </p>
             </div>
 
             {monthGroups.map((group) => (
@@ -277,7 +264,6 @@ export function ChangelogPageClient() {
                           <time dateTime={entry.isoDate} className="lp-dia-entry-date">
                             {formatFullDate(entry.isoDate)}
                           </time>
-                          <span className="lp-dia-surface-chip">{entry.surfaceName}</span>
                         </div>
                         <a
                           id={`${entry.id}-title`}
@@ -329,9 +315,6 @@ export function ChangelogPageClient() {
                           >
                             View commit {entry.commitHash} on GitHub
                           </a>
-                          <span className="lp-dia-entry-repo">
-                            {REPO_LABELS[entry.surfaceId]}
-                          </span>
                         </div>
                       </div>
                     </article>
