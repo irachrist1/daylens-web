@@ -173,6 +173,7 @@ export default async function LandingPage({
         <div className="landing-footer-links">
           <Link href="/link">Connect Device</Link>
           <Link href="/dashboard">Dashboard</Link>
+          <Link href="/docs">Docs</Link>
           <Link href="/recover">Recover Account</Link>
         </div>
         <p className="landing-fine-print">
