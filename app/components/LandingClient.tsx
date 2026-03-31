@@ -213,7 +213,7 @@ export function LandingClient() {
           aria-hidden="true"
         >
           <Image
-            src="/screenshots/screenshot-dashboard.png"
+            src="/daylens/screenshots/screenshot-dashboard.png"
             alt="Daylens dashboard"
             width={580}
             height={420}
@@ -314,7 +314,7 @@ export function LandingClient() {
             <div className="lp-split-visual reveal">
               <div className="lp-screenshot-frame img-reveal">
                 <Image
-                  src="/screenshots/screenshot-timeline.png"
+                  src="/daylens/screenshots/screenshot-timeline.png"
                   alt="Daylens timeline view showing daily activity blocks — Tax Filing, Development, and more"
                   fill
                   className="object-cover object-top"
@@ -369,7 +369,7 @@ export function LandingClient() {
             <div className="lp-split-visual reveal">
               <div className="lp-screenshot-frame img-reveal">
                 <Image
-                  src="/screenshots/screenshot-chat.png"
+                  src="/daylens/screenshots/screenshot-chat.png"
                   alt="Daylens AI chat showing focus pattern analysis and weekly breakdown"
                   fill
                   className="object-cover object-top"
@@ -383,7 +383,7 @@ export function LandingClient() {
           <div className="lp-feature-wide reveal">
             <div className="lp-screenshot-frame-wide img-reveal">
               <Image
-                src="/screenshots/screenshot-popover.png"
+                src="/daylens/screenshots/screenshot-popover.png"
                 alt="Daylens timeline popover showing detailed work block analysis — what sites you visited, apps used, and context switches"
                 fill
                 className="object-cover object-top"
