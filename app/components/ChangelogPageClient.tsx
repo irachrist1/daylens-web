@@ -1,39 +1,27 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { generatedChangelogData } from "../changelog/generatedChangelogData";
 import { MarketingFooter, MarketingInnerNav } from "./MarketingChrome";
 import { MarketingCursor } from "./MarketingEffects";
 
-type SurfaceId = (typeof generatedChangelogData.surfaces)[number]["id"];
-type SurfaceRecord = {
-  id: SurfaceId;
-  name: string;
-  description: string;
-  version: string;
-  latestCommitDate: string | null;
-  latestCommitDateTime: string | null;
-  latestCommitHash: string | null;
-  recentCommits: ReadonlyArray<{
-    date: string;
-    dateTime: string;
-    shortHash: string;
-    subject: string;
-  }>;
+type SurfaceRecord = (typeof generatedChangelogData.surfaces)[number];
+type SurfaceId = SurfaceRecord["id"];
+type ReleaseSection = {
+  label: "New" | "Improvements" | "Fixes";
+  items: string[];
 };
 
-type ReleaseEntry = {
-  id: string;
-  surfaceId: SurfaceId;
-  surfaceName: string;
-  version: string;
-  isoDate: string;
-  isoDateTime: string;
-  title: string;
-  intro: string;
-  sections: Array<{ title?: string; body?: string; bullets?: string[] }>;
-  moreUpdates: string[];
-  commitHash: string;
-  commitUrl: string;
+const SURFACE_LABELS: Record<SurfaceId, string> = {
+  mac: "macOS",
+  windows: "Windows",
+  web: "Web",
+};
+
+const SURFACE_ICONS: Record<SurfaceId, string> = {
+  mac: "◉",
+  windows: "◫",
+  web: "◎",
 };
 
 const REPO_URLS: Record<SurfaceId, string> = {
@@ -42,261 +30,268 @@ const REPO_URLS: Record<SurfaceId, string> = {
   windows: "https://github.com/irachrist1/daylens-windows",
 };
 
-function formatMonthLabel(isoDate: string) {
-  return new Date(`${isoDate}T12:00:00Z`).toLocaleString("en-US", {
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
+const PLATFORM_ORDER: SurfaceId[] = ["mac", "windows", "web"];
+
+function cleanSubject(subject: string) {
+  return subject.replace(/^(feat|fix|docs|chore):\s*/i, "").trim();
 }
 
-function formatMonthShort(isoDate: string) {
-  return new Date(`${isoDate}T12:00:00Z`).toLocaleString("en-US", {
-    month: "short",
-    timeZone: "UTC",
-  });
+function isOperationalCommit(subject: string) {
+  return /^(prepare|release|sync|trim|rebuild|refresh)\b/i.test(cleanSubject(subject));
 }
 
-function formatFullDate(isoDate: string) {
-  return new Date(`${isoDate}T12:00:00Z`).toLocaleString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-  });
+function pickHeadlineCommit(surface: SurfaceRecord) {
+  return (
+    surface.recentCommits.find((commit) => !isOperationalCommit(commit.subject)) ??
+    surface.recentCommits[0]
+  );
 }
 
-function formatDateTime(isoDateTime: string) {
-  return new Date(isoDateTime).toLocaleString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+function sentenceCase(value: string) {
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-function monthAnchor(isoDate: string) {
-  const [year, month] = isoDate.split("-");
-  return `${month}-${year}`;
-}
+function headlineFromSurface(surface: SurfaceRecord) {
+  const subject = cleanSubject(pickHeadlineCommit(surface)?.subject ?? surface.name);
 
-function createEntry(
-  surface: SurfaceRecord
-): ReleaseEntry {
-  const latestCommit = surface.recentCommits[0];
-  const shippedCommits = surface.recentCommits.slice(0, 4);
-  const followUpCommits = surface.recentCommits.slice(4, 7);
-  const extraCommits = surface.recentCommits.slice(7, 11);
-  const cleanedLatest = latestCommit
-    ? latestCommit.subject.replace(/^(feat|fix|docs|chore):\s*/i, "")
-    : `Latest work in ${surface.name}`;
-  const cleanedTitle =
-    cleanedLatest.length > 52
-      ? `${surface.name} update`
-      : cleanedLatest.charAt(0).toUpperCase() + cleanedLatest.slice(1);
-  const intro = latestCommit
-    ? `Latest work in the ${surface.name.toLowerCase()} is centered on “${cleanedLatest}.” ${surface.description}`
-    : surface.description;
-  const sections: ReleaseEntry["sections"] = [
-    {
-      title: "Latest shipped",
-      bullets: shippedCommits.map((commit) => commit.subject),
-    },
-  ];
-
-  if (followUpCommits.length) {
-    sections.push({
-      title: "Supporting work",
-      bullets: followUpCommits.map((commit) => commit.subject),
-    });
+  if (surface.id === "windows" && /multi-provider/i.test(subject)) {
+    return "Multi-provider AI on Windows";
   }
 
-  return {
-    id: `${surface.id}-${surface.version.replaceAll(".", "-")}`,
-    surfaceId: surface.id,
-    surfaceName: surface.name,
-    version: surface.version,
-    isoDate: surface.latestCommitDate ?? generatedChangelogData.generatedAt.slice(0, 10),
-    isoDateTime:
-      surface.latestCommitDateTime ??
-      `${surface.latestCommitDate ?? generatedChangelogData.generatedAt.slice(0, 10)}T12:00:00Z`,
-    title: cleanedTitle,
-    intro,
-    sections,
-    moreUpdates: extraCommits.map((commit) => commit.subject),
-    commitHash: surface.latestCommitHash ?? "unknown",
-    commitUrl: `${REPO_URLS[surface.id]}/commit/${surface.latestCommitHash ?? ""}`,
-  };
+  if (surface.id === "mac" && /reports, widgets/i.test(subject)) {
+    return "Reports, widgets, and focus review";
+  }
+
+  if (surface.id === "web" && /roadmap\/changelog/i.test(subject)) {
+    return "Roadmap, changelog, and web polish";
+  }
+
+  return sentenceCase(
+    subject
+      .replace(/^add\s+/i, "")
+      .replace(/^improve\s+/i, "")
+      .replace(/^support\s+/i, "")
+      .replace(/^prepare\s+/i, "")
+      .replace(/^release\s+/i, "")
+  );
 }
 
-function buildReleaseEntries(): ReleaseEntry[] {
-  return (generatedChangelogData.surfaces as readonly SurfaceRecord[])
-    .map((surface) => createEntry(surface))
-    .sort((a, b) => b.isoDateTime.localeCompare(a.isoDateTime));
+function introFromSurface(surface: SurfaceRecord) {
+  return [
+    `${surface.name} v${surface.version} centers on ${headlineFromSurface(surface).toLowerCase()}.`,
+    surface.description,
+  ];
+}
+
+function sectionForSubject(subject: string): ReleaseSection["label"] {
+  const normalized = cleanSubject(subject).toLowerCase();
+
+  if (
+    /^fix\b/.test(normalized) ||
+    normalized.includes(" guard ") ||
+    normalized.includes("prevent ") ||
+    normalized.includes("cleanup") ||
+    normalized.includes("preserve ")
+  ) {
+    return "Fixes";
+  }
+
+  if (
+    /^add\b/.test(normalized) ||
+    normalized.includes("support") ||
+    normalized.includes("reports") ||
+    normalized.includes("widgets") ||
+    normalized.includes("launch") ||
+    normalized.includes("roadmap") ||
+    normalized.includes("changelog")
+  ) {
+    return "New";
+  }
+
+  return "Improvements";
+}
+
+function sectionsFromSurface(surface: SurfaceRecord) {
+  const relevantCommits = surface.recentCommits
+    .filter((commit) => !isOperationalCommit(commit.subject))
+    .slice(0, 8);
+
+  const grouped = relevantCommits.reduce(
+    (acc, commit) => {
+      const label = sectionForSubject(commit.subject);
+      acc[label].push(cleanSubject(commit.subject));
+      return acc;
+    },
+    {
+      New: [] as string[],
+      Improvements: [] as string[],
+      Fixes: [] as string[],
+    }
+  );
+
+  return (["New", "Improvements", "Fixes"] as const)
+    .map((label) => ({ label, items: grouped[label] }))
+    .filter((section) => section.items.length > 0);
+}
+
+function formatDate(isoDate: string | null) {
+  if (!isoDate) return "Unknown date";
+  return new Date(`${isoDate}T12:00:00Z`).toLocaleString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+function commitUrl(surface: SurfaceRecord) {
+  return `${REPO_URLS[surface.id]}/commit/${surface.latestCommitHash ?? ""}`;
 }
 
 export function ChangelogPageClient() {
-  const entries = buildReleaseEntries();
-  const monthGroups = Array.from(
-    entries.reduce((acc, entry) => {
-      const key = monthAnchor(entry.isoDate);
-      const existing = acc.get(key);
-      if (existing) {
-        existing.entries.push(entry);
-        return acc;
-      }
+  const [activeSurface, setActiveSurface] = useState<SurfaceId>("mac");
 
-      acc.set(key, {
-        key,
-        label: formatMonthLabel(entry.isoDate),
-        shortLabel: formatMonthShort(entry.isoDate),
-        year: entry.isoDate.slice(0, 4),
-        entries: [entry],
-      });
-      return acc;
-    }, new Map<string, { key: string; label: string; shortLabel: string; year: string; entries: ReleaseEntry[] }>())
-      .values()
+  const surface = useMemo(
+    () =>
+      generatedChangelogData.surfaces.find((item) => item.id === activeSurface) ??
+      generatedChangelogData.surfaces[0],
+    [activeSurface]
   );
 
-  const archiveYears = Array.from(
-    monthGroups.reduce((acc, group) => {
-      const existing = acc.get(group.year);
-      if (existing) {
-        existing.push(group);
-      } else {
-        acc.set(group.year, [group]);
-      }
-      return acc;
-    }, new Map<string, typeof monthGroups>())
-  );
+  const headline = headlineFromSurface(surface);
+  const intro = introFromSurface(surface);
+  const sections = sectionsFromSurface(surface);
+  const highlights = surface.recentCommits
+    .filter((commit) => !isOperationalCommit(commit.subject))
+    .slice(0, 3)
+    .map((commit) => cleanSubject(commit.subject));
 
   return (
-    <div className="lp lp-dia-page">
+    <div className="lp lp-ray-changelog-page">
       <MarketingCursor />
-      <MarketingInnerNav current="changelog" theme="light" />
+      <MarketingInnerNav current="changelog" theme="dark" variant="capsule" />
 
-      <main className="lp-dia-main">
-        <section className="lp-container lp-dia-shell" aria-labelledby="daylens-changelog-title">
-          <aside className="lp-dia-archive" aria-label="Changelog archive">
-            <h1 id="daylens-changelog-title" className="lp-dia-archive-title">
+      <main className="lp-ray-changelog-main">
+        <section className="lp-container lp-ray-changelog-shell" aria-labelledby="changelog-title">
+          <header className="lp-ray-changelog-header">
+            <h1 id="changelog-title" className="lp-ray-changelog-title">
               Changelog
             </h1>
 
-            <nav className="lp-dia-archive-nav" aria-label="Release notes by month">
-              {archiveYears.map(([year, groups]) => (
-                <div key={year} className="lp-dia-archive-year">
-                  <p className="lp-dia-year-label">{year}</p>
-                  <div className="lp-dia-month-links">
-                    {groups.map((group) => (
-                      <a key={group.key} href={`#${group.key}`} className="lp-dia-month-link">
-                        <span className="lp-dia-month-dot" />
-                        <span>{group.label.split(" ")[0]}</span>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </nav>
-          </aside>
+            <div
+              className="lp-ray-platform-switch"
+              role="tablist"
+              aria-label="Select product surface"
+            >
+              {PLATFORM_ORDER.map((surfaceId) => {
+                const item = generatedChangelogData.surfaces.find(
+                  (candidate) => candidate.id === surfaceId
+                );
+                if (!item) return null;
 
-          <div className="lp-dia-content">
-            <div className="lp-dia-mobile-heading">
-              <h1 className="lp-dia-mobile-title">Changelog</h1>
+                return (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeSurface === item.id}
+                  className={`lp-ray-platform-pill${
+                    activeSurface === item.id ? " is-active" : ""
+                  }`}
+                  onClick={() => setActiveSurface(item.id)}
+                >
+                  <span className="lp-ray-platform-icon">{SURFACE_ICONS[item.id]}</span>
+                  <span>{SURFACE_LABELS[item.id]}</span>
+                </button>
+                );
+              })}
             </div>
+          </header>
 
-            {monthGroups.map((group) => (
-              <section
-                key={group.key}
-                id={group.key}
-                className="lp-dia-month-group"
-                aria-labelledby={`${group.key}-heading`}
+          <article className="lp-ray-release-entry">
+            <aside className="lp-ray-release-meta">
+              <a
+                href={`#${surface.id}`}
+                className="lp-ray-release-version"
+                id={surface.id}
               >
-                <div className="lp-dia-month-rail" aria-hidden="true">
-                  <div className="lp-dia-month-rail-inner">
-                    <span className="lp-dia-month-short">{group.shortLabel}</span>
-                    <span className="lp-dia-month-rail-dot" />
-                  </div>
+                v{surface.version}
+              </a>
+              <time
+                className="lp-ray-release-date"
+                dateTime={surface.latestCommitDate ?? undefined}
+              >
+                {formatDate(surface.latestCommitDate)}
+              </time>
+            </aside>
+
+            <div className="lp-ray-release-body">
+              <h2 className="lp-ray-release-title">
+                {headline}
+              </h2>
+
+              <div className={`lp-ray-release-media is-${surface.id}`}>
+                <div className="lp-ray-release-glow" />
+                <div className="lp-ray-release-panel">
+                  <span className="lp-ray-release-panel-kicker">
+                    {SURFACE_LABELS[surface.id]}
+                  </span>
+                  <strong className="lp-ray-release-panel-title">{headline}</strong>
+                  <span className="lp-ray-release-panel-version">v{surface.version}</span>
                 </div>
+                <div className="lp-ray-release-strips" aria-hidden="true">
+                  <span />
+                  <span />
+                </div>
+              </div>
 
-                <div className="lp-dia-month-content">
-                  <h2 id={`${group.key}-heading`} className="sr-only">
-                    {group.label}
-                  </h2>
+              <div className="lp-ray-release-copy">
+                {intro.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </div>
 
-                  {group.entries.map((entry) => (
-                    <article
-                      key={entry.id}
-                      id={entry.id}
-                      className="lp-dia-entry"
-                      aria-labelledby={`${entry.id}-title`}
-                    >
-                      <div className="lp-dia-entry-head">
-                        <div className="lp-dia-entry-meta">
-                          <span className="lp-dia-version-pill">v{entry.version}</span>
-                          <span className="lp-dia-surface-label">{entry.surfaceName}</span>
-                          <time dateTime={entry.isoDateTime} className="lp-dia-entry-date">
-                            {formatDateTime(entry.isoDateTime)}
-                          </time>
-                        </div>
-                        <a
-                          id={`${entry.id}-title`}
-                          href={`#${entry.id}`}
-                          className="lp-dia-entry-title"
-                        >
-                          {entry.title}
-                        </a>
-                      </div>
+              {sections.map((section) => (
+                <section key={section.label} className="lp-ray-release-section">
+                  <h3 className="lp-ray-release-section-title">{section.label}</h3>
+                  <ul className="lp-ray-release-list">
+                    {section.items.map((item) => (
+                      <li key={`${section.label}-${item}`}>
+                        {item.includes(":") ? (
+                          <>
+                            <strong>{item.split(":")[0]}</strong>
+                            {`:${item.slice(item.indexOf(":") + 1)}`}
+                          </>
+                        ) : (
+                          item
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
 
-                      <div className="lp-dia-entry-body">
-                        <p>{entry.intro}</p>
-
-                        {entry.sections.map((section, index) => (
-                          <section key={`${entry.id}-section-${index}`} className="lp-dia-section">
-                            {section.title ? (
-                              <h3 className="lp-dia-section-title">{section.title}</h3>
-                            ) : null}
-                            {section.body ? <p>{section.body}</p> : null}
-                            {section.bullets?.length ? (
-                              <ul className="lp-dia-bullet-list">
-                                {section.bullets.map((bullet) => (
-                                  <li key={bullet}>{bullet}</li>
-                                ))}
-                              </ul>
-                            ) : null}
-                          </section>
-                        ))}
-
-                        {entry.moreUpdates.length ? (
-                          <section className="lp-dia-section">
-                            <h3 className="lp-dia-section-title">
-                              Plus more shipped work in this build:
-                            </h3>
-                            <ul className="lp-dia-bullet-list">
-                              {entry.moreUpdates.map((update) => (
-                                <li key={update}>{update}</li>
-                              ))}
-                            </ul>
-                          </section>
-                        ) : null}
-
-                        <div className="lp-dia-entry-footer">
-                          <a
-                            href={entry.commitUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="lp-dia-entry-link"
-                          >
-                            View commit {entry.commitHash} on GitHub
-                          </a>
-                        </div>
-                      </div>
-                    </article>
+              <div className="lp-ray-release-footer">
+                <div className="lp-ray-release-mini-list">
+                  {highlights.map((item) => (
+                    <span key={item} className="lp-ray-release-mini-pill">
+                      {item}
+                    </span>
                   ))}
                 </div>
-              </section>
-            ))}
-          </div>
+
+                <a
+                  href={commitUrl(surface)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="lp-ray-release-link"
+                >
+                  View latest commit
+                </a>
+              </div>
+            </div>
+          </article>
         </section>
       </main>
 

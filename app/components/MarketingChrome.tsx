@@ -12,15 +12,17 @@ const NAV_LINKS: Array<{ href: string; label: string; key: MarketingNavKey }> =
 export function MarketingInnerNav({
   current,
   theme = "dark",
+  variant = "default",
 }: {
   current: MarketingNavKey;
   theme?: "dark" | "light";
+  variant?: "default" | "capsule";
 }) {
   return (
     <header
       className={`lp-docs-nav${
         theme === "light" ? " lp-docs-nav--light" : ""
-      }`}
+      }${variant === "capsule" ? " lp-docs-nav--capsule" : ""}`}
     >
       <Link
         href="/"
