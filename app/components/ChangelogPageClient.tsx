@@ -37,6 +37,9 @@ export function ChangelogPageClient() {
       minute: "2-digit",
     }
   );
+  const latestWindowsCommit = windowsSurface?.recentCommits[0];
+  const hasFeaturedWindowsMoment =
+    latestWindowsCommit?.subject === "Add multi-provider AI support for Windows";
 
   return (
     <div className="lp">
@@ -149,6 +152,81 @@ export function ChangelogPageClient() {
           ))}
         </div>
       </div>
+
+      {hasFeaturedWindowsMoment ? (
+        <section className="lp-section lp-section--light">
+          <div className="lp-container">
+            <div className="lp-section-intro reveal">
+              <span className="text-label lp-overline-dark">Featured release</span>
+              <p className="lp-section-desc">
+                This one deserves more than a line item. The latest Windows push
+                changes what the app can be, not just how it looks.
+              </p>
+            </div>
+
+            <div className="lp-featured-release">
+              <div className="lp-featured-release-body reveal">
+                <div className="lp-accent-rule" />
+                <h2 className="text-display-md lp-feature-title">
+                  Windows got
+                  <br />
+                  its AI stack.
+                </h2>
+                <p className="lp-feature-body">
+                  Daylens for Windows v{windowsSurface?.version} just landed
+                  multi-provider AI support. This is a real product step: the
+                  app now supports Anthropic, OpenAI, and Google models, lets
+                  people choose their provider in onboarding and settings, and
+                  routes Insights through the selected backend instead of
+                  assuming a single model path.
+                </p>
+                <ul className="lp-bullets">
+                  <li>— Provider and model selection now live in onboarding and Settings</li>
+                  <li>— API keys are stored per provider through the OS credential vault</li>
+                  <li>— Insights copy and flows now adapt to the selected AI backend</li>
+                  <li>— Updater and IPC paths were tightened as part of the same push</li>
+                </ul>
+                <p className="lp-featured-release-note">
+                  Source: commit {windowsSurface?.latestCommitHash} in{" "}
+                  {REPO_LABELS.windows}, dated {windowsSurface?.latestCommitDate}.
+                </p>
+              </div>
+
+              <div className="lp-featured-release-panel reveal delay-200">
+                <div className="lp-featured-release-stat">
+                  <span className="text-label lp-story-mini-label">Current build</span>
+                  <p className="lp-story-surface-title">v{windowsSurface?.version}</p>
+                  <p className="lp-story-surface-copy">Windows app</p>
+                </div>
+                <div className="lp-featured-release-grid">
+                  <div className="lp-featured-release-cell">
+                    <span className="text-label lp-story-mini-label">Providers</span>
+                    <p className="lp-featured-release-value">3</p>
+                    <p className="lp-story-surface-copy">Anthropic, OpenAI, Google</p>
+                  </div>
+                  <div className="lp-featured-release-cell">
+                    <span className="text-label lp-story-mini-label">Scope</span>
+                    <p className="lp-featured-release-value">16</p>
+                    <p className="lp-story-surface-copy">files changed in the commit</p>
+                  </div>
+                  <div className="lp-featured-release-cell">
+                    <span className="text-label lp-story-mini-label">Added</span>
+                    <p className="lp-featured-release-value">1,094</p>
+                    <p className="lp-story-surface-copy">lines shipped in the push</p>
+                  </div>
+                  <div className="lp-featured-release-cell">
+                    <span className="text-label lp-story-mini-label">Commit</span>
+                    <p className="lp-featured-release-value">
+                      {windowsSurface?.latestCommitHash}
+                    </p>
+                    <p className="lp-story-surface-copy">major Windows product step</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <section className="lp-section lp-section--light">
         <div className="lp-container">

@@ -2414,6 +2414,52 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
   color: rgba(252,249,248,0.82);
 }
 
+.lp-featured-release {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+}
+
+.lp-featured-release-panel {
+  border: 1px solid var(--lp-divider);
+  background: linear-gradient(180deg, rgba(212,130,42,0.04), rgba(26,24,22,0.015));
+}
+
+.lp-featured-release-stat {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--lp-divider);
+}
+
+.lp-featured-release-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--lp-divider);
+}
+
+.lp-featured-release-cell {
+  background: var(--lp-bone);
+  padding: 1.25rem;
+  min-height: 10.5rem;
+}
+
+.lp-featured-release-value {
+  margin: 0.45rem 0 0.35rem;
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-weight: 300;
+  color: var(--lp-accent);
+}
+
+.lp-featured-release-note {
+  margin: 1.4rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.65;
+  color: var(--lp-ink-faint);
+}
+
 .lp-release-list {
   display: flex;
   flex-direction: column;
@@ -2586,6 +2632,10 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
     gap: 1.5rem;
   }
 
+  .lp-featured-release {
+    grid-template-columns: 1fr;
+  }
+
   .lp-release-groups {
     grid-template-columns: 1fr;
   }
@@ -2609,6 +2659,10 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
 
   .lp-story-wide-stats,
   .lp-story-surface-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lp-featured-release-grid {
     grid-template-columns: 1fr;
   }
 }
