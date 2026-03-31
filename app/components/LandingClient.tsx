@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import posthog from "posthog-js";
 
 // ── Reveal hook ────────────────────────────────────────────────────────────────
@@ -120,7 +121,7 @@ const MARQUEE_ITEMS = [
   "Focus Scoring",
   "No Subscription",
   "Web Dashboard",
-  "QR Code Auth",
+  "QR Code Pairing",
   "Cross-Device Sync",
   "Every App, Every Site",
 ];
@@ -204,6 +205,23 @@ export function LandingClient() {
       {/* ── Hero ────────────────────────────────────────────────────────────── */}
       <section className="lp-hero">
         <div className="lp-hero-grid" aria-hidden="true" />
+
+        {/* Floating dashboard screenshot — desktop only */}
+        <div
+          className="lp-hero-screenshot"
+          style={{ animation: "lp-fadeUp 1s var(--ease-out-expo) 0.7s both" }}
+          aria-hidden="true"
+        >
+          <Image
+            src="/screenshots/screenshot-dashboard.png"
+            alt="Daylens dashboard"
+            width={580}
+            height={420}
+            priority
+            className="lp-hero-screenshot-img"
+          />
+        </div>
+
         <div className="lp-hero-content">
           <span
             className="text-label lp-overline"
@@ -229,14 +247,14 @@ export function LandingClient() {
             style={{ animation: "lp-fadeUp 0.8s var(--ease-out-expo) 0.85s both" }}
           >
             <a
-              href="/api/download/mac"
+              href="/daylens/api/download/mac"
               className="lp-btn-primary"
               onClick={() => posthog.capture("download_clicked", { platform: "mac" })}
             >
               <AppleIcon /> Download for Mac <span>→</span>
             </a>
             <a
-              href="/api/download/windows"
+              href="/daylens/api/download/windows"
               className="lp-btn-ghost-light"
               onClick={() => posthog.capture("download_clicked", { platform: "windows" })}
             >
@@ -250,6 +268,7 @@ export function LandingClient() {
             Free forever. No account. No subscription.
           </p>
         </div>
+
         <div
           className="lp-scroll-hint"
           style={{ animation: "lp-fadeIn 0.6s ease 1.4s both" }}
@@ -290,35 +309,17 @@ export function LandingClient() {
             </p>
           </div>
 
-          {/* Feature 1: Visibility */}
+          {/* Feature 1: Timeline visibility */}
           <div className="lp-split">
             <div className="lp-split-visual reveal">
-              <div className="img-container">
-                <div className="img-reveal lp-visual-applist">
-                  <div className="lp-visual-header">
-                    <span className="text-label" style={{ color: "rgba(252,249,248,0.3)" }}>Today&apos;s usage</span>
-                    <span className="lp-focus-badge">78% focus</span>
-                  </div>
-                  {[
-                    { name: "Figma", time: "3h 22m", pct: 78, color: "#8B5CF6" },
-                    { name: "VS Code", time: "2h 14m", pct: 52, color: "#3B82F6" },
-                    { name: "Slack", time: "1h 08m", pct: 26, color: "#10B981" },
-                    { name: "Safari", time: "0h 47m", pct: 18, color: "#F59E0B" },
-                    { name: "Terminal", time: "0h 31m", pct: 12, color: "#6B7280" },
-                  ].map((app) => (
-                    <div key={app.name} className="lp-app-row">
-                      <span className="lp-app-dot" style={{ background: app.color }} />
-                      <span className="lp-app-name">{app.name}</span>
-                      <div className="lp-app-bar-track">
-                        <div
-                          className="lp-app-bar"
-                          style={{ width: `${app.pct}%`, background: app.color }}
-                        />
-                      </div>
-                      <span className="lp-app-time">{app.time}</span>
-                    </div>
-                  ))}
-                </div>
+              <div className="lp-screenshot-frame img-reveal">
+                <Image
+                  src="/screenshots/screenshot-timeline.png"
+                  alt="Daylens timeline view showing daily activity blocks — Tax Filing, Development, and more"
+                  fill
+                  className="object-cover object-top"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               </div>
             </div>
 
@@ -333,7 +334,7 @@ export function LandingClient() {
               </p>
               <ul className="lp-bullets">
                 <li>— Every app and browser tab, automatically logged</li>
-                <li>— Organized by category: Work, Social, Entertainment</li>
+                <li>— Grouped into meaningful work blocks, not raw events</li>
                 <li>— Minute-by-minute timeline of your entire day</li>
                 <li>— Focus score calculated from your real patterns</li>
               </ul>
@@ -358,7 +359,7 @@ export function LandingClient() {
                 <li>— Natural language questions about your activity</li>
                 <li>— Answers grounded in your real usage data</li>
                 <li>— Trend analysis across days and weeks</li>
-                <li>— Conversation history saved for context</li>
+                <li>— Weekly summaries and pattern detection</li>
               </ul>
               <Link href="/chat" className="lp-btn-ghost-dark">
                 Try AI chat <span>→</span>
@@ -366,27 +367,38 @@ export function LandingClient() {
             </div>
 
             <div className="lp-split-visual reveal">
-              <div className="img-container">
-                <div className="img-reveal lp-visual-chat">
-                  <div className="lp-chat-msg lp-chat-msg--user">
-                    How was my focus today?
-                  </div>
-                  <div className="lp-chat-msg lp-chat-msg--ai">
-                    <span className="lp-chat-label">Daylens AI</span>
-                    Strong morning — 78% focus score before noon. You spent 3h 22m in
-                    Figma with minimal switching. Afternoon dropped after 2pm: 8 context
-                    switches in 90 minutes, mostly Slack and email.
-                  </div>
-                  <div className="lp-chat-msg lp-chat-msg--user">
-                    What should I change?
-                  </div>
-                  <div className="lp-chat-msg lp-chat-msg--ai">
-                    <span className="lp-chat-label">Daylens AI</span>
-                    <span className="lp-typing-dots">
-                      <span /><span /><span />
-                    </span>
-                  </div>
-                </div>
+              <div className="lp-screenshot-frame img-reveal">
+                <Image
+                  src="/screenshots/screenshot-chat.png"
+                  alt="Daylens AI chat showing focus pattern analysis and weekly breakdown"
+                  fill
+                  className="object-cover object-top"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Feature 3: Deep drill-down — full-width cinematic */}
+          <div className="lp-feature-wide reveal">
+            <div className="lp-screenshot-frame-wide img-reveal">
+              <Image
+                src="/screenshots/screenshot-popover.png"
+                alt="Daylens timeline popover showing detailed work block analysis — what sites you visited, apps used, and context switches"
+                fill
+                className="object-cover object-top"
+                sizes="100vw"
+              />
+              <div className="lp-feature-wide-overlay" />
+              <div className="lp-feature-wide-content">
+                <div className="lp-accent-rule" />
+                <h3 className="text-display-md" style={{ color: "rgba(252,249,248,0.97)", marginBottom: "0.75rem" }}>
+                  Every block,<br />fully explained.
+                </h3>
+                <p style={{ fontSize: "0.9375rem", color: "rgba(252,249,248,0.6)", fontWeight: 300, maxWidth: "38ch", lineHeight: 1.7 }}>
+                  Click any time block to see every site visited, every app used, every
+                  context switch — with AI-generated summaries of what you were actually doing.
+                </p>
               </div>
             </div>
           </div>
@@ -480,7 +492,7 @@ export function LandingClient() {
           <div className="lp-metrics-grid reveal delay-200">
             {[
               { num: "100%", label: "Data stays on your device. Full stop." },
-              { num: "5 min", label: "Dashboard refresh interval. Always current." },
+              { num: "12+", label: "Browsers supported natively. No extensions." },
               { num: "12", label: "Words. Your complete recovery phrase." },
               { num: "0", label: "Accounts, subscriptions, or paywalls." },
             ].map((m, i) => (
@@ -551,7 +563,7 @@ export function LandingClient() {
             </p>
             <div className="lp-cta-actions">
               <a
-                href="/api/download/mac"
+                href="/daylens/api/download/mac"
                 className="lp-btn-primary"
                 onClick={() =>
                   posthog.capture("download_clicked", { platform: "mac", source: "cta" })
@@ -560,7 +572,7 @@ export function LandingClient() {
                 <AppleIcon /> Download for Mac <span>→</span>
               </a>
               <a
-                href="/api/download/windows"
+                href="/daylens/api/download/windows"
                 className="lp-btn-ghost-light"
                 onClick={() =>
                   posthog.capture("download_clicked", { platform: "windows", source: "cta" })
@@ -616,8 +628,8 @@ export function LandingClient() {
               <span className="text-label lp-footer-heading">Support</span>
               <Link href="/docs" className="lp-footer-link">Documentation</Link>
               <Link href="/recover" className="lp-footer-link">Recover Account</Link>
-              <a href="/api/download/mac" className="lp-footer-link">Download for Mac</a>
-              <a href="/api/download/windows" className="lp-footer-link">
+              <a href="/daylens/api/download/mac" className="lp-footer-link">Download for Mac</a>
+              <a href="/daylens/api/download/windows" className="lp-footer-link">
                 Download for Windows
               </a>
             </div>

@@ -14,7 +14,7 @@ export function DownloadButtons() {
       }}
     >
       <a
-        href="/api/download/mac"
+        href="/daylens/api/download/mac"
         onClick={() => posthog.capture('download_clicked', { platform: 'mac' })}
         style={{
           display: "inline-flex",
@@ -34,7 +34,7 @@ export function DownloadButtons() {
         Download for Mac
       </a>
       <a
-        href="/api/download/windows"
+        href="/daylens/api/download/windows"
         onClick={() => posthog.capture('download_clicked', { platform: 'windows' })}
         style={{
           display: "inline-flex",

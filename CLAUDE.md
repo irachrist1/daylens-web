@@ -40,9 +40,22 @@ Key files:
 - `convex/keys.ts` — AES-256-GCM encryption for API keys with HKDF key derivation
 - `convex/snapshots.ts` — snapshot storage with multi-device merging
 
+## Deployment — READ BEFORE TOUCHING ROUTING
+
+The app is served at `christian-tonny.dev/daylens` via a proxy chain. Do NOT change routing without understanding this.
+
+**Chain:** `christian-tonny.dev/daylens` → portfolio `vercel.json` rewrite → `daylens-web-irachrist1s-projects.vercel.app/daylens` → Next.js serves the page.
+
+**Rules:**
+- `basePath: "/daylens"` is set in `next.config.ts` — all routes are prefixed. Raw `<a href="/api/...">` tags must use `/daylens/api/...`, NOT `/api/...` (browser resolves from domain root, bypassing basePath). Use Next.js `<Link>` or hardcode the prefix.
+- The portfolio `vercel.json` (at `/Users/christiantonny/Dev/portfolio/vercel.json`) owns the proxy rewrites. Both repos must be deployed for routing changes to take effect.
+- `daylens-web.vercel.app` is a manually added alias that redirects to `christian-tonny.dev/daylens`.
+- **Vercel Deployment Protection (SSO) must stay OFF** on the daylens-web project (`prj_14YMHN8dwFx2J1SUNTmA77wzbbYW`). If it gets re-enabled, every visitor sees a Vercel sign-in page. Disable via: Vercel dashboard → daylens-web → Settings → Deployment Protection → off. Or via API: `PATCH https://api.vercel.com/v9/projects/prj_14YMHN8dwFx2J1SUNTmA77wzbbYW?teamId=irachrist1s-projects` with `{"ssoProtection": null}`.
+
 ## Do NOT
 
 - Expose raw Convex error messages to users
 - Use server components for pages that depend on the user's local date/timezone
 - Modify the session JWT signing/verification logic without understanding the full auth flow
 - Change `CONVEX_DEPLOYMENT` or `NEXT_PUBLIC_CONVEX_URL` without coordinating with all three repos
+- Use `<a href="/api/...">` without the `/daylens` prefix — downloads and API links will 404
