@@ -216,17 +216,21 @@ export function LandingClient() {
             <div className="lp-split-content reveal delay-200">
               <div className="lp-accent-rule" />
               <h3 className="text-display-md lp-feature-title">
-                Complete visibility.<br />Zero effort.
+                What you were doing.
+                <br />
+                Not just open.
               </h3>
               <p className="lp-feature-body">
-                Daylens runs silently in the background, capturing every app, window title,
-                and website from the moment you start your computer. Nothing to configure.
+                Daylens watches your apps and browser activity natively and
+                builds your day as a timeline of labeled work blocks. No
+                extensions, no screenshots, and nothing leaves your machine
+                unless you choose the web companion.
               </p>
               <ul className="lp-bullets">
-                <li>— Every app and browser tab, automatically logged</li>
-                <li>— Organized by category: Work, Social, Entertainment</li>
-                <li>— Minute-by-minute timeline of your entire day</li>
-                <li>— Focus score calculated from your real patterns</li>
+                <li>— Navigate to any day and see named work blocks, not raw app totals</li>
+                <li>— Click a block to inspect sites, supporting apps, and context switches</li>
+                <li>— AI labels every session automatically from what actually happened</li>
+                <li>— Focus score is based on your own switching behavior over time</li>
               </ul>
               <Link href="/link" className="lp-btn-ghost-dark">
                 View your dashboard <span>→</span>

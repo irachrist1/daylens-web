@@ -60,7 +60,7 @@ export default function DocsPage() {
               <section id="getting-started" style={{ scrollMarginTop: 80 }} className="lp-docs-section">
                 <h2 className="text-headline lp-docs-section-title">Getting Started</h2>
                 <p className="lp-docs-body">
-                  Daylens requires no configuration to get value from it. Download, open, and let it run. By the end of your first day you will have a labeled timeline with focus scores and session breakdowns.
+                  Daylens starts working without setup because the point is to see what your day actually looked like, not to spend the first hour configuring categories. Download it, open it, and let it watch. By the end of the day you will have a timeline of named work blocks, session detail, and a clearer picture of where your attention went.
                 </p>
                 <div className="lp-docs-steps">
                   <div className="lp-docs-step">
@@ -79,7 +79,7 @@ export default function DocsPage() {
                     <div>
                       <p className="lp-docs-step-title">Open and let it run</p>
                       <p className="lp-docs-step-body">
-                        Daylens runs in the background from the menu bar. No setup screens, no categories to configure. It starts watching your activity immediately.
+                        Daylens runs in the background from the menu bar. No extensions, no screenshot prompts, no categories to train. It starts building the evidence of your day immediately.
                       </p>
                     </div>
                   </div>
@@ -88,7 +88,7 @@ export default function DocsPage() {
                     <div>
                       <p className="lp-docs-step-title">Check your timeline</p>
                       <p className="lp-docs-step-body">
-                        Open Daylens at the end of the day. Your activity will already be grouped into labeled sessions with AI analysis on each block.
+                        Open Daylens later in the day and you will already see named blocks like real work, not just app totals. Each block is grouped automatically and analyzed as it completes.
                       </p>
                     </div>
                   </div>
@@ -108,14 +108,14 @@ export default function DocsPage() {
               <section id="timeline" style={{ scrollMarginTop: 80 }} className="lp-docs-section">
                 <h2 className="text-headline lp-docs-section-title">The Timeline</h2>
                 <p className="lp-docs-body">
-                  The timeline shows your day as a sequence of labeled work sessions. These are not categories you configure — Daylens watches your apps and browser tabs, detects when the work shifts, and names each block based on what actually happened.
+                  The timeline is the answer to a more useful question than Screen Time asks. Not which apps were open, but what you were actually doing. Daylens watches your apps and browser activity natively, detects when the work shifts, and turns the day into labeled blocks that read like real sessions.
                 </p>
                 <p className="lp-docs-body">
-                  A session called "Tax Filing and Email" or "Mixed Development and Research Work" came from analyzing your activity, not from a predefined label.
+                  A block like "Tax Filing and Email" or "Mixed Development and Research Work" is not something you typed in. It came from analyzing the evidence of the session itself, so the timeline feels closer to memory than to a raw activity log.
                 </p>
                 <div className="lp-docs-infobox">
                   <span className="lp-docs-infobox-label">Note:</span>
-                  You can navigate to any past day using the date picker at the top of the timeline view. The full history is stored locally on your device.
+                  You can jump to any past day from the date picker and ask the same question again: what was I doing at 2pm last Tuesday? The full history stays stored locally on your device.
                 </div>
               </section>
 
@@ -123,14 +123,14 @@ export default function DocsPage() {
               <section id="session-detail" style={{ scrollMarginTop: 80 }} className="lp-docs-section">
                 <h2 className="text-headline lp-docs-section-title">Session Detail</h2>
                 <p className="lp-docs-body">
-                  Click any block on the timeline to see the full breakdown of what happened inside it.
+                  Click any block and the rough picture turns precise. This is where Daylens moves past "you spent time in this app" and shows what was really inside the session.
                 </p>
                 <ul className="lp-docs-bullets">
                   {[
-                    "Every website or page that was open, with time spent on each",
-                    "Which apps were running and for how long",
-                    "Context switch count for the session",
-                    "The AI-generated description of what the work was",
+                    "The sites and pages that were open, with time spent on each",
+                    "Primary and supporting apps inside the session",
+                    "Context switches detected while the work was unfolding",
+                    "The AI-generated explanation of what the block was actually about",
                   ].map((item) => (
                     <li key={item}>
                       <span className="lp-docs-bullet-dot" />
@@ -139,7 +139,7 @@ export default function DocsPage() {
                   ))}
                 </ul>
                 <p className="lp-docs-body">
-                  Context switches are counted each time your active window or tab changes. A high switch count in a session often signals fragmented work or heavy research across multiple sources.
+                  Context switches are counted every time the active tab or window changes. A high switch count usually means the work was fragmented, research-heavy, or both. That gap between effort and output is often sitting right there in the switch count.
                 </p>
               </section>
 
@@ -147,13 +147,13 @@ export default function DocsPage() {
               <section id="stats" style={{ scrollMarginTop: 80 }} className="lp-docs-section">
                 <h2 className="text-headline lp-docs-section-title">Stats and Focus Score</h2>
                 <p className="lp-docs-body">
-                  The stats view translates your day into numbers: total active time, time across categories, and your focus score.
+                  The stats view compresses the day into the numbers that matter most: total active time, category allocation, switching behavior, and whether the day felt calmer or more fragmented than usual.
                 </p>
                 <p className="lp-docs-body">
-                  The <strong style={{ fontWeight: 500, color: "var(--lp-ink)" }}>focus score</strong> is calculated from your own switching behavior relative to your own history. It is not a universal benchmark. It moves based on how fragmented your attention was compared to your own average, so it improves as Daylens learns more about your patterns.
+                  The <strong style={{ fontWeight: 500, color: "var(--lp-ink)" }}>focus score</strong> is based on your own switching behavior relative to your own history. It is not judging you against some external benchmark. It is measuring whether this day was more scattered or more settled than your normal.
                 </p>
                 <p className="lp-docs-body">
-                  The <strong style={{ fontWeight: 500, color: "var(--lp-ink)" }}>intelligence insight</strong> at the bottom of the stats view reads your actual data and surfaces one thing worth knowing that day. It is not a generic tip — it is specific to what happened.
+                  The <strong style={{ fontWeight: 500, color: "var(--lp-ink)" }}>intelligence insight</strong> reads the actual shape of the day and surfaces one thing worth noticing. It is not a generic productivity tip generator. It is grounded in what Daylens saw happen.
                 </p>
               </section>
 
@@ -161,10 +161,10 @@ export default function DocsPage() {
               <section id="ai-analysis" style={{ scrollMarginTop: 80 }} className="lp-docs-section">
                 <h2 className="text-headline lp-docs-section-title">AI Analysis</h2>
                 <p className="lp-docs-body">
-                  Every session in the timeline is analyzed by AI automatically. You do not need to prompt it or enable it — it runs on each session as it completes.
+                  The AI layer is not a separate mode you have to turn on. It runs on every completed block automatically, building the understanding that makes the timeline useful in the first place.
                 </p>
                 <p className="lp-docs-body">
-                  The analysis understands which apps and sites were primary versus supporting, distinguishes research from active work, and generates the session name and description from what actually happened.
+                  It distinguishes primary tools from supporting ones, spots when you were researching versus actively building, and names the session from the evidence instead of from a template. The goal is to make the product already understand the shape of your day before you ask anything.
                 </p>
                 <div className="lp-docs-infobox">
                   <span className="lp-docs-infobox-label">Note:</span>
@@ -176,7 +176,7 @@ export default function DocsPage() {
               <section id="insights" style={{ scrollMarginTop: 80 }} className="lp-docs-section">
                 <h2 className="text-headline lp-docs-section-title">Insights Chat</h2>
                 <p className="lp-docs-body">
-                  The Insights tab is a chat interface that already has all your data. Ask questions in plain language across any timeframe.
+                  The Insights tab is where the tracked history becomes queryable. Ask questions in plain language across any day, week, or custom range without having to reconstruct your context from scratch.
                 </p>
                 <div className="lp-docs-examples">
                   {[
@@ -192,7 +192,7 @@ export default function DocsPage() {
                   ))}
                 </div>
                 <p className="lp-docs-body">
-                  Answers are grounded in your actual activity data. Follow-up questions work — the conversation builds on itself within a session.
+                  Answers are grounded in your actual activity data, and follow-up questions keep the thread alive. That is the broader direction of Daylens: help that starts with the picture already in view instead of making you relay it manually every time.
                 </p>
               </section>
 
@@ -243,7 +243,7 @@ export default function DocsPage() {
               <section id="privacy" style={{ scrollMarginTop: 80 }} className="lp-docs-section">
                 <h2 className="text-headline lp-docs-section-title">Privacy and Data</h2>
                 <p className="lp-docs-body">
-                  Daylens is built around a simple principle: your data stays on your device unless you choose otherwise.
+                  Daylens is built around a simple rule: the default is local. The product is meant to explain your work, not quietly export your life.
                 </p>
                 <div className="lp-docs-privacy-list">
                   {[

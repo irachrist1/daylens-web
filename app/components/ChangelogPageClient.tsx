@@ -1,130 +1,42 @@
 "use client";
 
 import Link from "next/link";
+import { generatedChangelogData } from "../changelog/generatedChangelogData";
 import { MarketingFooter, MarketingInnerNav } from "./MarketingChrome";
 import { MarketingCursor, useReveal } from "./MarketingEffects";
 
-const CHANGELOG_TICKER = [
-  "Issue 004 · Web companion 0.2.2",
-  "Issue 003 · macOS 1.0.23",
-  "Issue 002 · Windows 1.2.0",
-  "Premium docs and recovery",
-  "Reports grounded to the right timeframe",
-  "Windows Intelligent Monolith redesign",
-];
-
-const RELEASES = [
-  {
-    issue: "004",
-    anchor: "issue-004",
-    date: "March 31, 2026",
-    surface: "Web companion",
-    version: "0.2.2 current build",
-    title: "The web companion stopped feeling secondary.",
-    intro:
-      "The latest web work focused on presentation and trust. Landing, docs, pairing, and recovery all moved into the same calmer design language so the companion finally feels like part of Daylens instead of a utility around it.",
-    groups: [
-      {
-        label: "New",
-        items: [
-          "Premium documentation, pairing, and recovery surfaces",
-          "Footer paths for docs, roadmap, and changelog as first-class pages",
-          "A cleaner marketing shell shared across the public site",
-        ],
-      },
-      {
-        label: "Changed",
-        items: [
-          "The landing experience now speaks in the same restrained system as the rest of the site",
-          "Marketing copy was rewritten around outcomes instead of raw feature lists",
-        ],
-      },
-      {
-        label: "Fixed",
-        items: [
-          "Next Image paths now honor the `/daylens` basePath in production",
-          "Download and route assets stay aligned with the proxy deployment setup",
-        ],
-      },
-    ],
-  },
-  {
-    issue: "003",
-    anchor: "issue-003",
-    date: "March 30, 2026",
-    surface: "macOS",
-    version: "1.0.23",
-    title: "Reports learned the right timeframe.",
-    intro:
-      "The latest macOS release tightened the most important thing in Daylens: whether the explanation matches the day you asked about. Reports, week review, and Insights all got more grounded and more direct.",
-    groups: [
-      {
-        label: "Added",
-        items: [
-          "Richer daily and weekly reports with saved report controls",
-          "A cleaner open-source repo surface for launch contributors",
-          "Standard community and release files for public readiness",
-        ],
-      },
-      {
-        label: "Changed",
-        items: [
-          "Insights answers are more direct about exact-time questions",
-          "Week in Review is more useful while the week is still in progress",
-          "Reports UI is cleaner and easier to scan",
-        ],
-      },
-      {
-        label: "Fixed",
-        items: [
-          "Live website carryover no longer leaks into a new day",
-          "Conversation continuity in Insights is more reliable",
-          "Timeline popovers recover app icons more consistently",
-        ],
-      },
-    ],
-  },
-  {
-    issue: "002",
-    anchor: "issue-002",
-    date: "March 24, 2026",
-    surface: "Windows",
-    version: "1.2.0",
-    title: "Windows found its own language.",
-    intro:
-      "The Windows app moved into the Intelligent Monolith system: more editorial, more structured, and less like a generic dashboard. Every major view was restyled around meaning-first reading.",
-    groups: [
-      {
-        label: "Design system",
-        items: [
-          "Surface tokens replaced hardcoded dark values so light mode behaves correctly",
-          "The sidebar, cards, chips, and glass panels were rebuilt around the new hierarchy",
-          "DESIGN.md now documents the full Windows language and view-by-view layouts",
-        ],
-      },
-      {
-        label: "Views",
-        items: [
-          "Dashboard, Timeline, Apps, Focus, Settings, and Insights were all redesigned",
-          "The Timeline gained filter pills, a vertical story structure, and sticky summary footer",
-          "Apps and Focus now read as intentional product surfaces instead of utility pages",
-        ],
-      },
-      {
-        label: "Effect",
-        items: [
-          "Information density increased without turning the UI noisy",
-          "Interpretation-first layouts now lead the eye before raw tables appear",
-          "Windows feels materially closer to the Daylens product vision",
-        ],
-      },
-    ],
-  },
-];
+const REPO_LABELS: Record<string, string> = {
+  web: "daylens-web",
+  mac: "daylens",
+  windows: "daylens-windows",
+};
 
 export function ChangelogPageClient() {
   useReveal();
-  const marqueeItems = [...CHANGELOG_TICKER, ...CHANGELOG_TICKER];
+  const surfaceMap = Object.fromEntries(
+    generatedChangelogData.surfaces.map((surface) => [surface.id, surface])
+  );
+  const webSurface = surfaceMap.web;
+  const macSurface = surfaceMap.mac;
+  const windowsSurface = surfaceMap.windows;
+
+  const marqueeItems = generatedChangelogData.surfaces.flatMap((surface) => [
+    `${surface.name} v${surface.version}`,
+    `Latest ${surface.latestCommitDate ?? "unknown"}`,
+    surface.recentCommits[0]?.subject ?? "No recent commits",
+  ]);
+
+  const ticker = [...marqueeItems, ...marqueeItems];
+  const refreshedAt = new Date(generatedChangelogData.generatedAt).toLocaleString(
+    "en-US",
+    {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    }
+  );
 
   return (
     <div className="lp">
@@ -150,17 +62,17 @@ export function ChangelogPageClient() {
               className="text-display-xl lp-story-hero-title"
               style={{ animation: "lp-fadeUp 0.8s var(--ease-out-expo) 0.4s both" }}
             >
-              Every release.
+              Recent commits.
               <br />
-              Written down.
+              No guesswork.
             </h1>
             <p
               className="lp-story-hero-sub"
               style={{ animation: "lp-fadeUp 0.8s var(--ease-out-expo) 0.65s both" }}
             >
-              Daylens ships across native desktop apps and a companion web
-              experience. This page keeps the record concise, factual, and close
-              to what actually changed.
+              This page now reads from the real local git history for the web
+              companion, the macOS app, and the Windows app. If the repos moved,
+              the page should move with them.
             </p>
             <div
               className="lp-hero-ctas"
@@ -177,26 +89,34 @@ export function ChangelogPageClient() {
               className="lp-fine"
               style={{ animation: "lp-fadeIn 0.8s var(--ease-out-expo) 1.05s both" }}
             >
-              One product journal across macOS, Windows, and the web.
+              Refreshed from local repos on {refreshedAt}.
             </p>
           </div>
 
           <div className="lp-issue-card reveal-scale">
             <div className="lp-issue-card-row">
-              <span className="text-label lp-issue-card-label">Issue No.</span>
-              <span className="lp-issue-card-value">004</span>
+              <span className="text-label lp-issue-card-label">Surfaces tracked</span>
+              <span className="lp-issue-card-value">
+                {generatedChangelogData.surfaces.length}
+              </span>
             </div>
             <div className="lp-issue-card-row">
-              <span className="text-label lp-issue-card-label">Surface</span>
-              <span className="lp-issue-card-value">Web companion</span>
+              <span className="text-label lp-issue-card-label">Current web build</span>
+              <span className="lp-issue-card-value">
+                v{webSurface?.version ?? "unknown"}
+              </span>
             </div>
             <div className="lp-issue-card-row">
-              <span className="text-label lp-issue-card-label">App version</span>
-              <span className="lp-issue-card-value">0.2.2 current build</span>
+              <span className="text-label lp-issue-card-label">Current mac build</span>
+              <span className="lp-issue-card-value">
+                v{macSurface?.version ?? "unknown"}
+              </span>
             </div>
             <div className="lp-issue-card-row">
-              <span className="text-label lp-issue-card-label">Published</span>
-              <span className="lp-issue-card-value">March 31, 2026</span>
+              <span className="text-label lp-issue-card-label">Current Windows build</span>
+              <span className="lp-issue-card-value">
+                v{windowsSurface?.version ?? "unknown"}
+              </span>
             </div>
           </div>
         </div>
@@ -212,7 +132,7 @@ export function ChangelogPageClient() {
 
       <div className="lp-proof-strip" aria-hidden="true">
         <div className="lp-marquee-track">
-          {marqueeItems.map((item, index) => (
+          {ticker.map((item, index) => (
             <span
               key={`${item}-${index}`}
               className="lp-marquee-item text-label"
@@ -233,36 +153,25 @@ export function ChangelogPageClient() {
       <section className="lp-section lp-section--light">
         <div className="lp-container">
           <div className="lp-section-intro reveal">
-            <span className="text-label lp-overline-dark">Latest issue</span>
+            <span className="text-label lp-overline-dark">Source of truth</span>
             <p className="lp-section-desc">
-              The current web companion build is mostly about feel: sharper copy,
-              calmer navigation, and better trust signals around pairing,
-              recovery, and documentation.
+              The changelog is generated from three local repos. No fake release
+              summaries, no guessed version numbers, and no assumptions about
+              what made it into a release unless the git history says so.
             </p>
           </div>
 
           <div className="lp-split">
             <div className="lp-split-visual reveal">
               <div className="lp-story-note-panel img-reveal">
-                <span className="text-label lp-story-note-kicker">Web companion</span>
-                <div className="lp-story-note-lines">
-                  <div className="lp-story-note-line lp-story-note-line--strong" />
-                  <div className="lp-story-note-line" />
-                  <div className="lp-story-note-line lp-story-note-line--short" />
-                </div>
+                <span className="text-label lp-story-note-kicker">Tracked repos</span>
                 <div className="lp-story-note-list">
-                  <div className="lp-story-note-item">
-                    <span className="lp-story-note-dot" />
-                    Premium docs and recovery
-                  </div>
-                  <div className="lp-story-note-item">
-                    <span className="lp-story-note-dot" />
-                    Shared marketing chrome
-                  </div>
-                  <div className="lp-story-note-item">
-                    <span className="lp-story-note-dot" />
-                    BasePath-safe route fixes
-                  </div>
+                  {generatedChangelogData.surfaces.map((surface) => (
+                    <div key={surface.id} className="lp-story-note-item">
+                      <span className="lp-story-note-dot" />
+                      {REPO_LABELS[surface.id]} — v{surface.version}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -270,23 +179,25 @@ export function ChangelogPageClient() {
             <div className="lp-split-content reveal delay-200">
               <div className="lp-accent-rule" />
               <h2 className="text-display-md lp-feature-title">
-                The companion now
+                Generated from the
                 <br />
-                feels deliberate.
+                actual repos.
               </h2>
               <p className="lp-feature-body">
-                The web surface stopped behaving like a utility shell. Docs,
-                recovery, landing, and pairing now share the same tone and
-                spacing discipline as the rest of the Daylens brand.
+                The updater reads recent local commits from `daylens-web`,
+                `daylens`, and `daylens-windows`, writes a generated data module,
+                and the page renders directly from that file. The manual refresh
+                path is `npm run sync:changelog-page`, and the reusable Codex
+                skill is `daylens-changelog-sync`.
               </p>
               <ul className="lp-bullets">
-                <li>— Premium docs, recovery, and connect flows</li>
-                <li>— Route and asset fixes for the `/daylens` basePath</li>
-                <li>— Footer navigation that treats product pages like a system</li>
-                <li>— A calmer release surface for roadmap and changelog notes</li>
+                <li>— Web version comes from this repo&apos;s package.json</li>
+                <li>— macOS version comes from the public changelog top entry</li>
+                <li>— Windows version comes from the current package.json build</li>
+                <li>— Recent commit subjects are shown exactly as written</li>
               </ul>
-              <Link href="/docs" className="lp-btn-ghost-dark">
-                Read the docs <span>→</span>
+              <Link href="/roadmap" className="lp-btn-ghost-dark">
+                Compare with the roadmap <span>→</span>
               </Link>
             </div>
           </div>
@@ -297,68 +208,55 @@ export function ChangelogPageClient() {
         <div className="lp-container">
           <div className="lp-signature">
             <div className="lp-signature-text reveal-left">
-              <span className="text-label lp-overline">Release rhythm</span>
+              <span className="text-label lp-overline">Current builds</span>
               <h2 className="text-display-lg lp-sig-title">
-                One changelog.
+                One product.
                 <br />
-                Three surfaces.
+                Three codebases.
               </h2>
               <p className="lp-sig-body">
-                The product is native-first, but the story is shared. This page
-                keeps macOS, Windows, and the web companion in one release journal
-                so the product direction stays easy to follow.
+                Daylens is shipping through three active repos right now. This
+                section shows the current build version and latest commit date for
+                each one, straight from the local checkout.
               </p>
               <ul className="lp-sig-bullets">
                 <li>
                   <span className="lp-bullet-dot" />
-                  macOS notes stay focused on grounded reports and better recall
+                  The web companion is the public surface and the access layer
                 </li>
                 <li>
                   <span className="lp-bullet-dot" />
-                  Windows notes track parity work and interface maturity
+                  The macOS app is the native core and report-heavy product surface
                 </li>
                 <li>
                   <span className="lp-bullet-dot" />
-                  Web notes cover access, pairing, docs, and mobile visibility
+                  The Windows app is its own build stream with separate packaging
                 </li>
                 <li>
                   <span className="lp-bullet-dot" />
-                  Everything here is sourced from repo changelogs or shipped commits
+                  The changelog now reflects that split instead of flattening it
                 </li>
               </ul>
-              <Link href="/roadmap" className="lp-btn-ghost-light">
-                Compare with the roadmap <span>→</span>
-              </Link>
             </div>
 
             <div className="lp-story-signature-visual reveal">
               <div className="lp-story-surface-grid">
-                <div className="lp-story-surface-card">
-                  <span className="text-label lp-story-mini-label">macOS</span>
-                  <p className="lp-story-surface-title">Grounds the analysis.</p>
-                  <p className="lp-story-surface-copy">
-                    Reports, exact-time answers, and a steadier week review.
-                  </p>
-                </div>
-                <div className="lp-story-surface-card">
-                  <span className="text-label lp-story-mini-label">Windows</span>
-                  <p className="lp-story-surface-title">Refines the language.</p>
-                  <p className="lp-story-surface-copy">
-                    Intelligent Monolith design work and parity-focused upgrades.
-                  </p>
-                </div>
-                <div className="lp-story-surface-card lp-story-surface-card--wide">
-                  <span className="text-label lp-story-mini-label">Web companion</span>
-                  <p className="lp-story-surface-title">Carries the public face.</p>
-                  <p className="lp-story-surface-copy">
-                    Docs, pairing, recovery, and route polish now feel like a single system.
-                  </p>
-                </div>
-              </div>
-
-              <div className="lp-stat-card">
-                <div className="lp-stat-num">3</div>
-                <div className="lp-stat-label">Release surfaces tracked here</div>
+                {generatedChangelogData.surfaces.map((surface) => (
+                  <div
+                    key={surface.id}
+                    className={`lp-story-surface-card${
+                      surface.id === "windows" ? " lp-story-surface-card--wide" : ""
+                    }`}
+                  >
+                    <span className="text-label lp-story-mini-label">{surface.name}</span>
+                    <p className="lp-story-surface-title">v{surface.version}</p>
+                    <p className="lp-story-surface-copy">{surface.description}</p>
+                    <p className="lp-story-surface-meta">
+                      Latest commit: {surface.latestCommitDate ?? "unknown"} ·{" "}
+                      {surface.latestCommitHash ?? "n/a"}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -368,75 +266,65 @@ export function ChangelogPageClient() {
       <section className="lp-section lp-section--light">
         <div className="lp-container">
           <div className="reveal">
-            <span className="text-label lp-overline-dark">Release issues</span>
+            <span className="text-label lp-overline-dark">Recent commit streams</span>
             <h2 className="text-display-md lp-metrics-title">
-              The recent record,
+              The latest repo history,
               <br />
-              in order.
+              without interpretation.
             </h2>
           </div>
 
           <div className="lp-release-list">
-            {RELEASES.map((release, index) => (
+            {generatedChangelogData.surfaces.map((surface, index) => (
               <article
-                id={release.anchor}
-                key={release.issue}
+                key={surface.id}
                 className={`lp-release-entry reveal delay-${(index + 1) * 100}`}
               >
                 <aside className="lp-release-meta">
-                  <span className="text-label lp-release-kicker">
-                    Issue {release.issue}
-                  </span>
+                  <span className="text-label lp-release-kicker">{surface.name}</span>
                   <div className="lp-release-meta-block">
-                    <span className="lp-release-meta-label">Published</span>
-                    <span className="lp-release-meta-value">{release.date}</span>
+                    <span className="lp-release-meta-label">Current build</span>
+                    <span className="lp-release-meta-value">v{surface.version}</span>
                   </div>
                   <div className="lp-release-meta-block">
-                    <span className="lp-release-meta-label">Surface</span>
-                    <span className="lp-release-meta-value">{release.surface}</span>
+                    <span className="lp-release-meta-label">Latest commit</span>
+                    <span className="lp-release-meta-value">
+                      {surface.latestCommitDate ?? "unknown"} ·{" "}
+                      {surface.latestCommitHash ?? "n/a"}
+                    </span>
                   </div>
                   <div className="lp-release-meta-block">
-                    <span className="lp-release-meta-label">App version</span>
-                    <span className="lp-release-meta-value">{release.version}</span>
+                    <span className="lp-release-meta-label">Repo</span>
+                    <span className="lp-release-meta-value">
+                      {REPO_LABELS[surface.id]}
+                    </span>
                   </div>
                 </aside>
 
                 <div className="lp-release-body">
-                  <h3 className="text-display-md lp-release-title">{release.title}</h3>
-                  <p className="lp-release-intro">{release.intro}</p>
+                  <h3 className="text-display-md lp-release-title">
+                    {surface.name} · v{surface.version}
+                  </h3>
+                  <p className="lp-release-intro">{surface.description}</p>
 
-                  <div className="lp-release-groups">
-                    {release.groups.map((group) => (
-                      <section key={group.label} className="lp-release-group">
-                        <span className="text-label lp-release-group-label">
-                          {group.label}
-                        </span>
-                        <ul className="lp-release-bullets">
-                          {group.items.map((item) => (
-                            <li key={item}>{item}</li>
-                          ))}
-                        </ul>
-                      </section>
-                    ))}
-                  </div>
+                  <section className="lp-release-group">
+                    <span className="text-label lp-release-group-label">
+                      Recent commits
+                    </span>
+                    <ul className="lp-release-commit-list">
+                      {surface.recentCommits.map((commit) => (
+                        <li key={`${surface.id}-${commit.shortHash}`} className="lp-release-commit-item">
+                          <span className="lp-release-commit-subject">{commit.subject}</span>
+                          <span className="lp-release-commit-meta">
+                            {commit.date} · {commit.shortHash}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
                 </div>
               </article>
             ))}
-          </div>
-
-          <div className="lp-release-rail reveal">
-            <span className="text-label lp-overline-dark">Jump to issue</span>
-            <div className="lp-release-rail-links">
-              {RELEASES.map((release) => (
-                <a
-                  key={release.issue}
-                  href={`#${release.anchor}`}
-                  className="lp-docs-toc-link"
-                >
-                  Issue {release.issue} · {release.surface}
-                </a>
-              ))}
-            </div>
           </div>
         </div>
       </section>
@@ -446,12 +334,14 @@ export function ChangelogPageClient() {
           <div className="lp-cta-block reveal">
             <div className="lp-accent-rule" />
             <h2 className="text-display-lg lp-cta-title">
-              See what shipped.
+              Refresh the data.
               <br />
-              Then see what&apos;s next.
+              Then ship again.
             </h2>
             <p className="lp-cta-sub">
-              The changelog keeps the record. The roadmap keeps the direction.
+              Run `npm run sync:changelog-page` whenever the repos move, or use
+              the `daylens-changelog-sync` skill to refresh the generated data
+              and rebuild the page.
             </p>
             <div className="lp-cta-actions">
               <Link href="/roadmap" className="lp-btn-primary">

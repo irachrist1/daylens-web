@@ -2338,6 +2338,14 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
   color: rgba(252,249,248,0.56);
 }
 
+.lp-story-surface-meta {
+  margin: 1rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  font-weight: 300;
+  color: rgba(252,249,248,0.3);
+}
+
 .lp-roadmap-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2511,6 +2519,42 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
   height: 4px;
   border-radius: 50%;
   background: var(--lp-accent);
+}
+
+.lp-release-commit-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lp-release-commit-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--lp-divider);
+}
+
+.lp-release-commit-item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.lp-release-commit-subject {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  font-weight: 300;
+  color: var(--lp-ink);
+}
+
+.lp-release-commit-meta {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--lp-ink-faint);
 }
 
 .lp-release-rail {

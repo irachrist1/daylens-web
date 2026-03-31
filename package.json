@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "sync:changelog-page": "node scripts/generate-changelog-page-data.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",

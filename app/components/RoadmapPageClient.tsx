@@ -23,22 +23,22 @@ const DELIVERY_LANES = [
   {
     label: "Now",
     title: "Tighter desktop truth",
-    body: "We are investing in cleaner browser evidence, stabler labels, and fewer edge-case gaps so the timeline keeps feeling trustworthy day after day.",
+    body: "The first job is making the evidence harder to doubt: cleaner browser capture, stabler labels, and fewer edge-case gaps so the timeline keeps feeling like an honest record of the day.",
   },
   {
     label: "Next",
-    title: "Windows catches all the way up",
-    body: "The immediate Windows work is practical: verify production browser paths, add Firefox support, and smooth the rough edges around updates and installer trust.",
+    title: "Understanding gets deeper",
+    body: "Once the tracking is solid, the next layer is better explanation: clearer reports, stronger weekly review, and block-level analysis that feels closer to understanding than summarization.",
   },
   {
     label: "Queued",
-    title: "The web companion gets deeper",
-    body: "Dashboard, history, chat, and recovery are in place. The next step is making reports, week review, and mobile browsing feel less like a viewer and more like a companion.",
+    title: "The companion becomes useful",
+    body: "Dashboard, history, chat, and recovery are in place. The next step is making the web companion feel less like a mirror of the desktop app and more like the place you can actually revisit, review, and ask.",
   },
   {
     label: "Exploring",
-    title: "From recall to momentum",
-    body: "The longer arc is not more data. It is better prompts, smarter resume cues, and planning surfaces that turn history into the next useful move.",
+    title: "Help starts with context",
+    body: "The longer arc is an assistant that does not begin from zero. It already knows what you have been doing, where attention has been leaking, and what context is missing before you ask for help.",
   },
 ];
 
@@ -93,17 +93,17 @@ export function RoadmapPageClient() {
               className="text-display-xl lp-story-hero-title"
               style={{ animation: "lp-fadeUp 0.8s var(--ease-out-expo) 0.4s both" }}
             >
-              The next layer
+              Tracking first.
               <br />
-              of clarity.
+              Understanding next.
             </h1>
             <p
               className="lp-story-hero-sub"
               style={{ animation: "lp-fadeUp 0.8s var(--ease-out-expo) 0.65s both" }}
             >
-              Daylens already captures what happened. The next releases make that
-              history easier to trust, search, and act on across macOS, Windows,
-              and the web companion.
+              Daylens already captures what happened. The roadmap is about making
+              that history more trustworthy, more explainable, and eventually
+              useful enough that an assistant no longer needs to be caught up.
             </p>
             <div
               className="lp-hero-ctas"
@@ -184,9 +184,9 @@ export function RoadmapPageClient() {
           <div className="lp-section-intro reveal">
             <span className="text-label lp-overline-dark">What&apos;s next</span>
             <p className="lp-section-desc">
-              The roadmap is not about adding noise. It is about tightening the
-              evidence, making the summaries smarter, and carrying the same calm
-              experience through every Daylens surface.
+              The roadmap is not feature-count theatre. It follows the actual
+              product arc: track the day faithfully, understand it well, then use
+              that understanding to offer better help across every surface.
             </p>
           </div>
 
@@ -227,7 +227,8 @@ export function RoadmapPageClient() {
                 The immediate priority is accuracy. That means verifying browser
                 paths in production on Windows, tightening app and site evidence,
                 and keeping labels stable enough that the timeline reads like a
-                memory instead of a log dump.
+                memory instead of a log dump. If the evidence is weak, every later
+                insight gets weaker too.
               </p>
               <ul className="lp-bullets">
                 <li>— Verify Windows Chromium history paths with real-user installs</li>
@@ -250,10 +251,10 @@ export function RoadmapPageClient() {
                 explain the week.
               </h2>
               <p className="lp-feature-body">
-                Daylens is moving from raw recall toward stronger daily and
-                weekly explanation. The best recent work already points there:
-                richer reports, better timeframe grounding, and tighter follow-up
-                continuity inside Insights.
+                Daylens is moving from recall toward explanation. The best recent
+                work already points there: richer reports, better timeframe
+                grounding, and follow-up continuity inside Insights so the system
+                can hold onto the thread of what your week is showing you.
               </p>
               <ul className="lp-bullets">
                 <li>— Saved reports that stay tied to the day or week you chose</li>
@@ -278,7 +279,7 @@ export function RoadmapPageClient() {
                 </div>
                 <div className="lp-story-chat-bubble lp-story-chat-bubble--ai">
                   Saved reports and better follow-ups are making this layer much
-                  easier to revisit.
+                  easier to revisit without rebuilding the context by hand.
                 </div>
               </div>
             </div>
@@ -297,7 +298,7 @@ export function RoadmapPageClient() {
                 >
                   The web companion
                   <br />
-                  gets deeper.
+                  becomes a real review surface.
                 </h2>
                 <p
                   style={{
@@ -310,8 +311,8 @@ export function RoadmapPageClient() {
                 >
                   Pairing, recovery, dashboard, history, and chat are already in
                   place. The next web work is about moving beyond access and
-                  toward real day review, stronger mobile reading, and better
-                  shared reports.
+                  toward real day review, calmer mobile reading, and reports you
+                  can return to without losing the thread.
                 </p>
                 <div className="lp-story-wide-stats">
                   <div className="lp-story-wide-stat">
@@ -342,8 +343,8 @@ export function RoadmapPageClient() {
               <p className="lp-sig-body">
                 The macOS app sets the pace, Windows is closing the gap fast, and
                 the web companion is becoming the place you can revisit from
-                anywhere. The roadmap is built around making those surfaces feel
-                unmistakably like the same product.
+                anywhere. The goal is not three disconnected tools. It is one
+                product that sees your work clearly wherever you open it.
               </p>
               <ul className="lp-sig-bullets">
                 <li>
@@ -407,18 +408,18 @@ export function RoadmapPageClient() {
           <div className="reveal">
             <span className="text-label lp-overline-dark">Roadmap in numbers</span>
             <h2 className="text-display-md lp-metrics-title">
-              Built with focus,
+              Built around
               <br />
-              not feature count.
+              one useful picture.
             </h2>
           </div>
           <div className="lp-metrics-grid reveal delay-200">
-            {[
-              { num: "3", label: "Active product surfaces moving in parallel" },
-              { num: "2", label: "Desktop apps feeding the same Daylens idea" },
-              { num: "0", label: "Accounts required for the core desktop experience" },
-              { num: "1", label: "North star: grounded recall you can act on" },
-            ].map((metric) => (
+              {[
+                { num: "3", label: "Active product surfaces moving in parallel" },
+                { num: "2", label: "Core phases: tracking first, understanding next" },
+                { num: "0", label: "Accounts required for the core desktop experience" },
+                { num: "1", label: "North star: an assistant that starts with context" },
+              ].map((metric) => (
               <div key={metric.label} className="lp-metric-cell">
                 <div className="text-display-md lp-metric-num">{metric.num}</div>
                 <p className="lp-metric-desc">{metric.label}</p>
@@ -433,9 +434,9 @@ export function RoadmapPageClient() {
           <div className="reveal">
             <span className="text-label lp-overline">Delivery lanes</span>
             <h2 className="text-display-md lp-story-dark-title">
-              Shipped, next,
+              What is solid,
               <br />
-              queued, exploring.
+              what comes next.
             </h2>
           </div>
           <div className="lp-roadmap-grid">
@@ -458,9 +459,9 @@ export function RoadmapPageClient() {
           <div className="reveal">
             <span className="text-label lp-overline-dark">How we ship</span>
             <h2 className="text-display-md lp-how-title">
-              Direction before
+              Build the picture.
               <br />
-              decoration.
+              Then build on it.
             </h2>
           </div>
           <div className="lp-steps-grid">
@@ -483,13 +484,13 @@ export function RoadmapPageClient() {
           <div className="lp-cta-block reveal">
             <div className="lp-accent-rule" />
             <h2 className="text-display-lg lp-cta-title">
-              Follow the build
+              Follow the shift
               <br />
-              as it ships.
+              from tracking to help.
             </h2>
             <p className="lp-cta-sub">
-              The roadmap sets direction. The changelog shows the work when it is
-              real.
+              The roadmap sets the direction. The changelog shows the exact repo
+              work when it is real.
             </p>
             <div className="lp-cta-actions">
               <Link href="/changelog" className="lp-btn-primary">
