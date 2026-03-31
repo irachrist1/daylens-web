@@ -56,8 +56,8 @@ function recentCommits(repoPath, limit = 10) {
   const raw = git(repoPath, [
     "log",
     `-n${limit}`,
-    "--date=short",
-    "--pretty=format:%ad%x1f%h%x1f%s%x1e",
+    "--date=iso-strict",
+    "--pretty=format:%ad%x1f%as%x1f%h%x1f%s%x1e",
   ]);
 
   return raw
@@ -65,8 +65,8 @@ function recentCommits(repoPath, limit = 10) {
     .map((entry) => entry.trim())
     .filter(Boolean)
     .map((entry) => {
-      const [date, shortHash, subject] = entry.split("\x1f");
-      return { date, shortHash, subject };
+      const [dateTime, date, shortHash, subject] = entry.split("\x1f");
+      return { dateTime, date, shortHash, subject };
     });
 }
 
@@ -82,6 +82,7 @@ const generated = {
       description: surface.description,
       version: surface.versionSource(),
       repoPath: surface.repoPath,
+      latestCommitDateTime: latest?.dateTime ?? null,
       latestCommitDate: latest?.date ?? null,
       latestCommitHash: latest?.shortHash ?? null,
       recentCommits: commits,

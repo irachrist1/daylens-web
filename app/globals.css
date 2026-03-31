@@ -2179,21 +2179,26 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
 }
 
 .lp-dia-version-pill,
+.lp-dia-surface-label,
 .lp-dia-entry-date {
   font-size: 0.875rem;
   line-height: 1.4;
   color: var(--lp-ink-faint);
 }
 
+.lp-dia-surface-label {
+  color: var(--lp-ink);
+}
+
 .lp-dia-entry-title {
   display: inline-block;
-  width: max-content;
-  max-width: 18ch;
+  width: auto;
+  max-width: 12ch;
   text-decoration: none;
   color: var(--lp-ink);
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1.04;
-  letter-spacing: -0.04em;
+  font-size: clamp(1.9rem, 3.2vw, 2.9rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
   font-weight: 300;
 }
 
@@ -2900,7 +2905,6 @@ details[open] .lp-docs-faq-icon { transform: rotate(45deg); }
 
   .lp-dia-entry-title {
     max-width: none;
-    width: auto;
   }
 
   .lp-story-hero {

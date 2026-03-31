@@ -5,6 +5,20 @@ import { MarketingFooter, MarketingInnerNav } from "./MarketingChrome";
 import { MarketingCursor } from "./MarketingEffects";
 
 type SurfaceId = (typeof generatedChangelogData.surfaces)[number]["id"];
+type SurfaceRecord = {
+  id: SurfaceId;
+  name: string;
+  version: string;
+  latestCommitDate: string | null;
+  latestCommitDateTime: string | null;
+  latestCommitHash: string | null;
+  recentCommits: Array<{
+    date: string;
+    dateTime: string;
+    shortHash: string;
+    subject: string;
+  }>;
+};
 
 type ReleaseEntry = {
   id: string;
@@ -12,6 +26,7 @@ type ReleaseEntry = {
   surfaceName: string;
   version: string;
   isoDate: string;
+  isoDateTime: string;
   title: string;
   intro: string;
   sections: Array<{ title?: string; body?: string; bullets?: string[] }>;
@@ -50,6 +65,16 @@ function formatFullDate(isoDate: string) {
   });
 }
 
+function formatDateTime(isoDateTime: string) {
+  return new Date(isoDateTime).toLocaleString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 function monthAnchor(isoDate: string) {
   const [year, month] = isoDate.split("-");
   return `${month}-${year}`;
@@ -62,7 +87,9 @@ function createEntry(
   sections: ReleaseEntry["sections"],
   moreUpdates: string[]
 ): ReleaseEntry {
-  const surface = generatedChangelogData.surfaces.find((item) => item.id === surfaceId);
+  const surface = generatedChangelogData.surfaces.find(
+    (item) => item.id === surfaceId
+  ) as SurfaceRecord | undefined;
   if (!surface) {
     throw new Error(`Missing changelog surface for ${surfaceId}`);
   }
@@ -73,6 +100,9 @@ function createEntry(
     surfaceName: surface.name,
     version: surface.version,
     isoDate: surface.latestCommitDate ?? generatedChangelogData.generatedAt.slice(0, 10),
+    isoDateTime:
+      surface.latestCommitDateTime ??
+      `${surface.latestCommitDate ?? generatedChangelogData.generatedAt.slice(0, 10)}T12:00:00Z`,
     title,
     intro,
     sections,
@@ -83,9 +113,15 @@ function createEntry(
 }
 
 function buildReleaseEntries(): ReleaseEntry[] {
-  const windows = generatedChangelogData.surfaces.find((surface) => surface.id === "windows");
-  const mac = generatedChangelogData.surfaces.find((surface) => surface.id === "mac");
-  const web = generatedChangelogData.surfaces.find((surface) => surface.id === "web");
+  const windows = generatedChangelogData.surfaces.find(
+    (surface) => surface.id === "windows"
+  ) as SurfaceRecord | undefined;
+  const mac = generatedChangelogData.surfaces.find(
+    (surface) => surface.id === "mac"
+  ) as SurfaceRecord | undefined;
+  const web = generatedChangelogData.surfaces.find(
+    (surface) => surface.id === "web"
+  ) as SurfaceRecord | undefined;
 
   if (!windows || !mac || !web) {
     return [];
@@ -94,7 +130,7 @@ function buildReleaseEntries(): ReleaseEntry[] {
   return [
     createEntry(
       "windows",
-      `What’s new in Daylens Windows ${windows.version}`,
+      "Multi-provider AI on Windows",
       `Daylens for Windows just took a real step forward. Version ${windows.version} adds multi-provider AI support across Anthropic, OpenAI, and Google, so the app no longer assumes one backend or one model path when you open Insights.`,
       [
         {
@@ -120,7 +156,7 @@ function buildReleaseEntries(): ReleaseEntry[] {
     ),
     createEntry(
       "mac",
-      `What’s new in Daylens for macOS ${mac.version}`,
+      "Reports, widgets, and stronger review on macOS",
       `The macOS app keeps pushing the core Daylens idea forward: cleaner recall, stronger reports, and a better explanation of what your day actually contained. The latest build keeps that native surface as the clearest expression of the product.`,
       [
         {
@@ -141,7 +177,7 @@ function buildReleaseEntries(): ReleaseEntry[] {
     ),
     createEntry(
       "web",
-      `What’s new in the Daylens web companion ${web.version}`,
+      "The web companion catches up",
       `The web companion has been catching up to the product itself. Instead of feeling like a utility wrapper around the desktop apps, it now reads more like a proper Daylens surface with docs, roadmap, changelog, recovery, and pairing all moving into one calmer system.`,
       [
         {
@@ -160,7 +196,7 @@ function buildReleaseEntries(): ReleaseEntry[] {
       ],
       web.recentCommits.slice(1, 5).map((commit) => commit.subject)
     ),
-  ].sort((a, b) => b.isoDate.localeCompare(a.isoDate));
+  ].sort((a, b) => b.isoDateTime.localeCompare(a.isoDateTime));
 }
 
 export function ChangelogPageClient() {
@@ -261,8 +297,9 @@ export function ChangelogPageClient() {
                       <div className="lp-dia-entry-head">
                         <div className="lp-dia-entry-meta">
                           <span className="lp-dia-version-pill">v{entry.version}</span>
-                          <time dateTime={entry.isoDate} className="lp-dia-entry-date">
-                            {formatFullDate(entry.isoDate)}
+                          <span className="lp-dia-surface-label">{entry.surfaceName}</span>
+                          <time dateTime={entry.isoDateTime} className="lp-dia-entry-date">
+                            {formatDateTime(entry.isoDateTime)}
                           </time>
                         </div>
                         <a
