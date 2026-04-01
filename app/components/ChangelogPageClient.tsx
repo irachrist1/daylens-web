@@ -15,14 +15,12 @@ const SURFACE_LABELS: Record<SurfaceId, string> = {
   mac: "macOS",
   windows: "Windows",
   web: "Web",
-  mcp: "MCP",
 };
 
 const SURFACE_PANEL_LABELS: Record<SurfaceId, string> = {
   mac: "macOS",
   windows: "Windows",
   web: "Web companion",
-  mcp: "MCP server",
 };
 
 function formatDate(date: string) {

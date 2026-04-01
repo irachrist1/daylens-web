@@ -18,6 +18,10 @@ const surfaces = [
       "Marketing site, web companion access, linking, recovery, and public product pages.",
     changelogPath: null,
     repoUrl: "https://github.com/irachrist1/daylens-web",
+    ignoredCommitPatterns: [
+      /^sync changelog data for latest releases$/i,
+      /^sync generated changelog data$/i,
+    ],
   },
   {
     id: "mac",
@@ -49,19 +53,6 @@ const surfaces = [
     changelogPath: path.resolve(repoRoot, "..", "daylens-windows", "CHANGELOG.md"),
     repoUrl: "https://github.com/irachrist1/daylens-windows",
   },
-  {
-    id: "mcp",
-    name: "MCP server",
-    repoPath: path.resolve(repoRoot, "..", "daylens-mcp"),
-    versionSource: () =>
-      JSON.parse(
-        readFileSync(path.resolve(repoRoot, "..", "daylens-mcp", "package.json"), "utf8")
-      ).version,
-    description:
-      "MCP server that connects Claude Code, Cursor, Windsurf, and Claude Desktop to your local Daylens activity database.",
-    changelogPath: null,
-    repoUrl: "https://github.com/irachrist1/daylens-mcp",
-  },
 ];
 
 function git(repoPath, args) {
@@ -87,6 +78,18 @@ function recentCommits(repoPath, limit = 10) {
       const [dateTime, date, shortHash, subject] = entry.split("\x1f");
       return { dateTime, date, shortHash, subject };
     });
+}
+
+function filterDisplayCommits(surface, commits) {
+  const patterns = surface.ignoredCommitPatterns ?? [];
+  if (patterns.length === 0) return commits;
+
+  const filtered = commits.filter((commit) => {
+    const subject = stripMarkdown(commit.subject);
+    return patterns.every((pattern) => !pattern.test(subject));
+  });
+
+  return filtered.length > 0 ? filtered : commits;
 }
 
 function stripMarkdown(value) {
@@ -268,13 +271,14 @@ const generated = {
   generatedAt: new Date().toISOString(),
   surfaces: surfaces.map((surface) => {
     const commits = recentCommits(surface.repoPath);
-    const latest = commits[0] ?? null;
+    const displayCommits = filterDisplayCommits(surface, commits);
+    const latest = displayCommits[0] ?? null;
     const version = surface.versionSource();
     const parsedReleases = surface.changelogPath != null ? parseMarkdownChangelog(surface) : [];
     const releases =
       parsedReleases.length > 0
         ? parsedReleases
-        : synthesizeCommitReleases(surface, version, commits);
+        : synthesizeCommitReleases(surface, version, displayCommits);
 
     return {
       id: surface.id,
@@ -285,7 +289,7 @@ const generated = {
       latestCommitDateTime: latest?.dateTime ?? null,
       latestCommitDate: latest?.date ?? null,
       latestCommitHash: latest?.shortHash ?? null,
-      recentCommits: commits,
+      recentCommits: displayCommits,
       releases,
     };
   }),
