@@ -44,6 +44,139 @@ const SURFACE_FILTERS: RoadmapSurface[] = [
 
 const ROADMAP_ITEMS: RoadmapItem[] = [
   {
+    title: "App and website blocking during focus",
+    status: "Backlog",
+    summary:
+      "Let users choose which apps and sites to block when a focus session starts, using the system-level Screen Time API for hard enforcement.",
+    whyItMatters:
+      "Distraction detection is only half the story. The product should be able to help users actually stay on task, not just report that they did not.",
+    currentFocus: [
+      "Apply for FamilyControls entitlement from Apple.",
+      "Build a blocking picker using FamilyActivityPicker.",
+      "Block on session start, unblock automatically on end.",
+    ],
+    tags: ["Focus", "Blocking", "Screen Time"],
+    surface: "macOS",
+    deliverables: 4,
+    board: "Focus surfaces",
+    updated: "Pending Apple entitlement approval",
+    owner: "Christian",
+  },
+  {
+    title: "Two-stage AI observation pipeline",
+    status: "In progress",
+    summary:
+      "Separate the AI pipeline into a cheap observation pass per 15-minute window and a richer editorial synthesis pass that produces the final timeline cards.",
+    whyItMatters:
+      "The current single-shot approach asks the model to parse raw events and make editorial decisions at the same time. Splitting these two tasks produces dramatically more specific labels and better merge and split decisions.",
+    currentFocus: [
+      "Stage 1 observation windows now exist as a separate prompt path.",
+      "Stage 2 synthesis is being validated as strict JSON with retry feedback.",
+      "Keep stable prompt instructions cacheable while volatile activity payloads stay separate.",
+    ],
+    tags: ["AI", "Pipeline", "Quality"],
+    surface: "Cross-platform",
+    deliverables: 6,
+    board: "Understanding",
+    updated: "Active macOS implementation",
+    owner: "Christian",
+  },
+  {
+    title: "Focus session redesign with intent and ring timer",
+    status: "In progress",
+    summary:
+      "Give the focus tab a stronger start: a prominent intent field, a full-screen ring timer during sessions, and a short reflection card when the session ends.",
+    whyItMatters:
+      "A session with a clear stated purpose is fundamentally different from one that just started. The ring timer makes the session feel real and present rather than a background count.",
+    currentFocus: [
+      "Intent-first session setup is now wired into the current macOS focus flow.",
+      "A full-screen ring timer and break suggestions are implemented in the new focus surface.",
+      "Post-session reflection is being polished before it is treated as shipped.",
+    ],
+    tags: ["Focus", "UI", "Sessions"],
+    surface: "Cross-platform",
+    deliverables: 5,
+    board: "Focus surfaces",
+    updated: "Active macOS implementation",
+    owner: "Christian",
+  },
+  {
+    title: "Distraction detection and interruption",
+    status: "Ready to ship",
+    summary:
+      "Use existing category data to detect when a user switches to a distraction app during a focus session, log it, and optionally surface a gentle floating prompt.",
+    whyItMatters:
+      "Knowing you were distracted after the fact is useful. Knowing in the moment is more so — and the product already has all the data it needs to do this.",
+    currentFocus: [
+      "App activations are now wired into the running focus session.",
+      "Distraction count feeds the new reflection and summary surfaces.",
+      "The non-activating interruption banner is implemented and needs final launch polish.",
+    ],
+    tags: ["Focus", "Distractions", "Tracking"],
+    surface: "Cross-platform",
+    deliverables: 4,
+    board: "Focus surfaces",
+    updated: "Implemented, pending launch polish",
+    owner: "Christian",
+  },
+  {
+    title: "Notification suppression during focus",
+    status: "In progress",
+    summary:
+      "Enable Do Not Disturb automatically when a focus session starts and restore the previous state when it ends.",
+    whyItMatters:
+      "Interruptions are the primary reason focus sessions fail. This is a one-toggle change with an outsized effect on session quality.",
+    currentFocus: [
+      "macOS focus-mode toggling is wired into the active session manager.",
+      "Settings now expose the DND-on-focus preference directly.",
+      "Cross-platform parity and safe restoration behavior still need verification.",
+    ],
+    tags: ["Focus", "DND", "Notifications"],
+    surface: "Cross-platform",
+    deliverables: 2,
+    board: "Focus surfaces",
+    updated: "Active macOS implementation",
+    owner: "Christian",
+  },
+  {
+    title: "Daily summary and morning nudge notifications",
+    status: "In progress",
+    summary:
+      "Send a summary notification at 6 PM with the day's highlights, and a morning nudge at 9 AM if no focus session has started yet.",
+    whyItMatters:
+      "Windows already ships this. Adding it to macOS closes a meaningful feature gap and gives users a natural daily rhythm around the product.",
+    currentFocus: [
+      "Scheduling code now exists for the 6 PM summary and 9 AM nudge.",
+      "Settings expose both toggles so launch copy can match the product.",
+      "Notification copy and real-world behavior still need end-to-end validation.",
+    ],
+    tags: ["Notifications", "Focus", "macOS"],
+    surface: "macOS",
+    deliverables: 3,
+    board: "Focus surfaces",
+    updated: "Active macOS implementation",
+    owner: "Christian",
+  },
+  {
+    title: "Slack status and calendar automation",
+    status: "Backlog",
+    summary:
+      "Let Daylens update Slack presence during focus sessions and eventually reserve focus time through calendar integrations.",
+    whyItMatters:
+      "Once the core focus loop is trustworthy, the next layer is reducing social interruption and making the session visible to the rest of the user's workday.",
+    currentFocus: [
+      "Keep the current Settings placeholders honest as 'coming soon' launch copy.",
+      "Decide whether Slack status ships before or after calendar automation.",
+      "Avoid promising automation until the core focus surfaces feel stable.",
+    ],
+    tags: ["Focus", "Slack", "Calendar"],
+    surface: "Cross-platform",
+    deliverables: 2,
+    board: "Focus surfaces",
+    updated: "Documented as coming soon",
+    owner: "Christian",
+  },
+  {
     title: "Timeline recall on mobile",
     status: "Backlog",
     summary:

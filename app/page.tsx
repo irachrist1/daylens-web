@@ -4,7 +4,7 @@ import { LandingClient } from "./components/LandingClient";
 export const metadata = {
   title: "Daylens — Know where your time goes",
   description:
-    "Daylens watches the apps and websites you use — privately, locally — and turns raw screen time into clarity you can act on. Free for Mac and Windows.",
+    "Daylens watches the apps and websites you use, keeps the raw history on your device, and turns it into timeline recall, focus coaching, and grounded AI help. Free for Mac and Windows.",
 };
 
 export default async function LandingPage({

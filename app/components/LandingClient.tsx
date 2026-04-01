@@ -13,12 +13,15 @@ const MARQUEE_ITEMS = [
   "Mac & Windows",
   "Zero Cloud Storage",
   "Full App History",
-  "Focus Scoring",
+  "Focus Sessions",
   "No Subscription",
   "Web Dashboard",
   "QR Code Pairing",
   "Cross-Device Sync",
   "Every App, Every Site",
+  "Distraction Detection",
+  "Daily Summary",
+  "Two-Stage AI Pipeline",
 ];
 
 // ── Main component ─────────────────────────────────────────────────────────────
@@ -53,7 +56,8 @@ export function LandingClient() {
             style={{ animation: "lp-fadeUp 0.8s var(--ease-out-expo) 0.65s both" }}
           >
             Daylens watches every app and website — privately, on your device —
-            and turns raw screen time into clarity you can act on.
+            and turns raw screen time into timeline recall, focus coaching, and
+            AI help that stays grounded in what actually happened.
           </p>
           <div
             className="lp-hero-ctas"
@@ -79,7 +83,7 @@ export function LandingClient() {
             className="lp-fine"
             style={{ animation: "lp-fadeIn 0.8s var(--ease-out-expo) 1.05s both" }}
           >
-            Free forever. No account. No subscription.
+            Free forever. No account. Optional AI provider.
           </p>
         </div>
 
@@ -171,7 +175,7 @@ export function LandingClient() {
               <ul className="lp-bullets">
                 <li>— Navigate to any day and see named work blocks, not raw app totals</li>
                 <li>— Click a block to inspect sites, supporting apps, and context switches</li>
-                <li>— AI labels every session automatically from what actually happened</li>
+                <li>— Richer AI labeling now separates cheap observations from final card synthesis</li>
                 <li>— Focus score is based on your own switching behavior over time</li>
               </ul>
               <Link href="/link" className="lp-btn-ghost-dark">
@@ -188,14 +192,15 @@ export function LandingClient() {
                 Ask anything about<br />your day.
               </h3>
               <p className="lp-feature-body">
-                An AI assistant powered by Claude that actually knows your data.
-                Ask about your habits, your focus patterns, or why Tuesday felt so unproductive.
+                An AI assistant grounded in your actual history. Use your own
+                Anthropic key, Claude Code CLI, or Codex CLI to ask about your
+                habits, your focus patterns, or what you should resume next.
               </p>
               <ul className="lp-bullets">
-                <li>— Natural language questions about your activity</li>
-                <li>— Answers grounded in your real usage data</li>
-                <li>— Trend analysis across days and weeks</li>
-                <li>— Conversation history saved for context</li>
+                <li>— Natural language questions about your activity, grounded in local data first</li>
+                <li>— Follow-up suggestions keep the thread moving instead of resetting the chat</li>
+                <li>— Better weekly context helps the assistant answer across days, not just one screen</li>
+                <li>— Daily budget guard can cap background AI work without killing chat</li>
               </ul>
               <Link href="/chat" className="lp-btn-ghost-dark">
                 Try AI chat <span>→</span>
@@ -241,8 +246,9 @@ export function LandingClient() {
               </h2>
               <p className="lp-sig-body">
                 Most productivity apps are surveillance tools in disguise. Daylens is
-                different: all processing happens on-device. No syncing to our servers.
-                No selling your habits to advertisers. Your activity is yours alone.
+                different: your raw history stays on-device. The optional web companion
+                only gets the read-only snapshot you choose to sync, and CLI-backed AI
+                can run entirely through tools you already pay for.
               </p>
               <ul className="lp-sig-bullets">
                 <li>
@@ -344,7 +350,7 @@ export function LandingClient() {
               {
                 n: "01",
                 title: "Download the app",
-                body: "Get Daylens for Mac or Windows. Installs in under a minute and starts tracking immediately.",
+                body: "Get Daylens for Mac or Windows. Install takes about a minute and the app walks you through permissions and AI setup.",
               },
               {
                 n: "02",
@@ -359,7 +365,7 @@ export function LandingClient() {
               {
                 n: "04",
                 title: "Ask anything",
-                body: "Use the AI assistant or browse your history. Your data is ready whenever you want to look.",
+                body: "Use the AI assistant or browse your history. Daylens now suggests strong follow-up questions so review feels conversational, not like query work.",
               },
             ].map((step, i) => (
               <div
@@ -384,7 +390,7 @@ export function LandingClient() {
               Start seeing your<br />time clearly.
             </h2>
             <p className="lp-cta-sub">
-              Free to download. Works on Mac and Windows. No account needed.
+              Free to download. Works on Mac and Windows. No account needed, and AI is optional.
             </p>
             <div className="lp-cta-actions">
               <a
