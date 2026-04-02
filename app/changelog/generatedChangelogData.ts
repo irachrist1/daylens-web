@@ -287,7 +287,7 @@ export const generatedChangelogData = {
       "id": "windows",
       "name": "Windows app",
       "description": "Electron app focused on parity, updater flow, Windows packaging, and UI polish.",
-      "version": "1.0.17",
+      "version": "1.0.18",
       "repoPath": "/Users/tonny/Dev-Personal/daylens-windows",
       "latestCommitDateTime": "2026-04-02T12:29:17+02:00",
       "latestCommitDate": "2026-04-02",
@@ -355,6 +355,29 @@ export const generatedChangelogData = {
         }
       ],
       "releases": [
+        {
+          "id": "windows-1.0.18",
+          "version": "1.0.18",
+          "date": "2026-04-02",
+          "title": "Notification taps now navigate to the correct view",
+          "intro": [
+            "Windows app v1.0.18 fixes notification tap routing.",
+            "Tapping the daily recap or morning nudge notification now navigates to Today or Focus instead of only bringing the window to the foreground.",
+            "The fix wires a missing IPC listener through the contextBridge so the renderer can actually respond to notification click events from the main process."
+          ],
+          "sections": [
+            {
+              "label": "Fixed",
+              "items": [
+                "Tapping the daily recap notification now opens Today",
+                "Tapping the morning nudge notification now opens Focus",
+                "Notification click IPC channel now exposed through contextBridge so the renderer can subscribe"
+              ]
+            }
+          ],
+          "linkUrl": "https://github.com/irachrist1/daylens-windows/blob/main/CHANGELOG.md",
+          "linkLabel": "View source changelog"
+        },
         {
           "id": "windows-1.0.17",
           "version": "1.0.17",
@@ -589,7 +612,7 @@ export const generatedChangelogData = {
       "id": "linux",
       "name": "Linux app",
       "description": "Electron app focused on Linux tracking fidelity, packaging, updater behavior, and evidence-backed Insights.",
-      "version": "1.0.17",
+      "version": "1.0.18",
       "repoPath": "/Users/tonny/Dev-Personal/daylens-linux",
       "latestCommitDateTime": "2026-04-02T13:02:19+02:00",
       "latestCommitDate": "2026-04-02",
@@ -639,6 +662,29 @@ export const generatedChangelogData = {
         }
       ],
       "releases": [
+        {
+          "id": "linux-1.0.18",
+          "version": "1.0.18",
+          "date": "2026-04-02",
+          "title": "Notification taps now navigate to the correct view",
+          "intro": [
+            "Linux app v1.0.18 fixes notification tap routing.",
+            "Tapping any daily summary or morning nudge notification now navigates to Today or Focus instead of only bringing the window to the foreground.",
+            "All three notification checks (daily summary, morning nudge, daily digest) previously had no click handler — notifications fired but tapping them did nothing beyond activating the window."
+          ],
+          "sections": [
+            {
+              "label": "Fixed",
+              "items": [
+                "Tapping the daily summary or digest notification now opens Today",
+                "Tapping the morning nudge notification now opens Focus",
+                "Click handlers added to all three notification checks via a shared navigation route parameter"
+              ]
+            }
+          ],
+          "linkUrl": "https://github.com/irachrist1/daylens-linux/blob/main/CHANGELOG.md",
+          "linkLabel": "View source changelog"
+        },
         {
           "id": "linux-1.0.17",
           "version": "1.0.17",

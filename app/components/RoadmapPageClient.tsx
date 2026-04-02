@@ -143,19 +143,19 @@ const ROADMAP_ITEMS: RoadmapItem[] = [
     title: "Daily summary and morning nudge notifications",
     status: "Done",
     summary:
-      "Send a summary notification at 6 PM with the day's highlights, plus a lightweight morning check-in that keeps the review loop visible from the start of the day.",
+      "Send a summary notification at 6 PM with the day's highlights, plus a lightweight morning check-in that keeps the review loop visible from the start of the day. Notification taps route into the correct view across all platforms.",
     whyItMatters:
-      "Windows already ships this. Adding it to macOS closes a meaningful feature gap and gives users a natural daily rhythm around the product.",
+      "A notification that opens the app to the wrong screen is barely better than no notification. The tap must land exactly where the user expects — Today for the day recap, Focus for the morning nudge.",
     currentFocus: [
-      "The 6 PM summary and 9 AM nudge now schedule from the shipping macOS app.",
-      "Notification taps route into Today or the correct daily report instead of stopping at the banner.",
+      "The 6 PM summary and 9 AM nudge schedule and fire correctly on macOS, Windows, and Linux.",
+      "Notification taps route into Today or Focus on all three platforms instead of stopping at the window foreground.",
       "Onboarding and Settings both expose the digest flow so launch copy matches the product.",
     ],
-    tags: ["Notifications", "Focus", "macOS"],
-    surface: "macOS",
+    tags: ["Notifications", "Focus", "Cross-platform"],
+    surface: "Cross-platform",
     deliverables: 3,
     board: "Focus surfaces",
-    updated: "Shipped in the current macOS release",
+    updated: "Shipped across macOS, Windows, and Linux — April 2",
     owner: "Christian",
   },
   {
