@@ -9,17 +9,19 @@ type SurfaceRecord = (typeof generatedChangelogData.surfaces)[number];
 type SurfaceId = SurfaceRecord["id"];
 type ReleaseRecord = SurfaceRecord["releases"][number];
 
-const PLATFORM_ORDER: SurfaceId[] = ["mac", "windows", "web"];
+const PLATFORM_ORDER: SurfaceId[] = ["mac", "windows", "linux", "web"];
 
 const SURFACE_LABELS: Record<SurfaceId, string> = {
   mac: "macOS",
   windows: "Windows",
+  linux: "Linux",
   web: "Web",
 };
 
 const SURFACE_PANEL_LABELS: Record<SurfaceId, string> = {
   mac: "macOS",
   windows: "Windows",
+  linux: "Linux",
   web: "Web companion",
 };
 
@@ -70,6 +72,17 @@ function SurfaceIcon({
           fillRule="evenodd"
           d="M0 0h7.584v7.584H0zm8.416 0h7.583v7.584H8.416zm-.832 8.416H0V16h7.584zm.832 0h7.583V16H8.416z"
           clipRule="evenodd"
+        />
+      </svg>
+    );
+  }
+
+  if (surface === "linux") {
+    return (
+      <svg viewBox="0 0 16 16" aria-hidden="true" className={className}>
+        <path
+          fill="currentColor"
+          d="M2.5 3.5A1.5 1.5 0 0 1 4 2h8a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 12 14H4A1.5 1.5 0 0 1 2.5 12.5v-9ZM4 3.5v9h8v-9H4Zm1.11 2.15 1.74 1.6-1.74 1.6.8.85 2.67-2.45-2.67-2.45-.8.85Zm4.14 3.2h2.15v-1.1H9.25v1.1Z"
         />
       </svg>
     );

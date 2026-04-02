@@ -11,7 +11,7 @@ type RoadmapStatus =
   | "Ready to ship"
   | "Done";
 
-type RoadmapSurface = "Cross-platform" | "Windows" | "macOS" | "Web companion";
+type RoadmapSurface = "Cross-platform" | "Windows" | "macOS" | "Linux" | "Web companion";
 
 type RoadmapItem = {
   title: string;
@@ -39,6 +39,7 @@ const SURFACE_FILTERS: RoadmapSurface[] = [
   "Cross-platform",
   "Windows",
   "macOS",
+  "Linux",
   "Web companion",
 ];
 
@@ -140,9 +141,9 @@ const ROADMAP_ITEMS: RoadmapItem[] = [
   },
   {
     title: "Daily summary and morning nudge notifications",
-    status: "In progress",
+    status: "Ready to ship",
     summary:
-      "Send a summary notification at 6 PM with the day's highlights, and a morning nudge at 9 AM if no focus session has started yet.",
+      "Send a summary notification at 6 PM with the day's highlights, plus a lightweight morning check-in that keeps the review loop visible from the start of the day.",
     whyItMatters:
       "Windows already ships this. Adding it to macOS closes a meaningful feature gap and gives users a natural daily rhythm around the product.",
     currentFocus: [
@@ -154,7 +155,7 @@ const ROADMAP_ITEMS: RoadmapItem[] = [
     surface: "macOS",
     deliverables: 3,
     board: "Focus surfaces",
-    updated: "Active macOS implementation",
+    updated: "Queued for current desktop release",
     owner: "Christian",
   },
   {
@@ -250,6 +251,25 @@ const ROADMAP_ITEMS: RoadmapItem[] = [
     deliverables: 3,
     board: "Tracking quality",
     updated: "Queued after current Windows push",
+    owner: "Christian",
+  },
+  {
+    title: "Linux local-first Insights",
+    status: "Done",
+    summary:
+      "Linux now answers exact-time, resume, and day-overview questions from local evidence before asking the user for an AI key.",
+    whyItMatters:
+      "Linux should feel useful on first launch, not like the version that needs cloud setup before it can explain your day.",
+    currentFocus: [
+      "Temporal routing now handles exact-time and resume-style questions locally.",
+      "Work-evidence summaries now surface the clearest thread and strongest work surface.",
+      "Final QA is about answer quality and wording, not missing plumbing.",
+    ],
+    tags: ["Linux", "Insights", "AI"],
+    surface: "Linux",
+    deliverables: 3,
+    board: "Linux AI",
+    updated: "Shipped April 2",
     owner: "Christian",
   },
   {
@@ -349,26 +369,26 @@ const ROADMAP_ITEMS: RoadmapItem[] = [
   },
   {
     title: "Focus review polish",
-    status: "Ready to ship",
+    status: "Done",
     summary:
-      "Sharpen the readout around focus score, context switches, and block summaries so the product tells a clearer story at a glance.",
+      "The focus readout now speaks in concrete terms: focus time, uninterrupted stretches, and session rhythm instead of vague optimization language.",
     whyItMatters:
       "The focus surface is where the product has to prove it can explain the day quickly and credibly.",
     currentFocus: [
-      "Reduce visual noise in focus summaries.",
-      "Keep block language more direct.",
-      "Tighten stats hierarchy for quicker scanning.",
+      "Focus time now sits alongside the score.",
+      "Session rhythm cards call out longest uninterrupted stretch and switch rate.",
+      "Reports mirror the same language so the product reads consistently.",
     ],
     tags: ["Focus", "Review", "UI"],
     surface: "macOS",
     deliverables: 2,
     board: "Focus surfaces",
-    updated: "Awaiting final polish",
+    updated: "Shipped April 2",
     owner: "Christian",
   },
   {
     title: "Provider-aware Windows onboarding",
-    status: "Ready to ship",
+    status: "Done",
     summary:
       "Finish the surrounding onboarding and settings copy now that Windows supports multiple AI providers and model paths.",
     whyItMatters:
@@ -382,7 +402,26 @@ const ROADMAP_ITEMS: RoadmapItem[] = [
     surface: "Windows",
     deliverables: 2,
     board: "Windows AI",
-    updated: "Final wording and QA",
+    updated: "Shipped in current release",
+    owner: "Christian",
+  },
+  {
+    title: "Linux packaging and updater foundation",
+    status: "Done",
+    summary:
+      "Linux now has a real release path with update metadata, package sanity checks, and public artifacts instead of a one-off dev build story.",
+    whyItMatters:
+      "Shipping Linux as a first-class surface means users can trust the install and update path, not just the code running behind it.",
+    currentFocus: [
+      "AppImage, deb, rpm, and tar.gz packaging are wired into the release flow.",
+      "Release metadata now supports Linux updater behavior where the package format allows it.",
+      "Runtime verification moved from local guesswork into repeatable CI checks.",
+    ],
+    tags: ["Linux", "Packaging", "Releases"],
+    surface: "Linux",
+    deliverables: 4,
+    board: "Linux platform",
+    updated: "Shipped",
     owner: "Christian",
   },
   {
@@ -567,7 +606,7 @@ export function RoadmapPageClient() {
               <p className="lp-ray-board-intro">
                 This is the clearest view of what Daylens is building now, what
                 is lining up next, and what has already shipped across macOS,
-                Windows, and the web companion.
+                Windows, Linux, and the web companion.
               </p>
               <p className="lp-ray-board-note">
                 Please note that these priorities are not guaranteed and will

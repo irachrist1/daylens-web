@@ -53,6 +53,19 @@ const surfaces = [
     changelogPath: path.resolve(repoRoot, "..", "daylens-windows", "CHANGELOG.md"),
     repoUrl: "https://github.com/irachrist1/daylens-windows",
   },
+  {
+    id: "linux",
+    name: "Linux app",
+    repoPath: path.resolve(repoRoot, "..", "daylens-linux"),
+    versionSource: () =>
+      JSON.parse(
+        readFileSync(path.resolve(repoRoot, "..", "daylens-linux", "package.json"), "utf8")
+      ).version,
+    description:
+      "Electron app focused on Linux tracking fidelity, packaging, updater behavior, and evidence-backed Insights.",
+    changelogPath: path.resolve(repoRoot, "..", "daylens-linux", "CHANGELOG.md"),
+    repoUrl: "https://github.com/irachrist1/daylens-linux",
+  },
 ];
 
 function git(repoPath, args) {
