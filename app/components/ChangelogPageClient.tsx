@@ -42,6 +42,11 @@ function displayTitle(value: string) {
   return compact || value;
 }
 
+function cardTitle(value: string) {
+  const compact = value.split(/[—:,.]/)[0].trim();
+  return compact.split(/\s+/).slice(0, 4).join(" ");
+}
+
 function cleanParagraph(value: string) {
   return value.replace(/\.\.+$/g, ".").replace(/\s+/g, " ").trim();
 }
@@ -181,7 +186,7 @@ export function ChangelogPageClient() {
                         {SURFACE_PANEL_LABELS[surface.id]}
                       </span>
                       <strong className="lp-ray-release-panel-title">
-                        {displayTitle(release.title)}
+                        {cardTitle(release.title)}
                       </strong>
                       <span className="lp-ray-release-panel-version">v{release.version}</span>
                     </div>
