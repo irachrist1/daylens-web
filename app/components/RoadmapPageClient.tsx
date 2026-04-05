@@ -594,7 +594,7 @@ export function RoadmapPageClient() {
   return (
     <div className="lp lp-ray-board-page">
       <MarketingCursor />
-      <MarketingInnerNav current="roadmap" theme="dark" variant="capsule" />
+      <MarketingInnerNav current="roadmap" theme="light" variant="capsule" />
 
       <main className="lp-ray-board-main">
         <section className="lp-container lp-ray-board-shell" aria-labelledby="roadmap-title">

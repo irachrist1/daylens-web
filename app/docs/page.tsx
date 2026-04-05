@@ -24,7 +24,7 @@ export default function DocsPage() {
   return (
     <div className="lp">
       <MarketingCursor />
-      <MarketingInnerNav current="docs" theme="dark" variant="capsule" />
+      <MarketingInnerNav current="docs" theme="light" variant="capsule" />
 
       {/* ── Hero ── */}
       <section className="lp-docs-hero">
@@ -34,7 +34,7 @@ export default function DocsPage() {
           <h1 className="text-display-lg" style={{ color: "var(--lp-bone)", margin: "0 0 1rem", maxWidth: "18ch" }}>
             Everything about Daylens.
           </h1>
-          <p style={{ fontSize: "1rem", fontWeight: 300, lineHeight: 1.65, color: "rgba(252,249,248,0.45)", margin: 0, maxWidth: "44ch" }}>
+          <p style={{ fontSize: "1rem", fontWeight: 400, lineHeight: 1.65, color: "rgba(10,22,40,0.5)", margin: 0, maxWidth: "44ch" }}>
             From first install to asking questions about your week — all in one place.
           </p>
         </div>

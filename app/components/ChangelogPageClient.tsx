@@ -118,7 +118,7 @@ export function ChangelogPageClient() {
   return (
     <div className="lp lp-ray-changelog-page">
       <MarketingCursor />
-      <MarketingInnerNav current="changelog" theme="dark" variant="capsule" />
+      <MarketingInnerNav current="changelog" theme="light" variant="capsule" />
 
       <main className="lp-ray-changelog-main">
         <section className="lp-container lp-ray-changelog-shell" aria-labelledby="changelog-title">
